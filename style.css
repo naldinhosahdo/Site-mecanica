@@ -771,3 +771,171 @@ button.article-card__link {
 }
 
 button.article-card__link:hover { color: var(--red-dark); }
+
+/* =========================================
+   MAPA MENTAL
+   ========================================= */
+.mapa-mental { padding: 6rem 0; background: var(--light); }
+
+/* ---- layout radial (desktop) ---- */
+.mapa__layout {
+  position: relative;
+  width: 100%;
+  height: 580px;
+  user-select: none;
+}
+
+.mapa__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* nó central */
+.mapa__central {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 110px;
+  height: 110px;
+  background: var(--dark);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--white);
+  box-shadow: 0 0 0 6px rgba(230,51,41,.25), 0 8px 32px rgba(0,0,0,.3);
+  z-index: 3;
+}
+
+.mapa__central span { font-size: 1.6rem; line-height: 1; }
+.mapa__central p    { font-size: .65rem; font-weight: 700; line-height: 1.3; margin-top: .3rem; }
+
+/* nós de ramo */
+.mapa__no {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  background: var(--white);
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: box-shadow var(--transition), transform var(--transition);
+  z-index: 3;
+  box-shadow: var(--shadow);
+}
+
+.mapa__no span { font-size: 1.5rem; line-height: 1; }
+.mapa__no p    { font-size: .65rem; font-weight: 700; margin-top: .25rem; line-height: 1.3; color: var(--dark2); }
+
+.mapa__no:hover  { transform: translate(-50%,-50%) scale(1.1); }
+.mapa__no.active { box-shadow: 0 0 0 4px currentColor, 0 8px 24px rgba(0,0,0,.15); transform: translate(-50%,-50%) scale(1.12); }
+
+/* painel de sub-itens */
+.mapa__painel {
+  position: absolute;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,.12);
+  border-left: 4px solid var(--border);
+  min-width: 160px;
+  max-width: 180px;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.9);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.mapa__painel.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: scale(1);
+}
+
+.mapa__painel h4 { font-size: .85rem; font-weight: 800; margin-bottom: .5rem; }
+
+.mapa__painel ul { list-style: none; }
+.mapa__painel li {
+  font-size: .78rem;
+  color: var(--gray);
+  padding: .2rem 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.mapa__painel li:last-child { border-bottom: none; }
+.mapa__painel li::before { content: '›'; color: var(--red); font-weight: 700; }
+
+/* ---- layout acordeão (mobile) ---- */
+.mapa__acordeao { display: none; }
+
+.mapa__item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  overflow: hidden;
+  margin-bottom: .75rem;
+}
+
+.mapa__item-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: .95rem;
+  justify-content: space-between;
+}
+
+.mapa__item-header span:first-child { font-size: 1.4rem; }
+
+.mapa__chevron {
+  font-size: .85rem;
+  color: var(--gray);
+  transition: transform var(--transition);
+}
+
+.mapa__item.open .mapa__chevron { transform: rotate(180deg); }
+
+.mapa__item-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .3s ease;
+}
+
+.mapa__item.open .mapa__item-body { max-height: 300px; }
+
+.mapa__item-body ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.mapa__item-body li {
+  background: var(--light);
+  border-radius: 999px;
+  padding: .25rem .75rem;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--dark2);
+}
+
+@media (max-width: 700px) {
+  .mapa__layout   { display: none; }
+  .mapa__acordeao { display: block; }
+}
