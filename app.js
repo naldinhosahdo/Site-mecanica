@@ -1,3 +1,206 @@
+// =========================================
+// ARTIGOS — conteúdo completo de cada card
+// =========================================
+const artigos = {
+  motor: {
+    cat: 'Motor',
+    titulo: 'Como funciona o motor de combustão interna',
+    tempo: '8 min de leitura',
+    img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80',
+    conteudo: `
+      <h3>O que é um motor de combustão interna?</h3>
+      <p>O motor de combustão interna (MCI) é o coração de praticamente todo veículo movido a gasolina, etanol ou diesel. Ele converte energia química do combustível em energia mecânica por meio de pequenas explosões controladas dentro de cilindros metálicos.</p>
+
+      <h3>O ciclo de 4 tempos</h3>
+      <p>A maioria dos motores de carro usa o ciclo Otto de 4 tempos. Cada "tempo" é um movimento do pistão dentro do cilindro:</p>
+      <ul>
+        <li><strong>1º Admissão:</strong> O pistão desce e a válvula de admissão abre, sugando a mistura de ar e combustível para dentro do cilindro.</li>
+        <li><strong>2º Compressão:</strong> Todas as válvulas fecham e o pistão sobe, comprimindo a mistura. Quanto maior a compressão, mais potência é gerada.</li>
+        <li><strong>3º Explosão (expansão):</strong> A vela de ignição produz uma fagulha que detona a mistura. A expansão dos gases empurra o pistão com força para baixo — esse é o único tempo que gera potência.</li>
+        <li><strong>4º Escape:</strong> A válvula de escape abre e o pistão sobe novamente, expulsando os gases queimados pelo escapamento.</li>
+      </ul>
+
+      <h3>Principais componentes do motor</h3>
+      <ul>
+        <li><strong>Bloco do motor:</strong> Estrutura principal que abriga os cilindros, onde os pistões se movem.</li>
+        <li><strong>Cabeçote:</strong> Tampa do bloco que contém as válvulas, árvore de cames e câmara de combustão.</li>
+        <li><strong>Pistões:</strong> Peças que sobem e descem dentro dos cilindros, transmitindo força ao virabrequim.</li>
+        <li><strong>Virabrequim:</strong> Converte o movimento linear dos pistões em rotação — é essa rotação que chega às rodas.</li>
+        <li><strong>Árvore de cames:</strong> Controla a abertura e fechamento das válvulas no momento exato.</li>
+        <li><strong>Correia dentada:</strong> Sincroniza o virabrequim com a árvore de cames. Se quebrar, pode destruir o motor inteiro.</li>
+      </ul>
+
+      <h3>Por que o motor aquece?</h3>
+      <p>As explosões constantes geram muito calor. Por isso existe o sistema de arrefecimento, que circula líquido refrigerante pelo bloco e pelo radiador para dissipar esse calor. Sem ele, o motor fundiria em minutos.</p>
+
+      <h3>Dica prática</h3>
+      <p>Nunca ignore a luz de temperatura no painel. Se o motor superaquecer, desligue-o imediatamente e aguarde esfriar antes de verificar o nível de água — abrir o radiador quente pode causar queimaduras graves.</p>
+    `
+  },
+  freios: {
+    cat: 'Freios',
+    titulo: 'Freios a disco x freios a tambor: qual a diferença?',
+    tempo: '5 min de leitura',
+    img: 'https://images.unsplash.com/photo-1600712242805-5f78671b24da?w=700&q=80',
+    conteudo: `
+      <h3>Como funciona um sistema de freios?</h3>
+      <p>Quando você pisa no pedal de freio, você aciona um sistema hidráulico que empurra peças de atrito contra as partes giratórias das rodas, convertendo energia cinética em calor e desacelerando o carro.</p>
+
+      <h3>Freios a disco</h3>
+      <p>Usados na maioria dos veículos modernos, principalmente nas rodas dianteiras. Funcionam assim:</p>
+      <ul>
+        <li>Um <strong>disco metálico</strong> fica preso à roda e gira junto com ela.</li>
+        <li>Uma <strong>pinça de freio</strong> abraça o disco com <strong>pastilhas</strong> de ambos os lados.</li>
+        <li>Ao frear, a pinça aperta as pastilhas contra o disco, criando atrito.</li>
+      </ul>
+      <p><strong>Vantagens:</strong> melhor dissipação de calor, desempenho superior em frenagens repetidas, mais fácil de inspecionar visualmente.</p>
+
+      <h3>Freios a tambor</h3>
+      <p>Mais antigos e ainda usados nas rodas traseiras de carros populares por serem mais baratos. Funcionam assim:</p>
+      <ul>
+        <li>Um <strong>tambor cilíndrico</strong> gira junto com a roda.</li>
+        <li>Dentro do tambor ficam as <strong>lonas de freio</strong> presas a um suporte fixo.</li>
+        <li>Ao frear, as lonas são pressionadas para fora contra a face interna do tambor.</li>
+      </ul>
+      <p><strong>Vantagens:</strong> custo menor, mais eficientes como freio de estacionamento.</p>
+
+      <h3>Comparação direta</h3>
+      <ul>
+        <li><strong>Potência de frenagem:</strong> Disco ganha — mais força e controle.</li>
+        <li><strong>Resistência ao calor:</strong> Disco ganha — dissipa calor mais rápido.</li>
+        <li><strong>Custo de manutenção:</strong> Tambor é mais barato para trocar as lonas.</li>
+        <li><strong>Vida útil:</strong> Pastilhas de disco duram em média 30–40 mil km. Lonas de tambor, 40–60 mil km.</li>
+      </ul>
+
+      <h3>Quando trocar?</h3>
+      <p>Substitua as pastilhas quando estiverem com menos de 3mm de espessura ou ao ouvir um chiado agudo ao frear. Nunca espere até o rangido metálico — nesse ponto o disco já foi danificado.</p>
+    `
+  },
+  suspensao: {
+    cat: 'Suspensão',
+    titulo: 'O que é suspensão e como ela afeta a dirigibilidade',
+    tempo: '6 min de leitura',
+    img: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=700&q=80',
+    conteudo: `
+      <h3>Para que serve a suspensão?</h3>
+      <p>A suspensão tem duas funções principais: garantir o <strong>conforto</strong> dos ocupantes absorvendo imperfeições da pista, e garantir a <strong>segurança</strong> mantendo os pneus em contato constante com o solo para que os freios e a direção funcionem corretamente.</p>
+
+      <h3>Componentes principais</h3>
+      <ul>
+        <li><strong>Molas:</strong> Absorvem os impactos. Podem ser helicoidais (espiral), folas de lâmina ou barras de torção.</li>
+        <li><strong>Amortecedores:</strong> Controlam o movimento das molas, impedindo que o carro "quique" após um buraco. Quando gasto, o carro oscila em excesso.</li>
+        <li><strong>Bandeja (braço de controle):</strong> Liga a roda ao chassi, controlando a geometria do movimento.</li>
+        <li><strong>Buchas:</strong> Peças de borracha ou poliuretano que amortecem vibrações nas articulações. Quando desgastadas causam barulhos e folga.</li>
+        <li><strong>Barra estabilizadora:</strong> Liga as duas rodas do mesmo eixo para reduzir a inclinação do carro em curvas.</li>
+      </ul>
+
+      <h3>Tipos de suspensão</h3>
+      <ul>
+        <li><strong>MacPherson (dianteira):</strong> Simples e barata. Usada na maioria dos populares. Amortecedor e mola integrados em um único conjunto.</li>
+        <li><strong>Multilink:</strong> Mais sofisticada, permite ajuste fino da geometria. Comum em carros médios e premium.</li>
+        <li><strong>Eixo rígido (traseira):</strong> As duas rodas traseiras ligadas por um eixo. Robusta e barata, porém menos confortável.</li>
+      </ul>
+
+      <h3>Sinais de desgaste</h3>
+      <ul>
+        <li>Barulho de "batida" ao passar em buracos ou lombadas → buchas ou bandejas desgastadas.</li>
+        <li>Carro oscila muito após um buraco → amortecedores gastos.</li>
+        <li>Pneu desgastado de forma irregular → problema de geometria (alinhamento).</li>
+        <li>Carro puxa para um lado ao frear → diferença de regulagem entre os lados.</li>
+      </ul>
+
+      <h3>Com que frequência revisar?</h3>
+      <p>Inspecione a suspensão a cada 20.000 km ou uma vez por ano. Amortecedores costumam durar 60.000–80.000 km, mas podem desgastar mais rápido em estradas ruins.</p>
+    `
+  },
+  cambio: {
+    cat: 'Câmbio',
+    titulo: 'Câmbio manual, automático, CVT e DSG: qual escolher?',
+    tempo: '7 min de leitura',
+    img: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=700&q=80',
+    conteudo: `
+      <h3>O que o câmbio faz?</h3>
+      <p>O câmbio (ou transmissão) adapta a rotação do motor à velocidade das rodas. Sem ele, o motor só conseguiria trabalhar em uma única condição de carga — inviável na prática. As marchas permitem usar a potência do motor de forma eficiente em diferentes situações: arranque, velocidade constante, subidas, etc.</p>
+
+      <h3>Câmbio manual</h3>
+      <p>O motorista escolhe a marcha usando a embreagem e o câmbio. É o tipo mais simples mecanicamente.</p>
+      <ul>
+        <li><strong>Vantagens:</strong> Custo de manutenção menor, maior controle do motorista, geralmente mais econômico.</li>
+        <li><strong>Desvantagens:</strong> Exige habilidade, cansativo em trânsito intenso.</li>
+        <li><strong>Manutenção:</strong> Trocar o fluido do câmbio a cada 60.000–80.000 km. A embreagem dura entre 60.000 e 150.000 km dependendo do uso.</li>
+      </ul>
+
+      <h3>Câmbio automático (torque converter)</h3>
+      <p>As marchas trocam sozinhas por meio de um conversor de torque hidráulico e um conjunto de engrenagens planetárias.</p>
+      <ul>
+        <li><strong>Vantagens:</strong> Conforto total, ideal para trânsito urbano.</li>
+        <li><strong>Desvantagens:</strong> Consumo um pouco maior, custo de reparo elevado.</li>
+        <li><strong>Manutenção:</strong> Trocar o óleo ATF a cada 40.000–60.000 km. Nunca negligencie — reparos de câmbio automático custam caro.</li>
+      </ul>
+
+      <h3>CVT (Variador Contínuo)</h3>
+      <p>Em vez de marchas fixas, usa duas polias e uma correia de aço que variam o diâmetro continuamente. O motor sempre trabalha na rotação ideal.</p>
+      <ul>
+        <li><strong>Vantagens:</strong> Mais eficiente em consumo, aceleração suave.</li>
+        <li><strong>Desvantagens:</strong> Sensação de "borrachinha" na aceleração, durabilidade menor sob uso esportivo.</li>
+      </ul>
+
+      <h3>DSG / DCT (Dupla Embreagem)</h3>
+      <p>Funciona como dois câmbios manuais em paralelo, um para marchas pares e outro para ímpares. Enquanto você está na 3ª, o câmbio já deixa a 4ª engatada, pronta para trocar em milissegundos.</p>
+      <ul>
+        <li><strong>Vantagens:</strong> Rapidíssimo, eficiente, esportivo.</li>
+        <li><strong>Desvantagens:</strong> Pode apresentar solavancos em baixas velocidades, manutenção cara.</li>
+      </ul>
+
+      <h3>Qual escolher?</h3>
+      <p>Para uso urbano intenso: <strong>automático ou CVT</strong>. Para quem gosta de dirigir e quer economizar na manutenção: <strong>manual</strong>. Para quem quer o melhor dos dois mundos com orçamento elevado: <strong>DSG/DCT</strong>.</p>
+    `
+  },
+  eletrica: {
+    cat: 'Elétrica',
+    titulo: 'Sistema elétrico do carro: bateria, alternador e motor de arranque',
+    tempo: '5 min de leitura',
+    img: 'https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=700&q=80',
+    conteudo: `
+      <h3>O trio que dá vida ao carro</h3>
+      <p>Três componentes trabalham juntos para garantir que seu carro ligue toda vez que você gira a chave (ou aperta o botão): a <strong>bateria</strong>, o <strong>motor de arranque</strong> e o <strong>alternador</strong>. Entender como cada um funciona facilita muito o diagnóstico de problemas.</p>
+
+      <h3>Bateria</h3>
+      <p>Armazena energia química e a converte em eletricidade. É responsável por alimentar o motor de arranque no momento da partida e manter todos os sistemas eletrônicos funcionando com o motor desligado.</p>
+      <ul>
+        <li><strong>Tensão nominal:</strong> 12 volts (12,6V totalmente carregada, abaixo de 12V indica descarga).</li>
+        <li><strong>Vida útil:</strong> 3 a 5 anos em média.</li>
+        <li><strong>Sinal de problema:</strong> Motor gira devagar ou não liga, especialmente no frio.</li>
+        <li><strong>Dica:</strong> Se deixar luzes acesas e a bateria descarregar frequentemente, verifique se não há consumo parasita (algo ligado drenando a bateria com o carro desligado).</li>
+      </ul>
+
+      <h3>Motor de arranque (starter)</h3>
+      <p>Motor elétrico pequeno que usa a energia da bateria para girar o motor de combustão nos primeiros instantes, até que ele consiga funcionar por conta própria.</p>
+      <ul>
+        <li><strong>Sinal de problema:</strong> Clique seco ao girar a chave (sem o motor girar) indica o motor de arranque com defeito.</li>
+        <li><strong>Vida útil:</strong> Geralmente dura mais de 100.000 km, mas pode falhar antes com partidas frequentes.</li>
+      </ul>
+
+      <h3>Alternador</h3>
+      <p>Gerador acionado pelo motor em funcionamento. Sua função é produzir eletricidade para recarregar a bateria e alimentar todos os sistemas do carro (injeção, ignição, ar-condicionado, luzes) enquanto você dirige.</p>
+      <ul>
+        <li><strong>Tensão de saída:</strong> Entre 13,5V e 14,8V com o motor ligado.</li>
+        <li><strong>Sinal de problema:</strong> Luz da bateria acesa com o motor ligado indica que o alternador não está gerando energia — a bateria vai descarregar em minutos.</li>
+        <li><strong>Vida útil:</strong> 80.000 a 150.000 km em geral.</li>
+      </ul>
+
+      <h3>Como diagnosticar em casa</h3>
+      <p>Com um multímetro simples (menos de R$50 em qualquer loja de ferramentas) você consegue testar os três:</p>
+      <ul>
+        <li>Motor desligado: meça a bateria. Deve marcar ≥ 12,4V.</li>
+        <li>Motor ligado: meça novamente. Deve marcar entre 13,5V e 14,8V (alternador funcionando).</li>
+        <li>Se motor ligado marcar ≤ 12,8V, o alternador provavelmente está com defeito.</li>
+      </ul>
+    `
+  }
+};
+
+// =========================================
 // Header scroll effect
 const header = document.getElementById('header');
 window.addEventListener('scroll', () => {
@@ -42,6 +245,49 @@ document.getElementById('busca-glossario').addEventListener('input', function ()
   });
 
   document.getElementById('glossario-vazio').style.display = visíveis === 0 ? 'block' : 'none';
+});
+
+// =========================================
+// MODAL de artigos
+// =========================================
+const overlay      = document.getElementById('modal-overlay');
+const modalContent = document.getElementById('modal-content');
+const modalClose   = document.getElementById('modal-close');
+
+function abrirModal(id) {
+  const a = artigos[id];
+  if (!a) return;
+  modalContent.innerHTML = `
+    <img src="${a.img}" alt="${a.titulo}" class="modal__img" />
+    <span class="modal__cat">${a.cat}</span>
+    <p style="font-size:.8rem;color:var(--gray);margin-bottom:.75rem">${a.tempo}</p>
+    <h2>${a.titulo}</h2>
+    ${a.conteudo}
+  `;
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  modalClose.focus();
+}
+
+function fecharModal() {
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('[data-artigo]').forEach(btn => {
+  btn.addEventListener('click', () => abrirModal(btn.dataset.artigo));
+});
+
+modalClose.addEventListener('click', fecharModal);
+
+overlay.addEventListener('click', e => {
+  if (e.target === overlay) fecharModal();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') fecharModal();
 });
 
 // Newsletter form

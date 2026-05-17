@@ -100,7 +100,7 @@
             <span class="article-card__time">8 min de leitura</span>
             <h3>Como funciona o motor de combustão interna</h3>
             <p>Entenda o ciclo de 4 tempos — admissão, compressão, explosão e escape — e por que cada peça existe dentro do motor.</p>
-            <a href="#" class="article-card__link">Ler artigo →</a>
+            <button class="article-card__link" data-artigo="motor">Ler artigo →</button>
           </div>
         </article>
 
@@ -113,7 +113,7 @@
             <span class="article-card__time">5 min de leitura</span>
             <h3>Freios a disco x freios a tambor: qual a diferença?</h3>
             <p>Conheça os dois sistemas, suas vantagens e quando cada um é indicado.</p>
-            <a href="#" class="article-card__link">Ler artigo →</a>
+            <button class="article-card__link" data-artigo="freios">Ler artigo →</button>
           </div>
         </article>
 
@@ -126,7 +126,7 @@
             <span class="article-card__time">6 min de leitura</span>
             <h3>O que é suspensão e como ela afeta a dirigibilidade</h3>
             <p>Amortecedores, molas e geometria: tudo que você precisa saber para não descuidar da suspensão.</p>
-            <a href="#" class="article-card__link">Ler artigo →</a>
+            <button class="article-card__link" data-artigo="suspensao">Ler artigo →</button>
           </div>
         </article>
 
@@ -139,7 +139,7 @@
             <span class="article-card__time">7 min de leitura</span>
             <h3>Câmbio manual, automático, CVT e DSG: qual escolher?</h3>
             <p>Diferenças técnicas, consumo de combustível e custo de manutenção de cada tipo.</p>
-            <a href="#" class="article-card__link">Ler artigo →</a>
+            <button class="article-card__link" data-artigo="cambio">Ler artigo →</button>
           </div>
         </article>
 
@@ -152,7 +152,7 @@
             <span class="article-card__time">5 min de leitura</span>
             <h3>Sistema elétrico do carro: bateria, alternador e motor de arranque</h3>
             <p>Como esses três componentes trabalham juntos para dar vida ao seu veículo toda vez que você gira a chave.</p>
-            <a href="#" class="article-card__link">Ler artigo →</a>
+            <button class="article-card__link" data-artigo="eletrica">Ler artigo →</button>
           </div>
         </article>
 
@@ -534,6 +534,14 @@
       </div>
     </div>
   </footer>
+
+  <!-- MODAL DE ARTIGO -->
+  <div class="modal-overlay" id="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal__close" id="modal-close" aria-label="Fechar">✕</button>
+      <div class="modal__content" id="modal-content"></div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
