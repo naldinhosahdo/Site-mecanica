@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa Mental | MecânicaPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; }
+
+    /* ── HEADER ─────────────────────────────── */
+    .mmh {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 52px;
+      background: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.25rem;
+      gap: 1rem;
+      z-index: 1000;
+    }
+    .mmh__back {
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: color .2s;
+    }
+    .mmh__back:hover { color: #fff; }
+    .mmh__title {
+      color: #fff;
+      font-size: .88rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mmh__controls { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
+    .mmh__btn {
+      width: 30px; height: 30px;
+      border-radius: 7px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+      font-family: inherit;
+    }
+    .mmh__btn:hover { background: rgba(255,255,255,.2); }
+    .mmh__zoom { font-size: .78rem; color: rgba(255,255,255,.6); min-width: 40px; text-align: center; }
+
+    /* ── CANVAS ─────────────────────────────── */
+    .mm-canvas {
+      position: fixed;
+      top: 52px; left: 0; right: 0; bottom: 0;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #fff;
+      background-image: radial-gradient(circle, #d4d4d8 1.2px, transparent 1.2px);
+      background-size: 28px 28px;
+    }
+    .mm-canvas.panning { cursor: grabbing; }
+
+    /* ── WORLD (transforms applied here) ────── */
+    .mm-world {
+      position: absolute;
+      width: 2400px;
+      height: 1400px;
+      transform-origin: 0 0;
+    }
+
+    /* ── SVG LAYER ───────────────────────────── */
+    .mm-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    /* ── NODES ───────────────────────────────── */
+    .mm-node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+    }
+
+    .mm-node__body {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border-radius: 30px;
+      border: 2.5px solid var(--borda, #374151);
+      background: var(--bg, #fff);
+      box-shadow: 3px 3px 0 rgba(0,0,0,.18);
+      white-space: nowrap;
+      cursor: default;
+      user-select: none;
+    }
+
+    .mm-node__label {
+      font-size: .84rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Root node is bigger */
+    .mm-node--root .mm-node__body {
+      padding: 14px 22px;
+      border-width: 3px;
+      box-shadow: 5px 5px 0 rgba(0,0,0,.22);
+    }
+    .mm-node--root .mm-node__label { font-size: 1.05rem; }
+
+    /* ── EXPAND BUTTON ───────────────────────── */
+    .mm-expand {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.7);
+      background: transparent;
+      color: rgba(255,255,255,.9);
+      font-size: .95rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+      font-family: inherit;
+      padding: 0;
+      flex-shrink: 0;
+      transition: background .2s, border-color .2s, transform .28s ease;
+    }
+    .mm-expand:hover { background: rgba(255,255,255,.25); border-color: #fff; }
+    .mm-expand.open  { transform: rotate(45deg); }
+
+    /* ── CHILD NODES (hidden by default) ─────── */
+    .mm-node--child {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) translateX(-50px) scale(0.55);
+      transition:
+        opacity  .28s ease,
+        transform .32s cubic-bezier(.34,1.56,.64,1);
+    }
+    .mm-node--child.show {
+      opacity: 1;
+      pointer-events: all;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* ── HINT BAR ────────────────────────────── */
+    .mm-hint {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(17,24,39,.72);
+      color: rgba(255,255,255,.9);
+      font-size: .74rem;
+      font-weight: 500;
+      padding: .4rem 1.1rem;
+      border-radius: 999px;
+      pointer-events: none;
+      white-space: nowrap;
+      transition: opacity 1s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mmh">
+    <a href="index.html" class="mmh__back">← Voltar ao site</a>
+    <div class="mmh__title">⚙ Mecânica Automotiva — Mapa Mental</div>
+    <div class="mmh__controls">
+      <button class="mmh__btn" id="btn-zo" title="Diminuir zoom">−</button>
+      <span  class="mmh__zoom" id="zoom-lbl">100%</span>
+      <button class="mmh__btn" id="btn-zi" title="Aumentar zoom">+</button>
+      <button class="mmh__btn" id="btn-zr" title="Centralizar">⊙</button>
+    </div>
+  </header>
+
+  <div class="mm-canvas" id="mm-canvas">
+    <div class="mm-world"  id="mm-world">
+      <svg class="mm-svg"  id="mm-svg"></svg>
+      <!-- nodes injected by JS -->
+    </div>
+    <div class="mm-hint" id="mm-hint">
+      Arraste para mover &nbsp;·&nbsp; Scroll para zoom &nbsp;·&nbsp; Clique em <strong>+</strong> para expandir
+    </div>
+  </div>
+
+<script>
+// ──────────────────────────────────────────────────────────────
+// DATA
+// ──────────────────────────────────────────────────────────────
+const ROOT_CX    = 310;   // center-x of root node on world
+const ROOT_CY    = 700;   // center-y of root node on world
+const CHILD_CX   = 820;   // center-x of child nodes
+const SPACING    = 90;    // vertical gap between child node centers
+
+const CHILDREN = [
+  { id:'estrutura',     label:'Estrutura do carro',         bg:'#15803d', borda:'#166534' },
+  { id:'motor',         label:'Motor',                      bg:'#dc2626', borda:'#991b1b' },
+  { id:'injecao',       label:'Sistema de injeção',         bg:'#2563eb', borda:'#1e40af' },
+  { id:'arrefecimento', label:'Sistema de arrefecimento',   bg:'#0891b2', borda:'#0e7490' },
+  { id:'suspensao',     label:'Suspensão',                  bg:'#7c3aed', borda:'#5b21b6' },
+  { id:'freio',         label:'Sistema de freio',           bg:'#ea580c', borda:'#c2410c' },
+  { id:'direcao',       label:'Sistema de direção',         bg:'#0d9488', borda:'#0f766e' },
+  { id:'escapamento',   label:'Sistema de escapamento',     bg:'#475569', borda:'#334155' },
+  { id:'gases',         label:'Reaproveitamento de gases',  bg:'#059669', borda:'#047857' },
+  { id:'arcond',        label:'Ar condicionado',            bg:'#4f46e5', borda:'#3730a3' },
+];
+
+// ──────────────────────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────────────────────
+const canvas  = document.getElementById('mm-canvas');
+const world   = document.getElementById('mm-world');
+const svgEl   = document.getElementById('mm-svg');
+const zoomLbl = document.getElementById('zoom-lbl');
+const hint    = document.getElementById('mm-hint');
+
+let tr        = { x: 0, y: 0, scale: 1 };
+let isPanning = false;
+let panStart  = { x: 0, y: 0 };
+let expanded  = false;
+let curves    = [];
+
+// Connection points (measured after DOM insert)
+let rootRightX = ROOT_CX + 90;   // fallback
+const childLeftX = {};
+
+// ──────────────────────────────────────────────────────────────
+// TRANSFORM
+// ──────────────────────────────────────────────────────────────
+function applyTr() {
+  world.style.transform = `translate(${tr.x}px,${tr.y}px) scale(${tr.scale})`;
+  zoomLbl.textContent   = Math.round(tr.scale * 100) + '%';
+}
+
+function centerRoot() {
+  const r = canvas.getBoundingClientRect();
+  tr.x = r.width  / 2 - ROOT_CX;
+  tr.y = r.height / 2 - ROOT_CY;
+  tr.scale = 1;
+  applyTr();
+}
+
+// ──────────────────────────────────────────────────────────────
+// PAN — mouse
+// ──────────────────────────────────────────────────────────────
+canvas.addEventListener('mousedown', e => {
+  if (e.target.closest('.mm-expand, .mm-node__body')) return;
+  isPanning = true;
+  panStart  = { x: e.clientX - tr.x, y: e.clientY - tr.y };
+  canvas.classList.add('panning');
+});
+document.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  tr.x = e.clientX - panStart.x;
+  tr.y = e.clientY - panStart.y;
+  applyTr();
+});
+document.addEventListener('mouseup', () => {
+  isPanning = false;
+  canvas.classList.remove('panning');
+});
+
+// PAN — touch
+let lastTouch  = null;
+let pinchStart = null;
+
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    lastTouch  = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    pinchStart = null;
+  } else if (e.touches.length === 2) {
+    lastTouch = null;
+    const d = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    pinchStart = {
+      d, scale: tr.scale, tx: tr.x, ty: tr.y,
+      cx: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+      cy: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+    };
+  }
+}, { passive: true });
+
+canvas.addEventListener('touchmove', e => {
+  if (e.touches.length === 1 && lastTouch) {
+    const dx = e.touches[0].clientX - lastTouch.x;
+    const dy = e.touches[0].clientY - lastTouch.y;
+    tr.x += dx; tr.y += dy;
+    lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    applyTr();
+  } else if (e.touches.length === 2 && pinchStart) {
+    const d        = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    const newScale = Math.max(.25, Math.min(3, pinchStart.scale * d / pinchStart.d));
+    const sc       = newScale / pinchStart.scale;
+    const rect     = canvas.getBoundingClientRect();
+    const mx = pinchStart.cx - rect.left;
+    const my = pinchStart.cy - rect.top;
+    tr.x     = mx - sc * (mx - pinchStart.tx);
+    tr.y     = my - sc * (my - pinchStart.ty);
+    tr.scale = newScale;
+    applyTr();
+  }
+}, { passive: true });
+
+canvas.addEventListener('touchend', () => { lastTouch = null; pinchStart = null; });
+
+// ──────────────────────────────────────────────────────────────
+// ZOOM — wheel & buttons
+// ──────────────────────────────────────────────────────────────
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor   = e.deltaY < 0 ? 1.12 : 0.9;
+  const newScale = Math.max(.2, Math.min(3, tr.scale * factor));
+  const sc       = newScale / tr.scale;
+  const rect     = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  tr.x = mx - sc * (mx - tr.x);
+  tr.y = my - sc * (my - tr.y);
+  tr.scale = newScale;
+  applyTr();
+}, { passive: false });
+
+function zoomBy(factor) {
+  const r  = canvas.getBoundingClientRect();
+  const cx = r.width / 2, cy = r.height / 2;
+  const ns = Math.max(.2, Math.min(3, tr.scale * factor));
+  const sc = ns / tr.scale;
+  tr.x = cx - sc * (cx - tr.x);
+  tr.y = cy - sc * (cy - tr.y);
+  tr.scale = ns;
+  applyTr();
+}
+
+document.getElementById('btn-zi').addEventListener('click', () => zoomBy(1.25));
+document.getElementById('btn-zo').addEventListener('click', () => zoomBy(0.8));
+document.getElementById('btn-zr').addEventListener('click', centerRoot);
+
+// ──────────────────────────────────────────────────────────────
+// NODE CREATION
+// ──────────────────────────────────────────────────────────────
+function createNode(id, cx, cy, label, bg, borda, isRoot) {
+  const el   = document.createElement('div');
+  el.className = 'mm-node' + (isRoot ? ' mm-node--root' : ' mm-node--child');
+  el.id        = 'node-' + id;
+  el.style.left = cx + 'px';
+  el.style.top  = cy + 'px';
+
+  const body = document.createElement('div');
+  body.className = 'mm-node__body';
+  body.style.setProperty('--bg',    bg);
+  body.style.setProperty('--borda', borda);
+
+  const lbl = document.createElement('span');
+  lbl.className   = 'mm-node__label';
+  lbl.textContent = label;
+  body.appendChild(lbl);
+
+  if (isRoot) {
+    const btn = document.createElement('button');
+    btn.type      = 'button';
+    btn.className = 'mm-expand';
+    btn.id        = 'btn-expand';
+    btn.textContent = '+';
+    btn.addEventListener('click', toggleExpand);
+    body.appendChild(btn);
+  }
+
+  el.appendChild(body);
+  world.appendChild(el);
+  return el;
+}
+
+// ──────────────────────────────────────────────────────────────
+// EXPAND / COLLAPSE
+// ──────────────────────────────────────────────────────────────
+function toggleExpand() {
+  expanded = !expanded;
+  const btn = document.getElementById('btn-expand');
+  btn.classList.toggle('open', expanded);
+
+  if (expanded) showChildren();
+  else          hideChildren();
+}
+
+function showChildren() {
+  const n      = CHILDREN.length;
+  const totalH = (n - 1) * SPACING;
+  const startY = ROOT_CY - totalH / 2;
+
+  CHILDREN.forEach((c, i) => {
+    const cy = startY + i * SPACING;
+
+    // Reposition child to its final Y
+    const el = document.getElementById('node-' + c.id);
+    el.style.top = cy + 'px';
+
+    // Staggered reveal
+    const delay = i * 55;
+    el.style.transitionDelay = delay + 'ms';
+    setTimeout(() => el.classList.add('show'), 20);
+
+    // Draw bezier curve (after node is positioned)
+    const childLX = childLeftX[c.id] || (CHILD_CX - 110);
+    setTimeout(() => {
+      const path = drawCurve(rootRightX, ROOT_CY, childLX, cy, c.borda);
+      curves.push(path);
+    }, delay + 60);
+  });
+}
+
+function hideChildren() {
+  CHILDREN.forEach(c => {
+    const el = document.getElementById('node-' + c.id);
+    el.style.transitionDelay = '0ms';
+    el.classList.remove('show');
+  });
+  curves.forEach(p => p.remove());
+  curves = [];
+}
+
+// ──────────────────────────────────────────────────────────────
+// SVG BEZIER CURVES
+// ──────────────────────────────────────────────────────────────
+function drawCurve(x1, y1, x2, y2, color) {
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  const dx   = (x2 - x1) * 0.5;
+  const d    = `M ${x1} ${y1} C ${x1+dx} ${y1}, ${x2-dx} ${y2}, ${x2} ${y2}`;
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', color);
+  path.setAttribute('stroke-width', '2.5');
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke-linecap', 'round');
+  svgEl.appendChild(path);
+
+  // Draw animation
+  const len = path.getTotalLength();
+  path.style.strokeDasharray  = len;
+  path.style.strokeDashoffset = len;
+  requestAnimationFrame(() => {
+    path.style.transition = 'stroke-dashoffset .45s ease';
+    path.style.strokeDashoffset = 0;
+  });
+  return path;
+}
+
+// ──────────────────────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────────────────────
+
+// Root node
+createNode('carro', ROOT_CX, ROOT_CY, '🚗  Carro', '#1e293b', '#1e293b', true);
+
+// Child nodes — all start at ROOT_CY (collapsed position) hidden
+CHILDREN.forEach(c => {
+  createNode(c.id, CHILD_CX, ROOT_CY, c.label, c.bg, c.borda, false);
+});
+
+// Measure real node widths to get accurate connection points
+requestAnimationFrame(() => {
+  const rootBody = document.querySelector('#node-carro .mm-node__body');
+  if (rootBody) rootRightX = ROOT_CX + rootBody.offsetWidth / 2 + 2;
+
+  CHILDREN.forEach(c => {
+    const body = document.querySelector(`#node-${c.id} .mm-node__body`);
+    if (body) childLeftX[c.id] = CHILD_CX - body.offsetWidth / 2 - 2;
+  });
+});
+
+// Center view on load
+window.addEventListener('load', () => {
+  centerRoot();
+  // Fade hint after 5s
+  setTimeout(() => hint.style.opacity = '0', 5000);
+});
+</script>
+</body>
+</html>
