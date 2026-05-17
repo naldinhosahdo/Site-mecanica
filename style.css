@@ -773,169 +773,209 @@ button.article-card__link {
 button.article-card__link:hover { color: var(--red-dark); }
 
 /* =========================================
-   MAPA MENTAL
+   MAPA MENTAL — estilo balões de quadrinhos
    ========================================= */
-.mapa-mental { padding: 6rem 0; background: var(--light); }
+.mapa-mental { padding: 6rem 0; background: #fffbeb; }
 
-/* ---- layout radial (desktop) ---- */
-.mapa__layout {
+/* cena geral */
+.mapa__cena {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-height: 520px;
+  padding: 1rem 0;
+}
+
+/* --- BALÃO PRINCIPAL --- */
+.mapa__esquerda { flex-shrink: 0; }
+
+.balao-principal {
   position: relative;
-  width: 100%;
-  height: 580px;
+  background: #fbbf24;
+  border: 4px solid #111;
+  border-radius: 50%;
+  width: 130px;
+  height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 5px 5px 0 #111;
+  transition: transform .15s ease, box-shadow .15s ease;
   user-select: none;
 }
 
-.mapa__svg {
+.balao-principal:hover  { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 #111; }
+.balao-principal:active { transform: translate(2px, 2px);  box-shadow: 3px 3px 0 #111; }
+
+/* rabinho do balão principal aponta para a direita */
+.balao-principal::after {
+  content: '';
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
+  right: -22px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 10px solid transparent;
+  border-left: 14px solid #111;
 }
 
-/* nó central */
-.mapa__central {
+.balao-principal__icone { font-size: 2rem; line-height: 1; }
+.balao-principal__texto { font-size: 1rem; font-weight: 900; color: #111; margin-top: .2rem; }
+
+.balao-principal__dica {
   position: absolute;
-  transform: translate(-50%, -50%);
-  width: 110px;
-  height: 110px;
-  background: var(--dark);
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: var(--white);
-  box-shadow: 0 0 0 6px rgba(230,51,41,.25), 0 8px 32px rgba(0,0,0,.3);
-  z-index: 3;
-}
-
-.mapa__central span { font-size: 1.6rem; line-height: 1; }
-.mapa__central p    { font-size: .65rem; font-weight: 700; line-height: 1.3; margin-top: .3rem; }
-
-/* nós de ramo */
-.mapa__no {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 90px;
-  height: 90px;
-  background: var(--white);
-  border-radius: 50%;
-  border: 3px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  transition: box-shadow var(--transition), transform var(--transition);
-  z-index: 3;
-  box-shadow: var(--shadow);
-}
-
-.mapa__no span { font-size: 1.5rem; line-height: 1; }
-.mapa__no p    { font-size: .65rem; font-weight: 700; margin-top: .25rem; line-height: 1.3; color: var(--dark2); }
-
-.mapa__no:hover  { transform: translate(-50%,-50%) scale(1.1); }
-.mapa__no.active { box-shadow: 0 0 0 4px currentColor, 0 8px 24px rgba(0,0,0,.15); transform: translate(-50%,-50%) scale(1.12); }
-
-/* painel de sub-itens */
-.mapa__painel {
-  position: absolute;
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 1rem 1.25rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,.12);
-  border-left: 4px solid var(--border);
-  min-width: 160px;
-  max-width: 180px;
-  z-index: 10;
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(.9);
-  transition: opacity .2s ease, transform .2s ease;
-}
-
-.mapa__painel.open {
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: #fbbf24;
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .15rem .5rem;
+  border-radius: 4px;
+  white-space: nowrap;
   opacity: 1;
-  pointer-events: all;
-  transform: scale(1);
+  transition: opacity .3s;
 }
 
-.mapa__painel h4 { font-size: .85rem; font-weight: 800; margin-bottom: .5rem; }
+/* esconde o "clique!" depois de abrir */
+.balao-principal[aria-expanded="true"] .balao-principal__dica { opacity: 0; }
 
-.mapa__painel ul { list-style: none; }
-.mapa__painel li {
-  font-size: .78rem;
-  color: var(--gray);
-  padding: .2rem 0;
-  border-bottom: 1px solid var(--border);
+/* --- CONECTOR --- */
+.mapa__conector {
+  width: 0;
+  height: 4px;
+  background: #111;
+  flex-shrink: 0;
+  transition: width .3s ease;
+  align-self: center;
+  margin-top: 2px;
+}
+
+.mapa__conector.visivel { width: 48px; }
+
+/* --- COLUNA DE RAMOS --- */
+.mapa__ramos {
   display: flex;
-  align-items: center;
-  gap: .4rem;
-}
-.mapa__painel li:last-child { border-bottom: none; }
-.mapa__painel li::before { content: '›'; color: var(--red); font-weight: 700; }
-
-/* ---- layout acordeão (mobile) ---- */
-.mapa__acordeao { display: none; }
-
-.mapa__item {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--white);
-  overflow: hidden;
-  margin-bottom: .75rem;
+  flex-direction: column;
+  gap: .7rem;
+  position: relative;
 }
 
-.mapa__item-header {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  padding: 1rem 1.25rem;
-  cursor: pointer;
+/* linha vertical que une os balões */
+.mapa__ramos::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 24px;
+  bottom: 24px;
+  width: 4px;
+  background: #111;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform .3s ease .25s;
+}
+
+.mapa__ramos.aberto::before { transform: scaleY(1); }
+
+/* --- BALÕES SECUNDÁRIOS --- */
+.balao-ramo {
+  position: relative;
+  background: var(--cor, #fff);
+  border: 3px solid var(--borda, #111);
+  border-radius: 18px;
+  padding: .55rem 1.1rem .55rem 1.4rem;
+  font-size: .88rem;
   font-weight: 700;
-  font-size: .95rem;
-  justify-content: space-between;
+  color: #111;
+  white-space: nowrap;
+  box-shadow: 3px 3px 0 #111;
+  cursor: default;
+
+  /* animação de entrada */
+  opacity: 0;
+  transform: translateX(-16px) scale(.85);
+  transition:
+    opacity   .25s ease calc(var(--i) * 55ms + 300ms),
+    transform .25s ease calc(var(--i) * 55ms + 300ms);
 }
 
-.mapa__item-header span:first-child { font-size: 1.4rem; }
-
-.mapa__chevron {
-  font-size: .85rem;
-  color: var(--gray);
-  transition: transform var(--transition);
+/* rabo do balão aponta para a esquerda */
+.balao-ramo::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 8px solid transparent;
+  border-right: 12px solid #111;
 }
 
-.mapa__item.open .mapa__chevron { transform: rotate(180deg); }
-
-.mapa__item-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .3s ease;
+.balao-ramo::after {
+  content: '';
+  position: absolute;
+  left: -13px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-right: 9px solid var(--cor, #fff);
 }
 
-.mapa__item.open .mapa__item-body { max-height: 300px; }
-
-.mapa__item-body ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  padding: 0 1.25rem 1.25rem;
+/* estado aberto — balões aparecem */
+.mapa__ramos.aberto .balao-ramo {
+  opacity: 1;
+  transform: translateX(0) scale(1);
 }
 
-.mapa__item-body li {
-  background: var(--light);
-  border-radius: 999px;
-  padding: .25rem .75rem;
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--dark2);
+/* hover leve */
+.mapa__ramos.aberto .balao-ramo:hover {
+  transform: translateX(4px) scale(1.03);
+  transition: transform .12s ease !important;
 }
 
+/* --- MOBILE: empilha verticalmente --- */
 @media (max-width: 700px) {
-  .mapa__layout   { display: none; }
-  .mapa__acordeao { display: block; }
+  .mapa__cena {
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: unset;
+  }
+
+  /* no mobile o rabo aponta para cima */
+  .balao-principal::after {
+    right: unset;
+    top: unset;
+    left: 28px;
+    bottom: -22px;
+    transform: none;
+    border: 10px solid transparent;
+    border-top: 14px solid #111;
+  }
+
+  .mapa__conector {
+    width: 4px !important;
+    height: 0;
+    transition: height .3s ease;
+    margin-left: 47px;
+    align-self: unset;
+  }
+
+  .mapa__conector.visivel { height: 36px; width: 4px !important; }
+
+  .mapa__ramos { padding-left: 1.5rem; }
+
+  .mapa__ramos::before {
+    left: .8rem;
+    top: 0;
+    bottom: 0;
+  }
+
+  .balao-ramo {
+    white-space: normal;
+    max-width: 280px;
+  }
 }

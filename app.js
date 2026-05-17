@@ -338,139 +338,18 @@ document.querySelectorAll('.card, .categoria-card, .article-card, .diag-card, .g
 });
 
 // =========================================
-// MAPA MENTAL
+// MAPA MENTAL — balões de quadrinhos
 // =========================================
-const mapaData = [
-  { id: 'motor',         icone: '🔥', nome: 'Motor',         cor: '#e63329',
-    filhos: ['Pistões', 'Virabrequim', 'Cabeçote', 'Correia dentada', 'Válvulas', 'Velas'] },
-  { id: 'cambio',        icone: '⚙️', nome: 'Câmbio',        cor: '#3b82f6',
-    filhos: ['Manual', 'Automático', 'CVT', 'DSG/DCT', 'Embreagem', 'Diferencial'] },
-  { id: 'suspensao',     icone: '🛞', nome: 'Suspensão',     cor: '#10b981',
-    filhos: ['Amortecedores', 'Molas', 'Bandejas', 'Buchas', 'Barra estabiliz.', 'Pneus'] },
-  { id: 'freios',        icone: '🛑', nome: 'Freios',        cor: '#f59e0b',
-    filhos: ['Pastilhas', 'Discos', 'Lonas', 'Tambores', 'Fluido', 'ABS / ESP'] },
-  { id: 'eletrica',      icone: '⚡', nome: 'Elétrica',      cor: '#8b5cf6',
-    filhos: ['Bateria', 'Alternador', 'Arranque', 'Fusíveis', 'Sensores', 'ECU'] },
-  { id: 'arrefecimento', icone: '💧', nome: 'Arrefecimento', cor: '#06b6d4',
-    filhos: ['Radiador', 'Termostato', 'Bomba d\'água', 'Refrigerante', 'Ventoinha', 'Mangueiras'] },
-];
+const btnCarro   = document.getElementById('balao-carro');
+const ramos      = document.getElementById('mapa-ramos');
+const conector   = document.getElementById('mapa-conector');
 
-function renderMapaDesktop() {
-  const layout = document.getElementById('mapa-layout');
-  if (!layout) return;
-
-  const W  = layout.offsetWidth;
-  const H  = 580;
-  const cx = W / 2;
-  const cy = H / 2;
-  const R  = Math.min(W * 0.38, 210);
-
-  // SVG para as linhas
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.classList.add('mapa__svg');
-  layout.appendChild(svg);
-
-  // Nó central
-  const central = document.createElement('div');
-  central.className = 'mapa__central';
-  central.innerHTML = '<span>⚙</span><p>Mecânica<br>Automotiva</p>';
-  central.style.left = cx + 'px';
-  central.style.top  = cy + 'px';
-  layout.appendChild(central);
-
-  mapaData.forEach((item, i) => {
-    const angle = (i * 60 - 90) * (Math.PI / 180);
-    const nx = cx + R * Math.cos(angle);
-    const ny = cy + R * Math.sin(angle);
-
-    // Linha SVG
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', cx); line.setAttribute('y1', cy);
-    line.setAttribute('x2', nx); line.setAttribute('y2', ny);
-    line.setAttribute('stroke', item.cor);
-    line.setAttribute('stroke-width', '2.5');
-    line.setAttribute('stroke-dasharray', '6 4');
-    line.setAttribute('opacity', '0.5');
-    svg.appendChild(line);
-
-    // Nó
-    const no = document.createElement('div');
-    no.className = 'mapa__no';
-    no.style.left        = nx + 'px';
-    no.style.top         = ny + 'px';
-    no.style.borderColor = item.cor;
-    no.style.color       = item.cor;
-    no.innerHTML = `<span>${item.icone}</span><p>${item.nome}</p>`;
-    layout.appendChild(no);
-
-    // Painel
-    const painel = document.createElement('div');
-    painel.className = 'mapa__painel';
-    painel.style.borderColor = item.cor;
-
-    // Posiciona painel: lado oposto ao centro
-    const offsetX = nx > cx ? 55 : -(55 + 180);
-    const offsetY = ny < cy + 40 && ny > cy - 40 ? -70 : (ny < cy ? -30 : -120);
-    painel.style.left = (nx + offsetX) + 'px';
-    painel.style.top  = (ny + offsetY) + 'px';
-
-    painel.innerHTML = `
-      <h4 style="color:${item.cor}">${item.icone} ${item.nome}</h4>
-      <ul>${item.filhos.map(f => `<li>${f}</li>`).join('')}</ul>
-    `;
-    layout.appendChild(painel);
-
-    no.addEventListener('click', () => {
-      const jaAberto = painel.classList.contains('open');
-      layout.querySelectorAll('.mapa__painel').forEach(p => p.classList.remove('open'));
-      layout.querySelectorAll('.mapa__no').forEach(n => n.classList.remove('active'));
-      if (!jaAberto) {
-        painel.classList.add('open');
-        no.classList.add('active');
-      }
-    });
-  });
-
-  // Fecha ao clicar fora
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.mapa__no') && !e.target.closest('.mapa__painel')) {
-      layout.querySelectorAll('.mapa__painel').forEach(p => p.classList.remove('open'));
-      layout.querySelectorAll('.mapa__no').forEach(n => n.classList.remove('active'));
-    }
+if (btnCarro && ramos && conector) {
+  btnCarro.addEventListener('click', () => {
+    const aberto = ramos.classList.toggle('aberto');
+    conector.classList.toggle('visivel', aberto);
+    btnCarro.setAttribute('aria-expanded', aberto);
   });
 }
-
-function renderMapaMobile() {
-  const section = document.querySelector('.mapa-mental');
-  if (!section) return;
-
-  const acordeao = document.createElement('div');
-  acordeao.className = 'mapa__acordeao';
-
-  mapaData.forEach(item => {
-    const el = document.createElement('div');
-    el.className = 'mapa__item';
-    el.style.setProperty('--cor', item.cor);
-    el.innerHTML = `
-      <div class="mapa__item-header">
-        <span>${item.icone}</span>
-        <span style="flex:1;margin-left:.25rem">${item.nome}</span>
-        <span class="mapa__chevron">▼</span>
-      </div>
-      <div class="mapa__item-body">
-        <ul>${item.filhos.map(f => `<li>${f}</li>`).join('')}</ul>
-      </div>
-    `;
-    const header = el.querySelector('.mapa__item-header');
-    header.style.borderLeft = `4px solid ${item.cor}`;
-    header.addEventListener('click', () => el.classList.toggle('open'));
-    acordeao.appendChild(el);
-  });
-
-  section.querySelector('.container').appendChild(acordeao);
-}
-
-renderMapaDesktop();
-renderMapaMobile();
 
 }); // fim DOMContentLoaded

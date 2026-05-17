@@ -506,11 +506,38 @@
     <div class="container">
       <div class="section__header">
         <p class="section__tag">Visão geral</p>
-        <h2 class="section__title">Mapa Mental da Mecânica</h2>
-        <p class="section__sub">Clique em qualquer sistema para ver os componentes relacionados.</p>
+        <h2 class="section__title">Mapa Mental</h2>
+        <p class="section__sub">Clique no balão principal para explorar os sistemas do automóvel.</p>
       </div>
-      <div class="mapa__layout" id="mapa-layout">
-        <!-- Renderizado pelo JS -->
+
+      <div class="mapa__cena">
+
+        <!-- Balão principal -->
+        <div class="mapa__esquerda">
+          <button type="button" class="balao-principal" id="balao-carro" aria-expanded="false">
+            <span class="balao-principal__icone">🚗</span>
+            <span class="balao-principal__texto">Carro</span>
+            <span class="balao-principal__dica">clique!</span>
+          </button>
+        </div>
+
+        <!-- Conector horizontal -->
+        <div class="mapa__conector" id="mapa-conector"></div>
+
+        <!-- Balões secundários -->
+        <div class="mapa__ramos" id="mapa-ramos">
+          <div class="balao-ramo" style="--i:0; --cor:#fef08a; --borda:#ca8a04">Estrutura do carro</div>
+          <div class="balao-ramo" style="--i:1; --cor:#fca5a5; --borda:#dc2626">Motor</div>
+          <div class="balao-ramo" style="--i:2; --cor:#bbf7d0; --borda:#16a34a">Sistema de injeção</div>
+          <div class="balao-ramo" style="--i:3; --cor:#bae6fd; --borda:#0284c7">Sistema de arrefecimento</div>
+          <div class="balao-ramo" style="--i:4; --cor:#e9d5ff; --borda:#7c3aed">Suspensão</div>
+          <div class="balao-ramo" style="--i:5; --cor:#fed7aa; --borda:#ea580c">Sistema de freio</div>
+          <div class="balao-ramo" style="--i:6; --cor:#fde68a; --borda:#d97706">Sistema de direção</div>
+          <div class="balao-ramo" style="--i:7; --cor:#d1fae5; --borda:#059669">Sistema de escapamento</div>
+          <div class="balao-ramo" style="--i:8; --cor:#cffafe; --borda:#0891b2">Reaproveitamento de gases</div>
+          <div class="balao-ramo" style="--i:9; --cor:#c7d2fe; --borda:#4f46e5">Sistema de ar condicionado</div>
+        </div>
+
       </div>
     </div>
   </section>
