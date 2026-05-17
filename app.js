@@ -201,6 +201,8 @@ const artigos = {
 };
 
 // =========================================
+document.addEventListener('DOMContentLoaded', () => {
+
 // Header scroll effect
 const header = document.getElementById('header');
 window.addEventListener('scroll', () => {
@@ -334,3 +336,5 @@ document.querySelectorAll('.card, .categoria-card, .article-card, .diag-card, .g
   el.style.transition = 'opacity .45s ease, transform .45s ease';
   observer.observe(el);
 });
+
+}); // fim DOMContentLoaded
