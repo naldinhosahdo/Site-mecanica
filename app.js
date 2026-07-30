@@ -201,6 +201,152 @@ const artigos = {
 };
 
 // =========================================
+// MARCAS — famílias de motor por montadora
+// =========================================
+const marcas = {
+  volkswagen: {
+    nome: 'Volkswagen', icon: '🚗', fundacao: 1937,
+    motores: [
+      { nome: 'Boxer a ar', periodo: '1936–2006', desc: 'Motor a ar 4 cilindros opostos ("de fusca"), usado no Fusca, Kombi e Brasília por sete décadas.' },
+      { nome: 'EA827', periodo: '1972–2013', desc: 'Bloco em ferro fundido 1.6/1.8/2.0, a base do lendário "motor AP" fabricado no Brasil (álcool e gasolina).' },
+      { nome: 'EA111', periodo: '1999–2013', desc: 'Motores 1.0/1.6 Total Flex, equipou o Gol G3/G4/G5 e popularizou o bicombustível no Brasil.' },
+      { nome: 'EA211', periodo: '2012–atual', desc: 'Geração atual 1.0/1.6 MSI/TSI, mais leve e eficiente, usado em Polo, Virtus e T-Cross.' },
+      { nome: 'EA888', periodo: '2007–atual', desc: 'Família turbo 2.0 TSI de alta performance, usada em Golf GTI, Jetta GLI e Tiguan.' },
+      { nome: 'TDI', periodo: '1989–atual', desc: 'Linha de motores diesel turbo com injeção direta, presente na Amarok.' },
+    ]
+  },
+  chevrolet: {
+    nome: 'Chevrolet', icon: '🏁', fundacao: 1911,
+    motores: [
+      { nome: 'Motor Opala (reto 6 e 4)', periodo: '1968–1992', desc: 'Motores 4 e 6 cilindros de origem Chevrolet/Opel que equiparam o Opala por mais de duas décadas no Brasil.' },
+      { nome: 'Família I', periodo: '1989–1996', desc: 'Motores 1.4/1.6 de origem GM/Opel usados no Kadett e Ipanema.' },
+      { nome: 'Família II', periodo: '1993–2016', desc: 'Motores 1.8/2.0 8V e 16V, um dos mais usados da história da GM no Brasil (Vectra, Astra, Omega, Zafira).' },
+      { nome: 'Ecotec (Família E)', periodo: '1999–atual', desc: 'Linha global compacta e eficiente, usada em Celta, Corsa, Onix e Prisma.' },
+      { nome: 'Small Block V8', periodo: '1955–atual', desc: 'Icônico V8 americano, símbolo do Camaro e do Corvette em todo o mundo.' },
+    ]
+  },
+  fiat: {
+    nome: 'Fiat', icon: '🔧', fundacao: 1899,
+    motores: [
+      { nome: 'Motor tipo 128', periodo: '1969–1985', desc: 'Motor 1.3/1.5 que equipou o Fiat 147, primeiro carro a álcool em massa no Brasil.' },
+      { nome: 'FIRE', periodo: '1985–atual', desc: '"Fully Integrated Robotized Engine", motor leve e compacto 1.0/1.4 que virou sinônimo de Uno e Palio.' },
+      { nome: 'E.torQ', periodo: '2010–2020', desc: 'Motores 1.6/1.8/2.0 16V desenvolvidos com a Chrysler, usados em Punto, Linea, Argo e Cronos.' },
+      { nome: 'Firefly', periodo: '2016–atual', desc: 'Família 3 cilindros turbo de última geração, presente em Mobi, Argo, Cronos e Pulse.' },
+      { nome: 'Multijet', periodo: '2000–atual', desc: 'Linha de motores diesel a injeção direta usada em utilitários e picapes (Toro, Strada).' },
+    ]
+  },
+  ford: {
+    nome: 'Ford', icon: '🛻', fundacao: 1903,
+    motores: [
+      { nome: 'CHT', periodo: '1982–1996', desc: '"Compound High Turbulence", motor 1.6/1.8 que equipou o Corcel, Belina e Del Rey.' },
+      { nome: 'Zetec-Rocam', periodo: '1996–2013', desc: 'Motores 1.0/1.6 simples e resistentes, usados em Fiesta, Ka e Escort.' },
+      { nome: 'Duratec', periodo: '1998–2019', desc: 'Linha 1.6/2.0 16V mais moderna e potente, presente no Focus e EcoSport.' },
+      { nome: 'EcoBoost', periodo: '2009–atual', desc: 'Motores turbo de baixa cilindrada com alta eficiência, adotados globalmente pela Ford.' },
+      { nome: 'Dragão', periodo: '2018–atual', desc: 'Motores 1.0/1.5 turbo Flex desenvolvidos no Brasil para Ka e novo EcoSport.' },
+    ]
+  },
+  toyota: {
+    nome: 'Toyota', icon: '🚙', fundacao: 1937,
+    motores: [
+      { nome: 'Série K', periodo: '1966–1988', desc: 'Motores 1.2/1.6 usados no Corolla e Tercel clássicos.' },
+      { nome: 'Série A', periodo: '1978–2018', desc: 'Motores 1.3/1.6/1.8 confiáveis, presentes em várias gerações do Corolla.' },
+      { nome: 'Dynamic Force (Série ZR/NR)', periodo: '2015–atual', desc: 'Motores 1.5/2.0 de alta eficiência térmica, usados no Corolla e Yaris atuais.' },
+      { nome: 'Hybrid Synergy Drive', periodo: '1997–atual', desc: 'Sistema híbrido pioneiro que tornou o Prius o carro híbrido mais famoso do mundo.' },
+    ]
+  },
+  honda: {
+    nome: 'Honda', icon: '🏎️', fundacao: 1948,
+    motores: [
+      { nome: 'D-series', periodo: '1984–2005', desc: 'Motores 1.5/1.6 SOHC, usados no Civic das gerações mais populares no Brasil.' },
+      { nome: 'B-series (VTEC)', periodo: '1988–2001', desc: 'Motores esportivos com a icônica tecnologia VTEC, marca registrada do Civic Si.' },
+      { nome: 'K-series', periodo: '2001–2020', desc: 'Sucessor do B-series, motores 1.8/2.0/2.4 usados em Civic e Accord.' },
+      { nome: 'L-series', periodo: '2008–atual', desc: 'Motores 1.5/1.8 compactos usados no Fit, City e HR-V.' },
+      { nome: 'Earth Dreams (i-VTEC turbo)', periodo: '2015–atual', desc: 'Motores turbo modernos e híbridos e-HEV do Civic e HR-V atuais.' },
+    ]
+  },
+  hyundai: {
+    nome: 'Hyundai', icon: '🚘', fundacao: 1967,
+    motores: [
+      { nome: 'Alpha', periodo: '1990–atual', desc: 'Motores 1.0/1.6 atualizados ao longo de décadas, usados em modelos de entrada.' },
+      { nome: 'Beta', periodo: '1990–atual', desc: 'Linha 1.6/2.0 amplamente usada no HB20 e Creta no Brasil.' },
+      { nome: 'Gamma', periodo: '2006–atual', desc: 'Motores 1.4/1.6 GDI de injeção direta, versão mais eficiente da linha.' },
+      { nome: 'Smartstream', periodo: '2018–atual', desc: 'Geração mais recente, focada em eficiência de combustível e menor emissão.' },
+    ]
+  },
+  renault: {
+    nome: 'Renault', icon: '🚕', fundacao: 1899,
+    motores: [
+      { nome: 'Cléon-Fonte', periodo: '1962–2003', desc: 'Um dos motores mais duradouros da história, 1.0 a 1.7, usado em dezenas de modelos por 40 anos.' },
+      { nome: 'K4M / K7M', periodo: '2000–atual', desc: 'Motores 1.6 8V/16V usados em Logan, Sandero e Duster no Brasil.' },
+      { nome: 'Energy (SCe/TCe)', periodo: '2012–atual', desc: 'Linha 1.0/1.3 aspirada e turbo mais eficiente, presente no Kwid e no Duster atual.' },
+    ]
+  },
+  nissan: {
+    nome: 'Nissan', icon: '🚗', fundacao: 1933,
+    motores: [
+      { nome: 'Série A', periodo: '1966–1998', desc: 'Motores 1.0 a 1.5 usados em modelos compactos japoneses clássicos.' },
+      { nome: 'Série SR/QG', periodo: '1990–2010', desc: 'Motores 1.6/2.0 16V usados no Sentra e no antigo March/Micra.' },
+      { nome: 'Série HR', periodo: '2010–atual', desc: 'Motores 1.0/1.6 modernos, usados em Versa, March e Kicks.' },
+      { nome: 'Série VR', periodo: '2007–atual', desc: 'V6 biturbo de alta performance, motor do lendário GT-R.' },
+    ]
+  },
+  peugeot: {
+    nome: 'Peugeot', icon: '🦁', fundacao: 1810,
+    motores: [
+      { nome: 'TU', periodo: '1970–2010', desc: 'Motores 1.0 a 1.6 muito usados nos anos 90 e 2000, presentes no 206 e 306.' },
+      { nome: 'EW/DW', periodo: '1998–2015', desc: 'Motores 1.6/2.0 16V a gasolina e diesel (HDi) usados no 307 e 308.' },
+      { nome: 'PureTech', periodo: '2014–atual', desc: 'Motores turbo 3 cilindros modernos e eficientes, usados no 208 e 2008 atuais.' },
+    ]
+  },
+  bmw: {
+    nome: 'BMW', icon: '🏎️', fundacao: 1916,
+    motores: [
+      { nome: 'M10', periodo: '1962–1988', desc: 'Motor 4 cilindros que formou a base de vários modelos e até de motores de Fórmula 1 turbo da marca.' },
+      { nome: 'M20 / M30 (reto-6)', periodo: '1977–1993', desc: 'Icônicos motores 6 cilindros em linha, marca registrada da suavidade BMW.' },
+      { nome: 'Série N', periodo: '2001–2015', desc: 'Motores modulares turbo (N54, N52, N20), que modernizaram a linha da marca.' },
+      { nome: 'Série B (modular)', periodo: '2014–atual', desc: 'Arquitetura modular atual (B38, B48, B58) usada em toda a linha, de 3 a 6 cilindros.' },
+    ]
+  },
+  mercedes: {
+    nome: 'Mercedes-Benz', icon: '⭐', fundacao: 1926,
+    motores: [
+      { nome: 'M102 / M111', periodo: '1980–2000', desc: 'Motores 4 cilindros robustos usados nos sedãs de entrada da marca nos anos 80 e 90.' },
+      { nome: 'Linha OM (diesel)', periodo: '1949–atual', desc: 'Tradicional família de motores diesel, muito usada em caminhões e utilitários Mercedes-Benz.' },
+      { nome: 'M270 / M274', periodo: '2012–atual', desc: 'Motores turbo 1.6/2.0 modernos usados na Classe A, C e GLA atuais.' },
+      { nome: 'M256', periodo: '2017–atual', desc: 'Motor 6 cilindros em linha com sistema elétrico de 48V, topo de linha da marca hoje.' },
+    ]
+  },
+  audi: {
+    nome: 'Audi', icon: '⚙️', fundacao: 1909,
+    motores: [
+      { nome: 'EA827 (compartilhado com VW)', periodo: '1972–2000', desc: 'Base dos motores 1.8/2.0 usados nos primeiros Audi 80 e 100.' },
+      { nome: '5 cilindros turbo (Quattro)', periodo: '1980–1991', desc: 'Motor icônico do Audi Quattro original, símbolo da tração integral da marca.' },
+      { nome: 'TFSI (EA888)', periodo: '2008–atual', desc: 'Motores turbo com injeção direta, usados no A3, A4 e Q3 atuais.' },
+      { nome: 'TDI V6/V8', periodo: '1997–atual', desc: 'Linha diesel de alta performance usada nos modelos maiores da marca.' },
+    ]
+  },
+  kia: {
+    nome: 'Kia', icon: '🚐', fundacao: 1944,
+    motores: [
+      { nome: 'Motores licenciados Mazda', periodo: '1980–1990', desc: 'Nos primeiros anos, a Kia produziu motores sob licença de outras montadoras.' },
+      { nome: 'Gamma (compartilhado c/ Hyundai)', periodo: '2006–atual', desc: 'Motores 1.4/1.6 GDI de injeção direta, usados no Soluto e Bongo.' },
+      { nome: 'Smartstream', periodo: '2018–atual', desc: 'Geração mais recente e eficiente, presente nos modelos globais atuais da marca.' },
+    ]
+  },
+  mitsubishi: {
+    nome: 'Mitsubishi', icon: '🔺', fundacao: 1917,
+    motores: [
+      { nome: 'Astron / Sirius', periodo: '1970–1990', desc: 'Motores 1.6 a 2.0 dos primeiros modelos exportados globalmente pela marca.' },
+      { nome: 'Série 4G', periodo: '1980–2010', desc: 'Família muito conhecida, incluindo o lendário 4G63 do Lancer Evolution.' },
+      { nome: 'MIVEC', periodo: '1992–atual', desc: 'Tecnologia de variação de comando de válvulas usada nos motores atuais da marca, como no L200 e Outlander.' },
+    ]
+  },
+};
+
+// Ordem de exibição no grid de marcas
+const ordemMarcas = ['volkswagen','chevrolet','fiat','ford','toyota','honda','hyundai','renault','nissan','peugeot','bmw','mercedes','audi','kia','mitsubishi'];
+
+// =========================================
 document.addEventListener('DOMContentLoaded', () => {
 
 // Header scroll effect
@@ -282,6 +428,53 @@ document.querySelectorAll('[data-artigo]').forEach(btn => {
   btn.addEventListener('click', () => abrirModal(btn.dataset.artigo));
 });
 
+// =========================================
+// MOTORES POR MARCA — grid + modal
+// =========================================
+const marcasGrid = document.getElementById('marcas-grid');
+
+if (marcasGrid) {
+  marcasGrid.innerHTML = ordemMarcas.map(id => {
+    const m = marcas[id];
+    return `
+      <button type="button" class="marca-card" data-marca="${id}">
+        <span class="marca-card__icon">${m.icon}</span>
+        <span class="marca-card__nome">${m.nome}</span>
+        <span class="marca-card__ano">Desde ${m.fundacao}</span>
+      </button>
+    `;
+  }).join('');
+
+  marcasGrid.addEventListener('click', e => {
+    const btn = e.target.closest('[data-marca]');
+    if (!btn) return;
+    abrirModalMarca(btn.dataset.marca);
+  });
+}
+
+function abrirModalMarca(id) {
+  const m = marcas[id];
+  if (!m) return;
+
+  const motoresHtml = m.motores.map(mo => `
+    <div class="motor-item">
+      <span class="motor-item__nome">${mo.nome}</span><span class="motor-item__periodo">${mo.periodo}</span>
+      <p>${mo.desc}</p>
+    </div>
+  `).join('');
+
+  modalContent.innerHTML = `
+    <span class="modal__cat">${m.icon} Desde ${m.fundacao}</span>
+    <h2>Motores ${m.nome}</h2>
+    <p style="color:var(--gray);margin:.5rem 0 1.25rem;">Principais famílias de motor produzidas pela ${m.nome} ao longo da sua história.</p>
+    ${motoresHtml}
+  `;
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  modalClose.focus();
+}
+
 modalClose.addEventListener('click', fecharModal);
 
 overlay.addEventListener('click', e => {
@@ -330,7 +523,7 @@ const observer = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.card, .categoria-card, .article-card, .diag-card, .glossario-item, .diferencial').forEach(el => {
+document.querySelectorAll('.card, .categoria-card, .article-card, .diag-card, .glossario-item, .marca-card, .diferencial').forEach(el => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(20px)';
   el.style.transition = 'opacity .45s ease, transform .45s ease';

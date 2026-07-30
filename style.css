@@ -547,6 +547,74 @@ ul   { list-style: none; }
 }
 
 /* =========================================
+   MOTORES POR MARCA
+   ========================================= */
+.motores { padding: 6rem 0; background: var(--light); }
+
+.marcas__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
+}
+
+.marca-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  font-family: inherit;
+}
+
+.marca-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--red);
+}
+
+.marca-card__icon { font-size: 1.9rem; display: block; margin-bottom: .6rem; }
+.marca-card__nome { font-size: .9rem; font-weight: 700; display: block; }
+.marca-card__ano  { font-size: .75rem; color: var(--gray); display: block; margin-top: .2rem; }
+
+@media (max-width: 1000px) {
+  .marcas__grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .marcas__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* motores dentro do modal */
+.motor-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.motor-item:last-child { border-bottom: none; }
+
+.motor-item__nome {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.motor-item__periodo {
+  display: inline-block;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--red);
+  margin-left: .5rem;
+}
+
+.motor-item p {
+  font-size: .9rem;
+  color: var(--gray);
+  margin-top: .35rem;
+}
+
+/* =========================================
    NEWSLETTER
    ========================================= */
 .newsletter { padding: 6rem 0; background: var(--light); }
