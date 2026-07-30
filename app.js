@@ -350,7 +350,7 @@ const marcas = {
       { nome: 'C-series (V6)', periodo: '1990–2005', desc: 'V6 que equipou o superesportivo NSX, primeiro carro de produção com bloco totalmente em alumínio.' },
       { nome: 'H-series', periodo: '1993–2001', desc: 'Motores VTEC de maior cilindrada, usados no Prelude Type S e no Accord esportivo.' },
       { nome: 'J-series (V6)', periodo: '1996–atual', desc: 'V6 3.0 a 3.5 usado no Accord, Pilot e Odyssey por quase três décadas.' },
-      { nome: 'F-series (F20C)', periodo: '1999–2009', desc: 'Motor 2.0 do S2000 que girava até 9.000 rpm — recorde de potência por litro em motor aspirado de série.' },
+      { nome: 'F-series (F20C)', periodo: '1999–2009', desc: 'Motor 2.0 do S2000 que girava até 9.000 rpm — na época, recorde de potência por litro em motor aspirado de série.' },
       { nome: 'IMA (híbrido)', periodo: '1999–2015', desc: 'Sistema híbrido do Insight, o primeiro carro híbrido vendido nos Estados Unidos — antes até do Prius.' },
       { nome: 'K-series', periodo: '2001–2020', desc: 'Sucessor do B/H-series, motores 1.8/2.0/2.4 usados em Civic, Civic Type R e Accord.' },
       { nome: 'R-series', periodo: '2006–2015', desc: 'Motores 1.8/2.0 econômicos, usados no Civic de oitava e nona geração — muito comuns no Brasil.' },
@@ -651,7 +651,7 @@ const marcas = {
     motores: [
       { nome: '3 cilindros turbo (Suprex)', periodo: '1998–2014', desc: 'Motor de apenas 600 a 700 cc montado atrás, no carro urbano mais compacto vendido no Ocidente.' },
       { nome: '1.0 3 cilindros', periodo: '2007–2015', desc: 'Motor de origem Mitsubishi que substituiu o turbo minúsculo por mais cilindrada e menos complexidade.' },
-      { nome: 'Motores elétricos', periodo: '2007–atual', desc: 'A smart foi uma das primeiras marcas a se tornar totalmente elétrica, hoje em parceria com a Geely.' },
+      { nome: 'Motores elétricos', periodo: '2007–atual', desc: 'A smart foi uma das primeiras marcas a se tornar totalmente elétrica; desde 2020 é uma joint venture meio a meio entre Mercedes-Benz e Geely.' },
     ]
   },
   citroen: {
@@ -935,6 +935,13 @@ const marcas = {
       { nome: 'Motores elétricos', periodo: '2008–atual', desc: 'A BYD começou fabricando baterias e virou a maior fabricante de carros elétricos do mundo.' },
       { nome: 'DM-i (híbrido)', periodo: '2020–atual', desc: 'Sistema híbrido em que o motor a combustão opera quase sempre como gerador, buscando consumo mínimo.' },
       { nome: 'e-Platform 3.0', periodo: '2021–atual', desc: 'Plataforma elétrica com bateria estrutural Blade, que dispensa o formato tradicional de células.' },
+    ]
+  },
+  rimac: {
+    nome: 'Rimac', logo: 'logos/rimac.png', fundacao: 2009,
+    motores: [
+      { nome: 'Motores do Concept One', periodo: '2013–2018', desc: 'Quatro motores elétricos independentes, um por roda, no primeiro hipercarro elétrico de produção da marca.' },
+      { nome: 'Motores do Nevera', periodo: '2021–atual', desc: 'Conjunto de quatro motores somando cerca de 1.900 cv, que tornou o Nevera um dos carros de série mais acelerados já feitos.' },
     ]
   },
 };
@@ -1248,8 +1255,8 @@ const variantes = {
 const grupos = {
   vw: {
     nome: 'Grupo Volkswagen', logo: 'logos/volkswagen.png', sede: 'Alemanha', fundacao: 1937,
-    resumo: 'O maior conglomerado automotivo da Europa: reúne desde carros populares até hipercarros, compartilhando plataformas e motores entre todas as marcas.',
-    marcas: ['volkswagen','audi','porsche','lamborghini','bentley','bugatti','skoda','seat']
+    resumo: 'O maior conglomerado automotivo da Europa, com marcas que vão do carro popular ao superesportivo. A Bugatti fez parte do grupo entre 1998 e 2021, mas hoje não pertence mais a ele.',
+    marcas: ['volkswagen','audi','porsche','lamborghini','bentley','skoda','seat']
   },
   bmw: {
     nome: 'Grupo BMW', logo: 'logos/bmw.png', sede: 'Alemanha', fundacao: 1916,
@@ -1258,7 +1265,7 @@ const grupos = {
   },
   mercedes: {
     nome: 'Grupo Mercedes-Benz', logo: 'logos/mercedes.png', sede: 'Alemanha', fundacao: 1926,
-    resumo: 'Herdeiro direto dos inventores do automóvel, com a divisão esportiva AMG e o urbano smart, hoje em parceria com a chinesa Geely.',
+    resumo: 'Herdeiro direto dos inventores do automóvel, com a divisão esportiva AMG. A smart deixou de ser só alemã: desde 2020 é uma joint venture meio a meio com a chinesa Geely.',
     marcas: ['mercedes','smart']
   },
   stellantis: {
@@ -1278,7 +1285,7 @@ const grupos = {
   },
   alianca: {
     nome: 'Aliança Renault-Nissan-Mitsubishi', logo: 'logos/renault.png', sede: 'França / Japão', fundacao: 1999,
-    resumo: 'Não é uma fusão, e sim uma aliança com participações cruzadas — as três marcas dividem plataformas e motores mantendo independência.',
+    resumo: 'Não é uma fusão, e sim uma aliança com participações cruzadas. Em 2023 Renault e Nissan reequilibraram suas fatias para 15% de cada lado, mas seguem dividindo plataformas e motores.',
     marcas: ['renault','nissan','mitsubishi','dacia','alpine','infiniti']
   },
   gm: {
@@ -1303,18 +1310,23 @@ const grupos = {
   },
   geely: {
     nome: 'Geely', logo: 'logos/volvo.png', sede: 'China / Suécia', fundacao: 1986,
-    resumo: 'Grupo chinês que comprou a Volvo da Ford em 2010 e desde então acumulou Lotus, Polestar e metade da smart.',
+    resumo: 'Grupo chinês que comprou a Volvo da Ford em 2010 e desde então acumulou o controle da Lotus, da Polestar e metade da smart.',
     marcas: ['volvo','polestar','lotus']
+  },
+  bugattirimac: {
+    nome: 'Bugatti Rimac', logo: 'logos/bugatti.png', sede: 'Croácia / França', fundacao: 2021,
+    resumo: 'Desde 2021 a Bugatti não pertence mais ao Grupo Volkswagen. Ela passou para a Bugatti Rimac, controlada pela croata Rimac com 55% — a Porsche ficou apenas com os 45% restantes.',
+    marcas: ['bugatti','rimac']
   },
   independentes: {
     nome: 'Independentes', logo: 'logos/ferrari.png', sede: 'Vários países', fundacao: 1920,
-    resumo: 'Marcas que não pertencem a nenhum grande conglomerado — algumas por tradição, outras por terem nascido fora da indústria tradicional.',
+    resumo: 'Marcas que não pertencem a nenhum grande conglomerado. Mazda e Suzuki mantêm independência mesmo com a Toyota detendo pequenas participações em ambas.',
     marcas: ['ferrari','mazda','suzuki','tesla','byd']
   },
 };
 
 // Ordem de exibição no grid de grupos
-const ordemGrupos = ['vw','stellantis','toyota','gm','hyundai','alianca','bmw','mercedes','ford','honda','tata','geely','independentes'];
+const ordemGrupos = ['vw','stellantis','toyota','gm','hyundai','alianca','bmw','mercedes','ford','honda','tata','geely','bugattirimac','independentes'];
 
 // =========================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1538,7 +1550,10 @@ function abrirModalFamilia(indice) {
   const vs = variantes[marcaAtual + '|' + familia.nome];
   if (!vs) return;
 
-  const listaHtml = vs.map(v => `
+  // mesma regra do resto do site: sempre em ordem cronológica
+  const emOrdem = [...vs].sort((a, b) => parseInt(a.periodo, 10) - parseInt(b.periodo, 10));
+
+  const listaHtml = emOrdem.map(v => `
     <div class="motor-item">
       <span class="motor-item__nome">${v.nome}</span><span class="motor-item__periodo">${v.periodo}</span>
       <p>${v.desc}</p>
