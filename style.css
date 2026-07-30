@@ -717,6 +717,31 @@ ul   { list-style: none; }
   margin-top: .35rem;
 }
 
+/* famílias que podem ser abertas motor por motor */
+button.motor-item--tem-lista {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition);
+  border-radius: 6px;
+}
+
+button.motor-item--tem-lista:hover { background: #fef2f2; }
+button.motor-item--tem-lista .motor-item__nome { color: var(--red); }
+
+.motor-item__ver {
+  display: inline-block;
+  margin-top: .5rem;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--red);
+}
+
 /* =========================================
    NEWSLETTER
    ========================================= */

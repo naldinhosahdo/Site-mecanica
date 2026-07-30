@@ -940,6 +940,309 @@ const marcas = {
 };
 
 // =========================================
+// VARIANTES — motor por motor dentro de cada família
+// chave: 'idDaMarca|Nome exato da família'
+// =========================================
+const variantes = {
+
+  // ---------- VOLKSWAGEN ----------
+  'volkswagen|EA111': [
+    { nome: '1.0 8V MPI', periodo: '1999–2010', desc: 'Motor 1.0 de 8 válvulas do Gol G3 e G4, com cerca de 76 cv na gasolina.' },
+    { nome: '1.0 16V', periodo: '1997–2005', desc: 'Versão de 16 válvulas com até 76 cv, mais giradora e usada no Gol 16V e no Polo Classic.' },
+    { nome: '1.0 16V Turbo', periodo: '2001–2005', desc: 'O 1.0 turbo do Gol Turbo e do Polo, com 112 cv — um dos primeiros turbos populares do Brasil.' },
+    { nome: '1.4 8V', periodo: '2005–2013', desc: 'Motor 1.4 Total Flex de 80 cv, usado em Gol, Parati e Saveiro.' },
+    { nome: '1.6 8V "Power"', periodo: '2001–2013', desc: 'O popular 1.6 Total Flex de até 104 cv, presente em quase toda a linha VW da época.' },
+    { nome: '1.6 16V', periodo: '1998–2005', desc: 'Versão 16 válvulas de 1.6 usada no Golf e no Polo importados.' },
+    { nome: '1.4 TSI Twincharger', periodo: '2005–2015', desc: 'Motor 1.4 com turbo e compressor juntos, chegando a 180 cv no Golf GT.' },
+  ],
+  'volkswagen|EA827 (motor AP)': [
+    { nome: 'AP 1.6', periodo: '1985–2000', desc: 'Versão 1.6 do AP, usada em Gol, Voyage, Parati e Santana de entrada.' },
+    { nome: 'AP 1.8', periodo: '1984–2005', desc: 'O 1.8 que virou sinônimo de AP, com versões a álcool e gasolina de até 99 cv.' },
+    { nome: 'AP 2.0 8V', periodo: '1989–2006', desc: 'Versão 2.0 de 8 válvulas, muito usada no Santana, Quantum e na Kombi.' },
+    { nome: 'AP 2.0 16V', periodo: '1997–2002', desc: 'Cabeçote de 16 válvulas que levou o AP a 145 cv no Golf GTI nacional.' },
+    { nome: 'AP 1.8 Turbo', periodo: '1997–2005', desc: 'Versão turbinada de fábrica do Santana e do Golf, queridinha dos preparadores.' },
+  ],
+  'volkswagen|EA211': [
+    { nome: '1.0 MPI 3 cilindros', periodo: '2014–atual', desc: 'Motor 1.0 aspirado de 3 cilindros e 84 cv, usado em Up!, Gol e Polo de entrada.' },
+    { nome: '1.0 TSI (200 TSI)', periodo: '2017–atual', desc: 'Turbo de 3 cilindros com 128 cv, motor de maior volume da VW no Brasil hoje.' },
+    { nome: '1.4 TSI (250 TSI)', periodo: '2013–2021', desc: 'Turbo de 4 cilindros e 150 cv, usado em Jetta, Golf e Tiguan.' },
+    { nome: '1.6 MSI', periodo: '2014–2022', desc: 'Motor 1.6 aspirado de injeção indireta, de 110 cv, presente em Gol, Voyage e Saveiro.' },
+    { nome: '1.5 TSI Evo', periodo: '2017–atual', desc: 'Evolução com ciclo Miller e turbo de geometria variável, com até 150 cv.' },
+  ],
+  'volkswagen|EA888': [
+    { nome: 'Geração 1 (2.0 TSI)', periodo: '2007–2011', desc: 'Primeira geração de 200 a 211 cv, no Golf GTI Mk6 e no Jetta.' },
+    { nome: 'Geração 2', periodo: '2008–2014', desc: 'Revisão focada em resolver o alto consumo de óleo da primeira geração.' },
+    { nome: 'Geração 3', periodo: '2012–2020', desc: 'Ganhou injeção dupla e chegou a 310 cv no Golf R — a mais usada da família.' },
+    { nome: 'Geração 4 (evo4)', periodo: '2019–atual', desc: 'Versão atual do Golf GTI e do Tiguan R, com até 320 cv.' },
+  ],
+  'volkswagen|Boxer a ar 1.3/1.5/1.6': [
+    { nome: '1200 (1.2)', periodo: '1960–1986', desc: 'O clássico "1200" do Fusca, com cerca de 36 cv — o mais vendido de todos.' },
+    { nome: '1300 (1.3)', periodo: '1965–1986', desc: 'Versão intermediária de 46 cv, muito usada no Fusca brasileiro.' },
+    { nome: '1500 (1.5)', periodo: '1966–1975', desc: 'Motor de 52 cv que equipou o Fusca 1500 e as primeiras Variant.' },
+    { nome: '1600 (1.6)', periodo: '1970–2006', desc: 'O maior da linha a ar, usado no Fusca 1600, Brasília, Kombi e Variant até 2006.' },
+  ],
+  'volkswagen|TDI': [
+    { nome: '1.9 TDI', periodo: '1991–2010', desc: 'O TDI que ficou famoso pela economia, com versões de 90 a 160 cv.' },
+    { nome: '2.0 TDI', periodo: '2003–atual', desc: 'Sucessor do 1.9, usado em quase toda a linha europeia e na Amarok.' },
+    { nome: '3.0 V6 TDI', periodo: '2004–atual', desc: 'V6 diesel dos modelos maiores, com até 258 cv na Amarok V6.' },
+  ],
+  'volkswagen|VR6': [
+    { nome: '2.8 VR6', periodo: '1991–2004', desc: 'O VR6 original de 174 cv, usado no Golf VR6 e no Passat.' },
+    { nome: '2.9 VR6', periodo: '1994–1997', desc: 'Versão de 190 cv com comando revisado, no Golf VR6 Syncro.' },
+    { nome: '3.2 VR6', periodo: '2002–2010', desc: 'Motor de 241 cv do Golf R32, um dos mais cultuados da marca.' },
+    { nome: '3.6 FSI', periodo: '2005–2016', desc: 'Última evolução, com injeção direta e 280 cv, no Passat CC e no Touareg.' },
+  ],
+
+  // ---------- CHEVROLET ----------
+  'chevrolet|Família I': [
+    { nome: '1.0 8V', periodo: '1994–2001', desc: 'Motor do Corsa Wind, com 54 a 60 cv — o popular mais vendido da GM na época.' },
+    { nome: '1.0 16V', periodo: '1998–2002', desc: 'Versão de 16 válvulas com 70 cv, no Corsa Sedan e no Celta.' },
+    { nome: '1.4 8V', periodo: '1989–1996', desc: 'Motor de entrada do Kadett e do Ipanema.' },
+    { nome: '1.6 8V', periodo: '1989–2001', desc: 'Versão 1.6 do Kadett, Ipanema e Corsa GSi.' },
+    { nome: '1.6 16V', periodo: '1996–2002', desc: 'Motor de 16 válvulas e 106 cv do Corsa GSi e do Tigra.' },
+  ],
+  'chevrolet|Família II': [
+    { nome: '1.8 8V', periodo: '1993–2005', desc: 'Motor de entrada do Monza, Astra e Vectra, com cerca de 110 cv.' },
+    { nome: '2.0 8V', periodo: '1993–2011', desc: 'O 2.0 mais comum, usado em Vectra, Astra, S10 e Blazer.' },
+    { nome: '2.0 16V', periodo: '1994–2002', desc: 'Versão de 16 válvulas com até 136 cv, no Vectra GSi e no Astra GLS.' },
+    { nome: '2.2 8V', periodo: '1997–2011', desc: 'Motor 2.2 do Vectra, S10 e Zafira, com bom torque em baixa.' },
+    { nome: '2.4 16V Flexpower', periodo: '2005–2012', desc: 'Última evolução, com 147 cv bicombustível no Vectra e na Zafira.' },
+  ],
+  'chevrolet|Ecotec (Família E)': [
+    { nome: '1.0 8V (VHC/VHC-E)', periodo: '2000–2015', desc: 'Motor do Celta, Corsa e Classic, projetado para ser barato de manter.' },
+    { nome: '1.4 8V (Econo.Flex)', periodo: '2007–2019', desc: 'Motor de 106 cv do Onix, Prisma, Cobalt e Spin — um dos mais vendidos do Brasil.' },
+    { nome: '1.8 8V', periodo: '2009–2019', desc: 'Versão maior usada em Cobalt, Spin e Cruze de entrada.' },
+    { nome: '1.4 Turbo', periodo: '2011–2021', desc: 'Turbo de 153 cv do Cruze e do Tracker, primeira aposta turbo da GM no Brasil.' },
+  ],
+  'chevrolet|LS (Small Block Gen III/IV)': [
+    { nome: 'LS1 5.7', periodo: '1997–2004', desc: 'O primeiro LS, com 350 cv no Corvette C5 e no Camaro da época.' },
+    { nome: 'LS6 5.7', periodo: '2001–2005', desc: 'Versão de 405 cv do Corvette Z06, com comando e cabeçotes mais agressivos.' },
+    { nome: 'LS2 6.0', periodo: '2005–2009', desc: 'Aumento para 6.0 litros e 400 cv no Corvette C6.' },
+    { nome: 'LS3 6.2', periodo: '2008–2017', desc: 'Um dos mais populares em preparações, com 430 cv de fábrica.' },
+    { nome: 'LS7 7.0', periodo: '2006–2013', desc: 'V8 de 7.0 litros e 505 cv, montado à mão para o Corvette Z06.' },
+    { nome: 'LS9 6.2 supercharged', periodo: '2009–2013', desc: 'Com compressor, entregava 638 cv no Corvette ZR1.' },
+  ],
+  'chevrolet|Motor Opala (reto 4 e 6)': [
+    { nome: '2.5 4 cilindros', periodo: '1969–1990', desc: 'Motor de 4 cilindros de entrada do Opala e da Caravan.' },
+    { nome: '3.8 6 cilindros', periodo: '1968–1979', desc: 'O 6 cilindros original do Opala, com cerca de 125 cv.' },
+    { nome: '4.1 6 cilindros', periodo: '1975–1992', desc: 'Versão maior de 4.1 litros, a mais desejada da linha Opala.' },
+    { nome: '4.1S', periodo: '1980–1988', desc: 'Versão de alto desempenho com carburador duplo, chegando a 171 cv.' },
+  ],
+
+  // ---------- FIAT ----------
+  'fiat|FIRE': [
+    { nome: '1.0 8V', periodo: '1999–2015', desc: 'Motor do Uno Mille, Palio e Siena, com cerca de 66 cv — ícone dos populares.' },
+    { nome: '1.0 16V', periodo: '2000–2005', desc: 'Versão de 16 válvulas com 70 cv, no Palio e no Punto de entrada.' },
+    { nome: '1.3 16V', periodo: '2001–2010', desc: 'Motor de 80 cv usado no Palio, Idea e Punto.' },
+    { nome: '1.4 8V EVO', periodo: '2010–2021', desc: 'Evolução com 88 cv, presente em Uno, Palio, Grand Siena e Strada.' },
+    { nome: '1.4 16V', periodo: '2003–2012', desc: 'Versão 16 válvulas do 1.4, usada no Punto e no Linea.' },
+  ],
+  'fiat|Firefly': [
+    { nome: '1.0 3 cilindros', periodo: '2016–atual', desc: 'Motor aspirado de 77 cv do Mobi, Argo e Uno — o de entrada da linha.' },
+    { nome: '1.3 4 cilindros', periodo: '2018–atual', desc: 'Aspirado de 109 cv usado em Argo, Cronos e Pulse.' },
+    { nome: '1.0 Turbo (T200)', periodo: '2021–atual', desc: 'Turbo de 3 cilindros e 130 cv do Pulse, Fastback e Argo.' },
+    { nome: '1.3 Turbo (T270)', periodo: '2021–atual', desc: 'Turbo de 185 cv das versões de topo do Pulse Abarth e do Toro.' },
+  ],
+  'fiat|E.torQ': [
+    { nome: '1.6 16V', periodo: '2012–2020', desc: 'Motor de 117 cv do Punto, Linea, Argo e Cronos.' },
+    { nome: '1.8 16V', periodo: '2010–2020', desc: 'Versão de 132 cv usada no Freemont, Toro e Renegade.' },
+    { nome: '2.0 16V', periodo: '2011–2018', desc: 'A maior da família, com 167 cv no Bravo e no Freemont.' },
+  ],
+
+  // ---------- FORD ----------
+  'ford|Zetec-Rocam': [
+    { nome: '1.0 8V Zetec Rocam', periodo: '1999–2013', desc: 'Motor do Ka e do Fiesta 1.0, com 65 a 73 cv.' },
+    { nome: '1.6 8V Zetec Rocam', periodo: '1999–2014', desc: 'O 1.6 do Fiesta, Ka e EcoSport, com até 106 cv no flex.' },
+    { nome: '1.6 Zetec RoCam Flex', periodo: '2004–2014', desc: 'Versão bicombustível, muito usada em táxis pela simplicidade mecânica.' },
+    { nome: '1.8 Zetec', periodo: '1997–2004', desc: 'Versão maior usada no Focus e no Escort da época.' },
+  ],
+  'ford|Duratec': [
+    { nome: '1.6 16V Ti-VCT', periodo: '2008–2019', desc: 'Motor de 130 cv do Focus, Fiesta e EcoSport.' },
+    { nome: '2.0 16V', periodo: '1998–2019', desc: 'O 2.0 do Focus, Fusion e EcoSport, com cerca de 148 cv.' },
+    { nome: '2.5 20V (5 cilindros)', periodo: '2005–2018', desc: 'Motor de 5 cilindros do Focus e do Fusion, com até 175 cv.' },
+    { nome: '3.0 V6', periodo: '1996–2008', desc: 'V6 usado no Mondeo e no Fusion importado.' },
+  ],
+  'ford|EcoBoost': [
+    { nome: '1.0 3 cilindros', periodo: '2012–atual', desc: 'Motor eleito "Motor do Ano" várias vezes, com até 125 cv no Focus e no EcoSport.' },
+    { nome: '1.5', periodo: '2013–atual', desc: 'Versão de 4 cilindros e 180 cv, usada no Focus e no Fusion.' },
+    { nome: '2.0', periodo: '2010–atual', desc: 'Turbo de 240 a 253 cv do Focus ST, Fusion e Ranger.' },
+    { nome: '2.3', periodo: '2015–atual', desc: 'Motor de 310 a 350 cv do Mustang EcoBoost e do Focus RS.' },
+    { nome: '3.5 V6', periodo: '2009–atual', desc: 'V6 biturbo de até 450 cv da F-150 Raptor e do Ford GT.' },
+  ],
+  'ford|Coyote 5.0 V8': [
+    { nome: 'Geração 1', periodo: '2011–2014', desc: 'Estreia com 412 cv no Mustang GT, retomando o nome "5.0".' },
+    { nome: 'Geração 2', periodo: '2015–2017', desc: 'Cabeçotes revisados e 435 cv no Mustang da sexta geração.' },
+    { nome: 'Geração 3', periodo: '2018–2023', desc: 'Ganhou injeção dupla e subiu para 460 cv.' },
+    { nome: 'Geração 4', periodo: '2024–atual', desc: 'Versão atual do Mustang com admissão dupla, chegando a 500 cv na Dark Horse.' },
+  ],
+  'ford|Windsor V8 (incl. 302 / "5.0")': [
+    { nome: '221 (3.6)', periodo: '1962–1963', desc: 'O primeiro Windsor, criado para ser um V8 leve e compacto.' },
+    { nome: '289 (4.7)', periodo: '1963–1968', desc: 'Motor do Mustang original e dos Shelby GT350.' },
+    { nome: '302 / 5.0', periodo: '1968–2001', desc: 'O mais famoso da família: virou o "5.0" dos Mustang dos anos 80 e 90.' },
+    { nome: '351W (5.8)', periodo: '1969–1996', desc: 'Versão de curso maior, muito usada em picapes e preparações.' },
+  ],
+
+  // ---------- TOYOTA ----------
+  'toyota|Série JZ (1JZ / 2JZ)': [
+    { nome: '1JZ-GE', periodo: '1990–2007', desc: 'Versão aspirada de 2.5 litros, usada em sedãs japoneses como o Mark II.' },
+    { nome: '1JZ-GTE', periodo: '1991–2007', desc: 'Versão turbinada de 2.5 com até 280 cv, popular em preparações no Japão.' },
+    { nome: '2JZ-GE', periodo: '1991–2005', desc: 'Aspirado de 3.0 litros do Supra base e do Lexus IS300.' },
+    { nome: '2JZ-GTE', periodo: '1991–2002', desc: 'O lendário biturbo do Supra: bloco de ferro tão forte que aguenta mais de 1.000 cv.' },
+  ],
+  'toyota|Série UZ (V8)': [
+    { nome: '1UZ-FE 4.0', periodo: '1989–2002', desc: 'V8 de estreia do Lexus LS400, tão suave que a demonstração usava taças empilhadas sobre o motor.' },
+    { nome: '2UZ-FE 4.7', periodo: '1998–2011', desc: 'Versão de bloco em ferro para o Land Cruiser e a Tundra, feita para trabalho pesado.' },
+    { nome: '3UZ-FE 4.3', periodo: '2000–2010', desc: 'Versão de 4.3 litros usada nos Lexus GS430 e SC430.' },
+  ],
+  'toyota|Série ZZ': [
+    { nome: '1ZZ-FE 1.8', periodo: '1998–2007', desc: 'Motor 1.8 do Corolla que equipou milhões de unidades no mundo todo.' },
+    { nome: '3ZZ-FE 1.6', periodo: '2000–2007', desc: 'Versão 1.6 vendida principalmente na Europa e na Ásia.' },
+  ],
+  'toyota|Série NZ': [
+    { nome: '1NZ-FE 1.5', periodo: '1997–atual', desc: 'Motor 1.5 do Yaris, Etios e Corolla asiático, com fama de econômico.' },
+    { nome: '2NZ-FE 1.3', periodo: '1999–2015', desc: 'Versão 1.3 para os modelos de entrada em mercados emergentes.' },
+    { nome: '1NZ-FXE (híbrido)', periodo: '1997–2015', desc: 'Versão de ciclo Atkinson criada especificamente para o Prius.' },
+  ],
+  'toyota|Série GR (V6)': [
+    { nome: '1GR-FE 4.0', periodo: '2002–atual', desc: 'V6 4.0 da Hilux, SW4 e Land Cruiser Prado.' },
+    { nome: '2GR-FE 3.5', periodo: '2005–atual', desc: 'V6 3.5 do Camry, RAV4 e Lexus RX — um dos V6 mais premiados da indústria.' },
+    { nome: '4GR-FSE 2.5', periodo: '2003–2015', desc: 'Versão menor com injeção direta, usada nos Lexus IS250 e GS250.' },
+  ],
+  'toyota|Série KD (diesel)': [
+    { nome: '2KD-FTV 2.5', periodo: '2001–2015', desc: 'Diesel 2.5 da Hilux brasileira, com 102 a 144 cv.' },
+    { nome: '1KD-FTV 3.0', periodo: '2000–2015', desc: 'Diesel 3.0 da Hilux e do SW4, com até 171 cv e muito torque.' },
+  ],
+
+  // ---------- HONDA ----------
+  'honda|B-series (VTEC)': [
+    { nome: 'B16A', periodo: '1989–2000', desc: 'O 1.6 VTEC que chegou a 160 cv aspirado — mais de 100 cv por litro, façanha rara na época.' },
+    { nome: 'B16B', periodo: '1997–2000', desc: 'Versão do Civic Type R japonês, com 185 cv e curso maior.' },
+    { nome: 'B18C', periodo: '1994–2001', desc: 'Motor 1.8 do Integra Type R, com 200 cv e cabeçote trabalhado à mão.' },
+    { nome: 'B20B', periodo: '1996–2001', desc: 'Versão 2.0 sem VTEC do CR-V, popular em preparações pelo bloco maior.' },
+  ],
+  'honda|D-series': [
+    { nome: 'D15B', periodo: '1984–2005', desc: 'Motor 1.5 dos Civic mais econômicos, incluindo versões VTEC-E.' },
+    { nome: 'D16A / D16Y8', periodo: '1986–2005', desc: 'Motor 1.6 do Civic EX, com 127 cv na versão VTEC.' },
+    { nome: 'D17A', periodo: '2001–2005', desc: 'Última geração da família, usada no Civic de sétima geração.' },
+  ],
+  'honda|K-series': [
+    { nome: 'K20A', periodo: '2001–2011', desc: 'O 2.0 do Civic Type R japonês, com 220 cv girando até 8.600 rpm.' },
+    { nome: 'K20A2 / K20Z', periodo: '2002–2011', desc: 'Versões do Integra Type R e do Civic Si vendidos fora do Japão.' },
+    { nome: 'K24A / K24Z', periodo: '2002–2017', desc: 'Motor 2.4 do Accord e do CR-V, muito usado em conversões por ter mais torque.' },
+    { nome: 'K20C1 (turbo)', periodo: '2015–atual', desc: 'Turbo de 306 a 320 cv do Civic Type R moderno.' },
+  ],
+  'honda|L-series': [
+    { nome: 'L15A', periodo: '2001–2014', desc: 'Motor 1.5 do Fit e do City, com i-VTEC e foco em economia.' },
+    { nome: 'L18A', periodo: '2006–2012', desc: 'Versão 1.8 usada no Civic de oitava geração no Brasil.' },
+    { nome: 'L15B7 (turbo)', periodo: '2016–atual', desc: 'Turbo de 173 a 182 cv do Civic e do HR-V atuais.' },
+  ],
+
+  // ---------- NISSAN ----------
+  'nissan|Série RB': [
+    { nome: 'RB20DET', periodo: '1985–1993', desc: 'Turbo de 2.0 litros do Skyline R31 e R32 de entrada.' },
+    { nome: 'RB25DET', periodo: '1991–2002', desc: 'Turbo 2.5 do Skyline R33 e R34, com cerca de 250 cv.' },
+    { nome: 'RB26DETT', periodo: '1989–2002', desc: 'O lendário biturbo 2.6 do Skyline GT-R, declarado com 280 cv por acordo entre montadoras japonesas.' },
+    { nome: 'RB30', periodo: '1985–1990', desc: 'Versão 3.0 aspirada, muito usada como base para preparações de alta potência.' },
+  ],
+  'nissan|Série VQ': [
+    { nome: 'VQ30DE', periodo: '1994–2004', desc: 'V6 3.0 de estreia da família, no Maxima e no Infiniti I30.' },
+    { nome: 'VQ35DE', periodo: '2000–2020', desc: 'V6 3.5 do 350Z e do Altima, um dos mais produzidos da marca.' },
+    { nome: 'VQ37VHR', periodo: '2007–2020', desc: 'V6 3.7 com comando de perfil variável, com até 355 cv no 370Z.' },
+  ],
+
+  // ---------- BMW ----------
+  'bmw|M50 / M52 / M54': [
+    { nome: 'M50B20 / M50B25', periodo: '1990–1996', desc: 'Primeiros 6 cilindros da família, de 2.0 e 2.5 litros, com comando variável VANOS.' },
+    { nome: 'M52B28', periodo: '1995–2000', desc: 'Motor 2.8 do 328i, considerado um dos mais equilibrados da marca.' },
+    { nome: 'M54B30', periodo: '2000–2006', desc: 'O 3.0 de 231 cv do 330i e do Z4, último grande 6 cilindros aspirado da BMW.' },
+  ],
+  'bmw|Série N': [
+    { nome: 'N52B30', periodo: '2004–2015', desc: 'Aspirado de 3.0 com bloco em magnésio, usado no 330i e no Z4.' },
+    { nome: 'N54B30', periodo: '2006–2016', desc: 'Primeiro 6 cilindros biturbo moderno da marca, adorado por preparadores.' },
+    { nome: 'N55B30', periodo: '2009–2017', desc: 'Sucessor com um único turbo twin-scroll, mais confiável que o N54.' },
+    { nome: 'N20B20', periodo: '2011–2017', desc: 'Turbo de 4 cilindros que substituiu os 6 em linha nos modelos de entrada.' },
+  ],
+  'bmw|Série B (modular)': [
+    { nome: 'B38 (3 cilindros)', periodo: '2014–atual', desc: 'Motor 1.5 de 3 cilindros do Série 1, do MINI e dos híbridos da marca.' },
+    { nome: 'B48 (4 cilindros)', periodo: '2014–atual', desc: 'Turbo 2.0 de 184 a 306 cv, o mais usado em toda a linha atual.' },
+    { nome: 'B58 (6 cilindros)', periodo: '2015–atual', desc: 'Turbo 3.0 do M340i e do Toyota Supra, muito elogiado pela suavidade e potencial.' },
+  ],
+
+  // ---------- MERCEDES-BENZ ----------
+  'mercedes|M113 (V8 5.0/5.5)': [
+    { nome: 'M113.940 (4.3)', periodo: '1997–2005', desc: 'Versão de 4.3 litros e 279 cv, usada nas Classe E e S de entrada.' },
+    { nome: 'M113.960 (5.0)', periodo: '1998–2006', desc: 'V8 5.0 de 306 cv, o mais comum da família nos modelos de topo.' },
+    { nome: 'M113.981 (5.5 AMG)', periodo: '1999–2006', desc: 'Versão AMG aspirada de 5.5 litros e 360 cv.' },
+    { nome: 'M113.990 (5.4 Kompressor)', periodo: '2002–2011', desc: 'O famoso "55K" com compressor, de 476 a 517 cv — lenda de confiabilidade entre os AMG.' },
+  ],
+  'mercedes|M104': [
+    { nome: 'M104.900 (3.0)', periodo: '1989–1997', desc: 'Seis cilindros 3.0 de 24 válvulas do W124 e do 300E.' },
+    { nome: 'M104.941 (3.2)', periodo: '1992–1999', desc: 'Versão 3.2 de 220 cv, usada na Classe E e na Classe S.' },
+    { nome: 'M104.980 (3.6 AMG)', periodo: '1993–1995', desc: 'Preparação AMG de 3.6 litros e 272 cv, feita em pequena série.' },
+  ],
+  'mercedes|M156 / M177 (AMG V8)': [
+    { nome: 'M156 (6.2 aspirado)', periodo: '2006–2015', desc: 'V8 6.2 de 457 a 510 cv, o último grande V8 AMG aspirado — famoso pelo som.' },
+    { nome: 'M157 (5.5 biturbo)', periodo: '2010–2019', desc: 'Substituiu o M156 com biturbo, entregando até 585 cv com menos consumo.' },
+    { nome: 'M177 / M178 (4.0 biturbo)', periodo: '2014–atual', desc: 'V8 4.0 com turbos no "vale" do V, do C63 e do AMG GT, com até 639 cv.' },
+  ],
+
+  // ---------- AUDI ----------
+  'audi|1.8T (EA113)': [
+    { nome: '150 cv', periodo: '1994–2005', desc: 'Versão de entrada do A4 e do A3, com turbo pequeno e boa resposta.' },
+    { nome: '180 cv', periodo: '1997–2005', desc: 'A mais comum, usada no A4, A3 e TT com 5 válvulas por cilindro.' },
+    { nome: '225 cv', periodo: '1998–2006', desc: 'Versão do TT quattro e do S3, com turbo maior e intercooler reforçado.' },
+    { nome: '240 cv', periodo: '2003–2005', desc: 'A mais potente de fábrica, exclusiva do Audi TT quattro Sport.' },
+  ],
+  'audi|2.5 TFSI (5 cilindros)': [
+    { nome: '340 cv (RS3 8P)', periodo: '2011–2013', desc: 'Primeira geração do 5 cilindros moderno, no RS3 Sportback.' },
+    { nome: '367 cv (RS3 8V)', periodo: '2015–2017', desc: 'Ganhou potência e ficou mais leve com bloco em alumínio.' },
+    { nome: '400 cv (RS3 8Y)', periodo: '2017–atual', desc: 'Versão atual do RS3 e do TT RS, com ordem de ignição irregular que gera o som característico.' },
+  ],
+  'audi|4.0 TFSI V8 biturbo': [
+    { nome: '520–560 cv (S8/S6)', periodo: '2012–atual', desc: 'Versão dos modelos S, focada em torque e uso diário.' },
+    { nome: '560–605 cv (RS6 C7)', periodo: '2013–2018', desc: 'Versão do RS6 Avant e do RS7, incluindo o pacote Performance.' },
+    { nome: '600 cv (RS6 C8)', periodo: '2019–atual', desc: 'Geração atual do RS6 e do RS7, agora com sistema de 48V.' },
+  ],
+
+  // ---------- PORSCHE ----------
+  'porsche|Boxer 6 a ar (911)': [
+    { nome: '2.0 (901)', periodo: '1963–1969', desc: 'O boxer 6 original do 911, com 130 cv.' },
+    { nome: '2.7', periodo: '1973–1977', desc: 'Motor do lendário Carrera RS 2.7, um dos 911 mais valorizados de todos.' },
+    { nome: '3.2 (Carrera)', periodo: '1984–1989', desc: 'Motor do 911 Carrera 3.2, considerado o mais confiável dos refrigerados a ar.' },
+    { nome: '3.6 (964/993)', periodo: '1989–1998', desc: 'Última evolução do boxer a ar, encerrando 35 anos dessa arquitetura.' },
+  ],
+  'porsche|Boxer 6 (9A1)': [
+    { nome: '3.4 aspirado', periodo: '2008–2016', desc: 'Motor do 911 Carrera de entrada e do Cayman S.' },
+    { nome: '3.8 aspirado', periodo: '2008–2019', desc: 'Versão do Carrera S e do GT3, girando até 9.000 rpm.' },
+    { nome: '3.0 biturbo', periodo: '2016–atual', desc: 'Turbo que substituiu os aspirados no 911 Carrera atual.' },
+    { nome: '4.0 aspirado (GT3)', periodo: '2017–atual', desc: 'Último 911 aspirado, com 510 cv e giro até 9.000 rpm.' },
+  ],
+
+  // ---------- RENAULT ----------
+  'renault|K4M / K7M': [
+    { nome: 'K7M 1.6 8V', periodo: '2000–2016', desc: 'Motor 1.6 de 8 válvulas do Logan e Sandero, simples e barato de manter.' },
+    { nome: 'K4M 1.6 16V', periodo: '2001–2020', desc: 'Versão de 16 válvulas com até 118 cv, usada no Duster, Fluence e Sandero.' },
+  ],
+  'renault|Energy (SCe/TCe)': [
+    { nome: '1.0 SCe 3 cilindros', periodo: '2015–atual', desc: 'Aspirado de 82 cv do Kwid e do Sandero de entrada.' },
+    { nome: '1.0 TCe turbo', periodo: '2019–atual', desc: 'Turbo de 3 cilindros e 120 cv, no Sandero, Logan e Duster.' },
+    { nome: '1.3 TCe', periodo: '2018–atual', desc: 'Turbo de 4 cilindros e até 170 cv, desenvolvido com a Mercedes-Benz.' },
+  ],
+
+  // ---------- HYUNDAI ----------
+  'hyundai|Kappa': [
+    { nome: '1.0 3 cilindros', periodo: '2012–atual', desc: 'Motor de 80 cv do HB20 e do Atos, com bom desempenho no etanol.' },
+    { nome: '1.0 T-GDi turbo', periodo: '2019–atual', desc: 'Turbo de 120 cv do HB20 e do Creta, com injeção direta.' },
+    { nome: '1.2', periodo: '2011–atual', desc: 'Versão de 4 cilindros usada no HB20 e no i10 europeu.' },
+  ],
+  'hyundai|Gamma': [
+    { nome: '1.6 MPI', periodo: '2010–atual', desc: 'Motor 1.6 de injeção indireta do HB20S, Creta e Kia Cerato.' },
+    { nome: '1.6 GDI', periodo: '2010–atual', desc: 'Versão com injeção direta e mais potência, usada no Elantra e no Veloster.' },
+    { nome: '1.6 T-GDi', periodo: '2011–atual', desc: 'Turbo de 177 a 204 cv do Veloster Turbo e do Kia Seltos.' },
+  ],
+};
+
+// =========================================
 // GRUPOS AUTOMOTIVOS — quem é dono de quem
 // =========================================
 const grupos = {
@@ -1100,8 +1403,9 @@ document.querySelectorAll('[data-artigo]').forEach(btn => {
 // =========================================
 const gruposGrid = document.getElementById('grupos-grid');
 
-// guarda de qual grupo viemos, para o botão "voltar" do nível de marca
+// guarda de onde viemos, para os botões "voltar"
 let grupoAtual = null;
+let marcaAtual = null;
 
 function totalMotoresDoGrupo(g) {
   return g.marcas.reduce((soma, id) => soma + (marcas[id] ? marcas[id].motores.length : 0), 0);
@@ -1132,8 +1436,12 @@ if (modalContent) {
   modalContent.addEventListener('click', e => {
     const btnMarca = e.target.closest('[data-marca]');
     if (btnMarca) { abrirModalMarca(btnMarca.dataset.marca); return; }
+    const btnFamilia = e.target.closest('[data-familia]');
+    if (btnFamilia) { abrirModalFamilia(btnFamilia.dataset.familia); return; }
     const btnVoltar = e.target.closest('[data-voltar]');
     if (btnVoltar) abrirModalGrupo(btnVoltar.dataset.voltar);
+    const btnVoltarMarca = e.target.closest('[data-voltar-marca]');
+    if (btnVoltarMarca) abrirModalMarca(btnVoltarMarca.dataset.voltarMarca);
   });
 }
 
@@ -1176,17 +1484,35 @@ function abrirModalGrupo(id) {
   mostrarModal();
 }
 
-// NÍVEL 3 — motores da marca
+// NÍVEL 3 — famílias de motor da marca
 function abrirModalMarca(id) {
   const m = marcas[id];
   if (!m) return;
+  marcaAtual = id;
 
-  const motoresHtml = m.motores.map(mo => `
-    <div class="motor-item">
-      <span class="motor-item__nome">${mo.nome}</span><span class="motor-item__periodo">${mo.periodo}</span>
-      <p>${mo.desc}</p>
-    </div>
-  `).join('');
+  const motoresHtml = m.motores.map((mo, i) => {
+    const vs = variantes[id + '|' + mo.nome];
+    if (vs) {
+      return `
+        <button type="button" class="motor-item motor-item--tem-lista" data-familia="${i}">
+          <span class="motor-item__nome">${mo.nome}</span><span class="motor-item__periodo">${mo.periodo}</span>
+          <p>${mo.desc}</p>
+          <span class="motor-item__ver">Ver os ${vs.length} motores desta família →</span>
+        </button>
+      `;
+    }
+    return `
+      <div class="motor-item">
+        <span class="motor-item__nome">${mo.nome}</span><span class="motor-item__periodo">${mo.periodo}</span>
+        <p>${mo.desc}</p>
+      </div>
+    `;
+  }).join('');
+
+  const detalhadas = m.motores.filter(mo => variantes[id + '|' + mo.nome]).length;
+  const aviso = detalhadas
+    ? `As famílias marcadas em vermelho já podem ser abertas motor por motor (${detalhadas} de ${m.motores.length}).`
+    : `O detalhamento motor por motor desta marca ainda não foi feito.`;
 
   const voltar = grupoAtual
     ? `<button type="button" class="modal__voltar" data-voltar="${grupoAtual}">← ${grupos[grupoAtual].nome}</button>`
@@ -1197,8 +1523,36 @@ function abrirModalMarca(id) {
     <img src="${m.logo}" alt="Logo ${m.nome}" class="modal__marca-logo" />
     <span class="modal__cat">Desde ${m.fundacao}</span>
     <h2>Motores ${m.nome}</h2>
-    <p style="color:var(--gray);margin:.5rem 0 1.25rem;">Seleção das principais famílias de motor da ${m.nome}, em ordem cronológica. Não é uma lista exaustiva — cada família reúne dezenas de variações.</p>
+    <p style="color:var(--gray);margin:.5rem 0 1.25rem;">Famílias de motor em ordem cronológica. ${aviso}</p>
     ${motoresHtml}
+  `;
+  mostrarModal();
+}
+
+// NÍVEL 4 — motor por motor dentro da família
+function abrirModalFamilia(indice) {
+  const m = marcas[marcaAtual];
+  if (!m) return;
+  const familia = m.motores[Number(indice)];
+  if (!familia) return;
+  const vs = variantes[marcaAtual + '|' + familia.nome];
+  if (!vs) return;
+
+  const listaHtml = vs.map(v => `
+    <div class="motor-item">
+      <span class="motor-item__nome">${v.nome}</span><span class="motor-item__periodo">${v.periodo}</span>
+      <p>${v.desc}</p>
+    </div>
+  `).join('');
+
+  modalContent.innerHTML = `
+    <button type="button" class="modal__voltar" data-voltar-marca="${marcaAtual}">← Motores ${m.nome}</button>
+    <img src="${m.logo}" alt="Logo ${m.nome}" class="modal__marca-logo" />
+    <span class="modal__cat">${familia.periodo}</span>
+    <h2>${m.nome} ${familia.nome}</h2>
+    <p style="color:var(--gray);margin:.5rem 0 1.25rem;">${familia.desc}</p>
+    <h3 style="margin-bottom:.25rem;">Motores desta família</h3>
+    ${listaHtml}
   `;
   mostrarModal();
 }
