@@ -574,7 +574,13 @@ ul   { list-style: none; }
   border-color: var(--red);
 }
 
-.marca-card__icon { font-size: 1.9rem; display: block; margin-bottom: .6rem; }
+.marca-card__icon {
+  display: block;
+  height: 42px;
+  width: 100%;
+  object-fit: contain;
+  margin: 0 auto .75rem;
+}
 .marca-card__nome { font-size: .9rem; font-weight: 700; display: block; }
 .marca-card__ano  { font-size: .75rem; color: var(--gray); display: block; margin-top: .2rem; }
 
@@ -584,6 +590,13 @@ ul   { list-style: none; }
 
 @media (max-width: 700px) {
   .marcas__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.modal__marca-logo {
+  height: 48px;
+  max-width: 160px;
+  object-fit: contain;
+  margin-bottom: .75rem;
 }
 
 /* motores dentro do modal */

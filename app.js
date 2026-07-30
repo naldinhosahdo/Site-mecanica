@@ -205,7 +205,7 @@ const artigos = {
 // =========================================
 const marcas = {
   volkswagen: {
-    nome: 'Volkswagen', icon: '🚗', fundacao: 1937,
+    nome: 'Volkswagen', logo: 'logos/volkswagen.png', fundacao: 1937,
     motores: [
       { nome: 'Motor 1.1 a ar (original)', periodo: '1938–1960', desc: 'Motor boxer 4 cilindros refrigerado a ar de 1131 cc, criado para o "KdF-Wagen" que deu origem ao Fusca.' },
       { nome: 'Boxer a ar 1.3/1.5/1.6', periodo: '1960–2006', desc: 'Evolução do motor a ar, com cilindradas maiores. Equipou Fusca, Kombi e Brasília no Brasil até 2006.' },
@@ -219,7 +219,7 @@ const marcas = {
     ]
   },
   chevrolet: {
-    nome: 'Chevrolet', icon: '🏁', fundacao: 1911,
+    nome: 'Chevrolet', logo: 'logos/chevrolet.png', fundacao: 1911,
     motores: [
       { nome: 'Motor 4 cilindros original', periodo: '1911–1920', desc: 'Primeiros motores da marca, usados nos modelos Série C "Classic Six" e seguintes no início do século 20.' },
       { nome: 'Stovebolt Six', periodo: '1929–1962', desc: 'Motor 6 cilindros em linha extremamente popular nos EUA, usado por mais de 30 anos em vários modelos.' },
@@ -231,7 +231,7 @@ const marcas = {
     ]
   },
   fiat: {
-    nome: 'Fiat', icon: '🔧', fundacao: 1899,
+    nome: 'Fiat', logo: 'logos/fiat.png', fundacao: 1899,
     motores: [
       { nome: 'Motor 4 cilindros Fiat 501', periodo: '1919–1926', desc: 'Um dos primeiros motores de produção em massa da Fiat, símbolo da consolidação da marca na Itália.' },
       { nome: 'Motor bicilíndrico traseiro (600/500)', periodo: '1955–1975', desc: 'Motores compactos montados atrás, que motorizaram o Fiat 600 e o icônico Fiat 500 clássico.' },
@@ -243,7 +243,7 @@ const marcas = {
     ]
   },
   ford: {
-    nome: 'Ford', icon: '🛻', fundacao: 1903,
+    nome: 'Ford', logo: 'logos/ford.png', fundacao: 1903,
     motores: [
       { nome: 'Motor do Ford Modelo T', periodo: '1908–1927', desc: 'Motor 2.9 4 cilindros que motorizou o carro mais vendido do início do século 20, produzido por quase 20 anos sem grandes mudanças.' },
       { nome: 'Flathead V8', periodo: '1932–1953', desc: 'Primeiro V8 de baixo custo produzido em massa, revolucionou a indústria automotiva americana.' },
@@ -255,7 +255,7 @@ const marcas = {
     ]
   },
   toyota: {
-    nome: 'Toyota', icon: '🚙', fundacao: 1937,
+    nome: 'Toyota', logo: 'logos/toyota.png', fundacao: 1937,
     motores: [
       { nome: 'Motor Tipo A', periodo: '1936–1947', desc: 'Primeiro motor a gasolina desenvolvido pela Toyota, usado no protótipo AA que deu origem à marca.' },
       { nome: 'Série R', periodo: '1953–1997', desc: 'Família de motores robustos usada por décadas no Corona, Hilux e primeiras gerações do Land Cruiser.' },
@@ -266,7 +266,7 @@ const marcas = {
     ]
   },
   honda: {
-    nome: 'Honda', icon: '🏎️', fundacao: 1948,
+    nome: 'Honda', logo: 'logos/honda.png', fundacao: 1948,
     motores: [
       { nome: 'Motores de motocicleta iniciais', periodo: '1948–1962', desc: 'A Honda nasceu fabricando motores para bicicletas e motos; essa base técnica veio a definir sua engenharia futura de motores.' },
       { nome: 'Motor CVCC', periodo: '1972–1987', desc: 'Tecnologia pioneira de combustão de baixa emissão, que dispensou o catalisador exigido nos EUA na época.' },
@@ -278,7 +278,7 @@ const marcas = {
     ]
   },
   hyundai: {
-    nome: 'Hyundai', icon: '🚘', fundacao: 1967,
+    nome: 'Hyundai', logo: 'logos/hyundai.png', fundacao: 1967,
     motores: [
       { nome: 'Motores licenciados Mitsubishi', periodo: '1968–1989', desc: 'Nos primeiros anos, a Hyundai produziu motores sob licença da Mitsubishi para seus primeiros modelos, como o Pony.' },
       { nome: 'Alpha', periodo: '1990–atual', desc: 'Motores 1.0/1.6 atualizados ao longo de décadas, usados em modelos de entrada.' },
@@ -288,7 +288,7 @@ const marcas = {
     ]
   },
   renault: {
-    nome: 'Renault', icon: '🚕', fundacao: 1899,
+    nome: 'Renault', logo: 'logos/renault.png', fundacao: 1899,
     motores: [
       { nome: 'Motores originais Renault', periodo: '1899–1945', desc: 'Motores primitivos desenvolvidos pelos irmãos Renault nos primórdios da fabricação de automóveis na França.' },
       { nome: 'Motor Billancourt', periodo: '1946–1986', desc: 'Motor 1.0 muito duradouro, usado no 4CV, Renault 4 e Renault 5 originais.' },
@@ -298,7 +298,7 @@ const marcas = {
     ]
   },
   nissan: {
-    nome: 'Nissan', icon: '🚗', fundacao: 1933,
+    nome: 'Nissan', logo: 'logos/nissan.png', fundacao: 1933,
     motores: [
       { nome: 'Motores Datsun iniciais', periodo: '1933–1965', desc: 'Primeiros motores pequenos usados nos automóveis Datsun, marca original da Nissan para exportação.' },
       { nome: 'Série A', periodo: '1966–1998', desc: 'Motores 1.0 a 1.5 usados em modelos compactos japoneses clássicos.' },
@@ -308,7 +308,7 @@ const marcas = {
     ]
   },
   peugeot: {
-    nome: 'Peugeot', icon: '🦁', fundacao: 1810,
+    nome: 'Peugeot', logo: 'logos/peugeot.png', fundacao: 1810,
     motores: [
       { nome: 'Motor do Peugeot Type 3', periodo: '1891–1900', desc: 'Um dos primeiros automóveis a gasolina da Peugeot, marcando a entrada da marca no setor automotivo.' },
       { nome: 'Motores XU/XN', periodo: '1970–2000', desc: 'Motores 1.4 a 2.0 desenvolvidos com a Citroën, usados em várias gerações do 205, 405 e 306.' },
@@ -318,7 +318,7 @@ const marcas = {
     ]
   },
   bmw: {
-    nome: 'BMW', icon: '🏎️', fundacao: 1916,
+    nome: 'BMW', logo: 'logos/bmw.png', fundacao: 1916,
     motores: [
       { nome: 'Motores de aviação BMW', periodo: '1917–1928', desc: 'A BMW nasceu fabricando motores de avião; essa origem aeronáutica está até hoje na logomarca da empresa.' },
       { nome: 'Motor M78 (BMW 303)', periodo: '1933–1936', desc: 'Motor 6 cilindros em linha do primeiro carro a levar o característico grelha "rim duplo" da marca.' },
@@ -330,7 +330,7 @@ const marcas = {
     ]
   },
   mercedes: {
-    nome: 'Mercedes-Benz', icon: '⭐', fundacao: 1926,
+    nome: 'Mercedes-Benz', logo: 'logos/mercedes.png', fundacao: 1926,
     motores: [
       { nome: 'Motor Benz Patent-Motorwagen', periodo: '1886', desc: 'Considerado o primeiro motor a combustão interna de um automóvel de produção da história, criado por Karl Benz.' },
       { nome: 'Motor Mercedes 35 HP', periodo: '1901–1905', desc: 'Motor avançado para a época que deu nome ao primeiro carro batizado de "Mercedes".' },
@@ -341,7 +341,7 @@ const marcas = {
     ]
   },
   audi: {
-    nome: 'Audi', icon: '⚙️', fundacao: 1909,
+    nome: 'Audi', logo: 'logos/audi.png', fundacao: 1909,
     motores: [
       { nome: 'Motores pré-guerra Auto Union', periodo: '1932–1940', desc: 'Motores usados nos famosos "Silver Arrows" de corrida, quando a Audi fazia parte do consórcio Auto Union.' },
       { nome: 'EA827 (compartilhado com VW)', periodo: '1972–2000', desc: 'Base dos motores 1.8/2.0 usados nos primeiros Audi 80 e 100.' },
@@ -351,7 +351,7 @@ const marcas = {
     ]
   },
   kia: {
-    nome: 'Kia', icon: '🚐', fundacao: 1944,
+    nome: 'Kia', logo: 'logos/kia.png', fundacao: 1944,
     motores: [
       { nome: 'Motores licenciados (Mazda/Ford)', periodo: '1974–1990', desc: 'A Kia começou fabricando peças e depois carros com motores licenciados de outras montadoras, antes de desenvolver os próprios.' },
       { nome: 'Gamma (compartilhado c/ Hyundai)', periodo: '2006–atual', desc: 'Motores 1.4/1.6 GDI de injeção direta, usados no Soluto e Bongo.' },
@@ -359,7 +359,7 @@ const marcas = {
     ]
   },
   mitsubishi: {
-    nome: 'Mitsubishi', icon: '🔺', fundacao: 1917,
+    nome: 'Mitsubishi', logo: 'logos/mitsubishi.png', fundacao: 1917,
     motores: [
       { nome: 'Primeiro motor a combustão Mitsubishi', periodo: '1917', desc: 'Motor usado no Mitsubishi Model A, o primeiro automóvel de produção em série do Japão.' },
       { nome: 'Astron / Sirius', periodo: '1970–1990', desc: 'Motores 1.6 a 2.0 dos primeiros modelos exportados globalmente pela marca.' },
@@ -464,7 +464,7 @@ if (marcasGrid) {
     const m = marcas[id];
     return `
       <button type="button" class="marca-card" data-marca="${id}">
-        <span class="marca-card__icon">${m.icon}</span>
+        <img class="marca-card__icon" src="${m.logo}" alt="Logo ${m.nome}" loading="lazy" />
         <span class="marca-card__nome">${m.nome}</span>
         <span class="marca-card__ano">Desde ${m.fundacao}</span>
       </button>
@@ -490,7 +490,8 @@ function abrirModalMarca(id) {
   `).join('');
 
   modalContent.innerHTML = `
-    <span class="modal__cat">${m.icon} Desde ${m.fundacao}</span>
+    <img src="${m.logo}" alt="Logo ${m.nome}" class="modal__marca-logo" />
+    <span class="modal__cat">Desde ${m.fundacao}</span>
     <h2>Motores ${m.nome}</h2>
     <p style="color:var(--gray);margin:.5rem 0 1.25rem;">Principais famílias de motor produzidas pela ${m.nome} ao longo da sua história.</p>
     ${motoresHtml}
