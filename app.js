@@ -369,8 +369,9 @@ const marcas = {
       { nome: '5 cilindros turbo (Quattro)', periodo: '1980–1991', desc: 'Motor icônico do Audi Quattro original, símbolo da tração integral da marca.' },
       { nome: '1.8T (EA113)', periodo: '1994–2006', desc: 'Motor turbo que marcou época no A4 e no TT, muito popular entre entusiastas.' },
       { nome: 'TDI V6/V8', periodo: '1997–atual', desc: 'Linha diesel de alta performance usada nos modelos maiores da marca.' },
-      { nome: 'V10 FSI', periodo: '2002–2015', desc: 'Motor 10 cilindros de alta performance, usado no RS6 e no superesportivo R8.' },
+      { nome: '5.0 TFSI V10 biturbo', periodo: '2008–2010', desc: 'Motor V10 biturbo de altíssima performance (mais de 570 cv), usado no Audi RS6 C6 — um dos sedãs mais rápidos do mundo na época.' },
       { nome: 'TFSI (EA888)', periodo: '2008–atual', desc: 'Motores turbo com injeção direta, usados no A3, A4 e Q3 atuais.' },
+      { nome: '5.2 FSI V10', periodo: '2009–2015', desc: 'V10 aspirado compartilhado com a Lamborghini, usado no superesportivo R8.' },
     ]
   },
   kia: {
