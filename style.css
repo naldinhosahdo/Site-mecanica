@@ -551,6 +551,85 @@ ul   { list-style: none; }
    ========================================= */
 .motores { padding: 6rem 0; background: var(--light); }
 
+.motores__nota {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: .8rem;
+  color: var(--gray);
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- nível 1: grupos --- */
+.grupos__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.grupo-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grupo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--red);
+}
+
+.grupo-card__icon { height: 40px; width: 100%; object-fit: contain; margin-bottom: .85rem; }
+.grupo-card__nome { font-size: .95rem; font-weight: 700; line-height: 1.3; }
+.grupo-card__sede { font-size: .75rem; color: var(--gray); margin-top: .25rem; }
+
+.grupo-card__qtd {
+  margin-top: .6rem;
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--red);
+  background: #fef2f2;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+}
+
+@media (max-width: 1000px) { .grupos__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px)  { .grupos__grid { grid-template-columns: 1fr; } }
+
+/* --- nível 2: marcas dentro do modal --- */
+.modal__marcas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .85rem;
+}
+
+@media (max-width: 700px) { .modal__marcas-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.modal__voltar {
+  background: var(--light);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .35rem .9rem;
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--gray);
+  cursor: pointer;
+  margin-bottom: 1.25rem;
+  transition: var(--transition);
+}
+
+.modal__voltar:hover { border-color: var(--red); color: var(--red); }
+
 .marcas__grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
