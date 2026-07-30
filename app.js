@@ -210,12 +210,15 @@ const marcas = {
       { nome: 'Motor 1.1 a ar (original)', periodo: '1938–1960', desc: 'Motor boxer 4 cilindros refrigerado a ar de 1131 cc, criado para o "KdF-Wagen" que deu origem ao Fusca.' },
       { nome: 'Boxer a ar 1.3/1.5/1.6', periodo: '1960–2006', desc: 'Evolução do motor a ar, com cilindradas maiores. Equipou Fusca, Kombi e Brasília no Brasil até 2006.' },
       { nome: 'EA827', periodo: '1972–2013', desc: 'Bloco em ferro fundido 1.6/1.8/2.0, a base do lendário "motor AP" fabricado no Brasil (álcool e gasolina).' },
-      { nome: 'EA111', periodo: '1999–2013', desc: 'Motores 1.0/1.6 Total Flex, equipou o Gol G3/G4/G5 e popularizou o bicombustível no Brasil.' },
-      { nome: 'EA113 (2.0 Turbo)', periodo: '2003–2008', desc: 'Motor turbo de alta performance, usado no Golf GTI e no Audi TT da época.' },
-      { nome: 'VR6', periodo: '1991–atual', desc: 'V6 compacto com ângulo estreito entre cilindros, usado no Passat e em versões esportivas do Golf.' },
       { nome: 'TDI', periodo: '1989–atual', desc: 'Linha de motores diesel turbo com injeção direta, presente na Amarok.' },
-      { nome: 'EA211', periodo: '2012–atual', desc: 'Geração atual 1.0/1.6 MSI/TSI, mais leve e eficiente, usado em Polo, Virtus e T-Cross.' },
+      { nome: 'VR6', periodo: '1991–atual', desc: 'V6 compacto com ângulo estreito entre cilindros, usado no Passat e em versões esportivas do Golf.' },
+      { nome: 'EA113 (1.8T)', periodo: '1994–2006', desc: 'Motor turbo 1.8 que virou febre nos Golf, Jetta e New Beetle turbo dos anos 2000.' },
+      { nome: 'EA111', periodo: '1999–2013', desc: 'Motores 1.0/1.6 Total Flex, equipou o Gol G3/G4/G5 e popularizou o bicombustível no Brasil.' },
+      { nome: 'W12', periodo: '2001–atual', desc: 'Motor de 12 cilindros em "W" usado em modelos de luxo do grupo, como o Phaeton.' },
+      { nome: 'EA113 (2.0 TFSI)', periodo: '2003–2008', desc: 'Evolução turbo de alta performance, usada no Golf GTI e no Audi TT da época.' },
       { nome: 'EA888', periodo: '2007–atual', desc: 'Família turbo 2.0 TSI de alta performance, usada em Golf GTI, Jetta GLI e Tiguan.' },
+      { nome: 'EA189', periodo: '2008–2015', desc: 'Motor diesel TDI que ficou conhecido mundialmente por estar no centro do escândalo de emissões "Dieselgate".' },
+      { nome: 'EA211', periodo: '2012–atual', desc: 'Geração atual 1.0/1.6 MSI/TSI, mais leve e eficiente, usado em Polo, Virtus e T-Cross.' },
     ]
   },
   chevrolet: {
@@ -223,11 +226,14 @@ const marcas = {
     motores: [
       { nome: 'Motor 4 cilindros original', periodo: '1911–1920', desc: 'Primeiros motores da marca, usados nos modelos Série C "Classic Six" e seguintes no início do século 20.' },
       { nome: 'Stovebolt Six', periodo: '1929–1962', desc: 'Motor 6 cilindros em linha extremamente popular nos EUA, usado por mais de 30 anos em vários modelos.' },
-      { nome: 'Small Block V8', periodo: '1955–atual', desc: 'Icônico V8 americano, símbolo do Camaro e do Corvette em todo o mundo, ainda em produção.' },
+      { nome: 'Small Block V8 (1ª/2ª geração)', periodo: '1955–2003', desc: 'Icônico V8 americano original, símbolo do Camaro e do Corvette clássicos.' },
       { nome: 'Motor Opala (reto 4 e 6)', periodo: '1968–1992', desc: 'Motores de origem Chevrolet/Opel que equiparam o Opala por mais de duas décadas no Brasil.' },
       { nome: 'Família I', periodo: '1989–1996', desc: 'Motores 1.4/1.6 de origem GM/Opel usados no Kadett e Ipanema.' },
       { nome: 'Família II', periodo: '1993–2016', desc: 'Motores 1.8/2.0 8V e 16V, um dos mais usados da história da GM no Brasil (Vectra, Astra, Omega, Zafira).' },
+      { nome: 'LS (Small Block 3ª/4ª/5ª geração)', periodo: '1997–atual', desc: 'Sucessor moderno do Small Block clássico, usado no Camaro, Corvette e picapes americanas até hoje.' },
       { nome: 'Ecotec (Família E)', periodo: '1999–atual', desc: 'Linha global compacta e eficiente, usada em Celta, Corsa, Onix e Prisma.' },
+      { nome: 'Duramax', periodo: '2001–atual', desc: 'Linha de motores diesel robustos usados nas picapes pesadas da marca (Silverado, S10).' },
+      { nome: 'Motor 1.0/1.4 Turbo', periodo: '2016–atual', desc: 'Geração turbo compacta atual, usada no Onix Turbo e no Tracker.' },
     ]
   },
   fiat: {
@@ -235,10 +241,11 @@ const marcas = {
     motores: [
       { nome: 'Motor 4 cilindros Fiat 501', periodo: '1919–1926', desc: 'Um dos primeiros motores de produção em massa da Fiat, símbolo da consolidação da marca na Itália.' },
       { nome: 'Motor bicilíndrico traseiro (600/500)', periodo: '1955–1975', desc: 'Motores compactos montados atrás, que motorizaram o Fiat 600 e o icônico Fiat 500 clássico.' },
+      { nome: 'Twin Cam (Lampredi)', periodo: '1966–2000', desc: 'Motor de comando duplo desenvolvido por Aurelio Lampredi, usado em versões esportivas do 124 e do Tempra.' },
       { nome: 'Motor tipo 128', periodo: '1969–1985', desc: 'Motor 1.3/1.5 que equipou o Fiat 147, primeiro carro a álcool em massa no Brasil.' },
       { nome: 'FIRE', periodo: '1985–atual', desc: '"Fully Integrated Robotized Engine", motor leve e compacto 1.0/1.4 que virou sinônimo de Uno e Palio.' },
-      { nome: 'E.torQ', periodo: '2010–2020', desc: 'Motores 1.6/1.8/2.0 16V desenvolvidos com a Chrysler, usados em Punto, Linea, Argo e Cronos.' },
       { nome: 'Multijet', periodo: '2000–atual', desc: 'Linha de motores diesel a injeção direta usada em utilitários e picapes (Toro, Strada).' },
+      { nome: 'E.torQ', periodo: '2010–2020', desc: 'Motores 1.6/1.8/2.0 16V desenvolvidos com a Chrysler, usados em Punto, Linea, Argo e Cronos.' },
       { nome: 'Firefly', periodo: '2016–atual', desc: 'Família 3 cilindros turbo de última geração, presente em Mobi, Argo, Cronos e Pulse.' },
     ]
   },
@@ -247,7 +254,9 @@ const marcas = {
     motores: [
       { nome: 'Motor do Ford Modelo T', periodo: '1908–1927', desc: 'Motor 2.9 4 cilindros que motorizou o carro mais vendido do início do século 20, produzido por quase 20 anos sem grandes mudanças.' },
       { nome: 'Flathead V8', periodo: '1932–1953', desc: 'Primeiro V8 de baixo custo produzido em massa, revolucionou a indústria automotiva americana.' },
+      { nome: 'Windsor V8', periodo: '1962–2001', desc: 'Família de V8 pequenos muito versátil, usada por décadas no Mustang e em picapes americanas.' },
       { nome: 'CHT', periodo: '1982–1996', desc: '"Compound High Turbulence", motor 1.6/1.8 que equipou o Corcel, Belina e Del Rey no Brasil.' },
+      { nome: 'Modular V8', periodo: '1991–2014', desc: 'Sucessor mais moderno do Windsor, usado no Mustang GT e em SUVs e picapes maiores da Ford.' },
       { nome: 'Zetec-Rocam', periodo: '1996–2013', desc: 'Motores 1.0/1.6 simples e resistentes, usados em Fiesta, Ka e Escort.' },
       { nome: 'Duratec', periodo: '1998–2019', desc: 'Linha 1.6/2.0 16V mais moderna e potente, presente no Focus e EcoSport.' },
       { nome: 'EcoBoost', periodo: '2009–atual', desc: 'Motores turbo de baixa cilindrada com alta eficiência, adotados globalmente pela Ford.' },
@@ -261,6 +270,8 @@ const marcas = {
       { nome: 'Série R', periodo: '1953–1997', desc: 'Família de motores robustos usada por décadas no Corona, Hilux e primeiras gerações do Land Cruiser.' },
       { nome: 'Série K', periodo: '1966–1988', desc: 'Motores 1.2/1.6 usados no Corolla e Tercel clássicos.' },
       { nome: 'Série A', periodo: '1978–2018', desc: 'Motores 1.3/1.6/1.8 confiáveis, presentes em várias gerações do Corolla.' },
+      { nome: 'Série UZ (V8)', periodo: '1989–2011', desc: 'V8 usado nos Land Cruiser e nos modelos de luxo Lexus, símbolo de robustez e conforto.' },
+      { nome: '2JZ', periodo: '1991–2007', desc: 'Motor 6 cilindros em linha lendário entre entusiastas, famoso por equipar o Supra Turbo.' },
       { nome: 'Hybrid Synergy Drive', periodo: '1997–atual', desc: 'Sistema híbrido pioneiro que tornou o Prius o carro híbrido mais famoso do mundo.' },
       { nome: 'Dynamic Force (Série ZR/NR)', periodo: '2015–atual', desc: 'Motores 1.5/2.0 de alta eficiência térmica, usados no Corolla e Yaris atuais.' },
     ]
@@ -272,7 +283,8 @@ const marcas = {
       { nome: 'Motor CVCC', periodo: '1972–1987', desc: 'Tecnologia pioneira de combustão de baixa emissão, que dispensou o catalisador exigido nos EUA na época.' },
       { nome: 'D-series', periodo: '1984–2005', desc: 'Motores 1.5/1.6 SOHC, usados no Civic das gerações mais populares no Brasil.' },
       { nome: 'B-series (VTEC)', periodo: '1988–2001', desc: 'Motores esportivos com a icônica tecnologia VTEC, marca registrada do Civic Si.' },
-      { nome: 'K-series', periodo: '2001–2020', desc: 'Sucessor do B-series, motores 1.8/2.0/2.4 usados em Civic e Accord.' },
+      { nome: 'H-series', periodo: '1993–2001', desc: 'Motores VTEC de maior cilindrada, usados no Prelude Type S e no Accord esportivo.' },
+      { nome: 'K-series', periodo: '2001–2020', desc: 'Sucessor do B/H-series, motores 1.8/2.0/2.4 usados em Civic, Civic Type R e Accord.' },
       { nome: 'L-series', periodo: '2008–atual', desc: 'Motores 1.5/1.8 compactos usados no Fit, City e HR-V.' },
       { nome: 'Earth Dreams (i-VTEC turbo)', periodo: '2015–atual', desc: 'Motores turbo modernos e híbridos e-HEV do Civic e HR-V atuais.' },
     ]
@@ -283,6 +295,7 @@ const marcas = {
       { nome: 'Motores licenciados Mitsubishi', periodo: '1968–1989', desc: 'Nos primeiros anos, a Hyundai produziu motores sob licença da Mitsubishi para seus primeiros modelos, como o Pony.' },
       { nome: 'Alpha', periodo: '1990–atual', desc: 'Motores 1.0/1.6 atualizados ao longo de décadas, usados em modelos de entrada.' },
       { nome: 'Beta', periodo: '1990–atual', desc: 'Linha 1.6/2.0 amplamente usada no HB20 e Creta no Brasil.' },
+      { nome: 'Theta', periodo: '2004–atual', desc: 'Motores 4 cilindros maiores (2.0/2.4), compartilhados com a Kia, usados no Sonata e Tucson.' },
       { nome: 'Gamma', periodo: '2006–atual', desc: 'Motores 1.4/1.6 GDI de injeção direta, versão mais eficiente da linha.' },
       { nome: 'Smartstream', periodo: '2018–atual', desc: 'Geração mais recente, focada em eficiência de combustível e menor emissão.' },
     ]
@@ -293,6 +306,7 @@ const marcas = {
       { nome: 'Motores originais Renault', periodo: '1899–1945', desc: 'Motores primitivos desenvolvidos pelos irmãos Renault nos primórdios da fabricação de automóveis na França.' },
       { nome: 'Motor Billancourt', periodo: '1946–1986', desc: 'Motor 1.0 muito duradouro, usado no 4CV, Renault 4 e Renault 5 originais.' },
       { nome: 'Cléon-Fonte', periodo: '1962–2003', desc: 'Um dos motores mais duradouros da história, 1.0 a 1.7, usado em dezenas de modelos por 40 anos.' },
+      { nome: 'F-Type (F3R/F7R)', periodo: '1986–2010', desc: 'Motores esportivos usados em versões preparadas como o Clio Williams e o Mégane R.S.' },
       { nome: 'K4M / K7M', periodo: '2000–atual', desc: 'Motores 1.6 8V/16V usados em Logan, Sandero e Duster no Brasil.' },
       { nome: 'Energy (SCe/TCe)', periodo: '2012–atual', desc: 'Linha 1.0/1.3 aspirada e turbo mais eficiente, presente no Kwid e no Duster atual.' },
     ]
@@ -302,8 +316,11 @@ const marcas = {
     motores: [
       { nome: 'Motores Datsun iniciais', periodo: '1933–1965', desc: 'Primeiros motores pequenos usados nos automóveis Datsun, marca original da Nissan para exportação.' },
       { nome: 'Série A', periodo: '1966–1998', desc: 'Motores 1.0 a 1.5 usados em modelos compactos japoneses clássicos.' },
+      { nome: 'Série L', periodo: '1967–1986', desc: 'Motores 6 cilindros em linha famosos por equipar o Datsun 240Z e o Skyline clássico.' },
+      { nome: 'Série RB', periodo: '1979–2004', desc: 'Família de 6 cilindros que inclui o lendário RB26DETT, motor do Skyline GT-R.' },
       { nome: 'Série SR/QG', periodo: '1990–2010', desc: 'Motores 1.6/2.0 16V usados no Sentra e no antigo March/Micra.' },
-      { nome: 'Série VR', periodo: '2007–atual', desc: 'V6 biturbo de alta performance, motor do lendário GT-R.' },
+      { nome: 'Série VQ', periodo: '1994–atual', desc: 'V6 premiado internacionalmente, usado em modelos esportivos e SUVs da marca por décadas.' },
+      { nome: 'Série VR', periodo: '2007–atual', desc: 'V6 biturbo de alta performance, motor do lendário GT-R atual.' },
       { nome: 'Série HR', periodo: '2010–atual', desc: 'Motores 1.0/1.6 modernos, usados em Versa, March e Kicks.' },
     ]
   },
@@ -311,6 +328,7 @@ const marcas = {
     nome: 'Peugeot', logo: 'logos/peugeot.png', fundacao: 1810,
     motores: [
       { nome: 'Motor do Peugeot Type 3', periodo: '1891–1900', desc: 'Um dos primeiros automóveis a gasolina da Peugeot, marcando a entrada da marca no setor automotivo.' },
+      { nome: 'Motor Indenor (diesel)', periodo: '1959–2000', desc: 'Motor diesel muito conhecido no Brasil por equipar táxis e picapes por sua robustez e economia.' },
       { nome: 'Motores XU/XN', periodo: '1970–2000', desc: 'Motores 1.4 a 2.0 desenvolvidos com a Citroën, usados em várias gerações do 205, 405 e 306.' },
       { nome: 'TU', periodo: '1970–2010', desc: 'Motores 1.0 a 1.6 muito usados nos anos 90 e 2000, presentes no 206 e 306.' },
       { nome: 'EW/DW', periodo: '1998–2015', desc: 'Motores 1.6/2.0 16V a gasolina e diesel (HDi) usados no 307 e 308.' },
@@ -325,6 +343,7 @@ const marcas = {
       { nome: 'M10', periodo: '1962–1988', desc: 'Motor 4 cilindros que formou a base de vários modelos e até de motores de Fórmula 1 turbo da marca.' },
       { nome: 'M20 / M30 (reto-6)', periodo: '1977–1993', desc: 'Icônicos motores 6 cilindros em linha, marca registrada da suavidade BMW.' },
       { nome: 'Série S (M-Power)', periodo: '1985–atual', desc: 'Motores esportivos de alta rotação usados nos M3, M5 e outros modelos de performance.' },
+      { nome: 'M60 / M62 (V8)', periodo: '1992–2003', desc: 'Primeira geração moderna de V8 da BMW, usada na Série 5, 7 e X5 da época.' },
       { nome: 'Série N', periodo: '2001–2015', desc: 'Motores modulares turbo (N54, N52, N20), que modernizaram a linha da marca.' },
       { nome: 'Série B (modular)', periodo: '2014–atual', desc: 'Arquitetura modular atual (B38, B48, B58) usada em toda a linha, de 3 a 6 cilindros.' },
     ]
@@ -334,8 +353,10 @@ const marcas = {
     motores: [
       { nome: 'Motor Benz Patent-Motorwagen', periodo: '1886', desc: 'Considerado o primeiro motor a combustão interna de um automóvel de produção da história, criado por Karl Benz.' },
       { nome: 'Motor Mercedes 35 HP', periodo: '1901–1905', desc: 'Motor avançado para a época que deu nome ao primeiro carro batizado de "Mercedes".' },
-      { nome: 'M102 / M111', periodo: '1980–2000', desc: 'Motores 4 cilindros robustos usados nos sedãs de entrada da marca nos anos 80 e 90.' },
       { nome: 'Linha OM (diesel)', periodo: '1949–atual', desc: 'Tradicional família de motores diesel, muito usada em caminhões e utilitários Mercedes-Benz.' },
+      { nome: 'M117 (V8)', periodo: '1970–1991', desc: 'V8 clássico usado nos sedãs de luxo e nos esportivos SL da época.' },
+      { nome: 'M102 / M111', periodo: '1980–2000', desc: 'Motores 4 cilindros robustos usados nos sedãs de entrada da marca nos anos 80 e 90.' },
+      { nome: 'M156 / M177 (AMG V8)', periodo: '2006–atual', desc: 'V8 de alta performance desenvolvido pela AMG, usado em C63, E63 e GT AMG.' },
       { nome: 'M270 / M274', periodo: '2012–atual', desc: 'Motores turbo 1.6/2.0 modernos usados na Classe A, C e GLA atuais.' },
       { nome: 'M256', periodo: '2017–atual', desc: 'Motor 6 cilindros em linha com sistema elétrico de 48V, topo de linha da marca hoje.' },
     ]
@@ -346,7 +367,9 @@ const marcas = {
       { nome: 'Motores pré-guerra Auto Union', periodo: '1932–1940', desc: 'Motores usados nos famosos "Silver Arrows" de corrida, quando a Audi fazia parte do consórcio Auto Union.' },
       { nome: 'EA827 (compartilhado com VW)', periodo: '1972–2000', desc: 'Base dos motores 1.8/2.0 usados nos primeiros Audi 80 e 100.' },
       { nome: '5 cilindros turbo (Quattro)', periodo: '1980–1991', desc: 'Motor icônico do Audi Quattro original, símbolo da tração integral da marca.' },
+      { nome: '1.8T (EA113)', periodo: '1994–2006', desc: 'Motor turbo que marcou época no A4 e no TT, muito popular entre entusiastas.' },
       { nome: 'TDI V6/V8', periodo: '1997–atual', desc: 'Linha diesel de alta performance usada nos modelos maiores da marca.' },
+      { nome: 'V10 FSI', periodo: '2002–2015', desc: 'Motor 10 cilindros de alta performance, usado no RS6 e no superesportivo R8.' },
       { nome: 'TFSI (EA888)', periodo: '2008–atual', desc: 'Motores turbo com injeção direta, usados no A3, A4 e Q3 atuais.' },
     ]
   },
@@ -354,6 +377,7 @@ const marcas = {
     nome: 'Kia', logo: 'logos/kia.png', fundacao: 1944,
     motores: [
       { nome: 'Motores licenciados (Mazda/Ford)', periodo: '1974–1990', desc: 'A Kia começou fabricando peças e depois carros com motores licenciados de outras montadoras, antes de desenvolver os próprios.' },
+      { nome: 'Theta (compartilhado c/ Hyundai)', periodo: '2005–atual', desc: 'Motores 2.0/2.4 usados em modelos maiores como Sportage e Sorento.' },
       { nome: 'Gamma (compartilhado c/ Hyundai)', periodo: '2006–atual', desc: 'Motores 1.4/1.6 GDI de injeção direta, usados no Soluto e Bongo.' },
       { nome: 'Smartstream', periodo: '2018–atual', desc: 'Geração mais recente e eficiente, presente nos modelos globais atuais da marca.' },
     ]
@@ -364,6 +388,7 @@ const marcas = {
       { nome: 'Primeiro motor a combustão Mitsubishi', periodo: '1917', desc: 'Motor usado no Mitsubishi Model A, o primeiro automóvel de produção em série do Japão.' },
       { nome: 'Astron / Sirius', periodo: '1970–1990', desc: 'Motores 1.6 a 2.0 dos primeiros modelos exportados globalmente pela marca.' },
       { nome: 'Série 4G', periodo: '1980–2010', desc: 'Família muito conhecida, incluindo o lendário 4G63 do Lancer Evolution.' },
+      { nome: '6G7 (V6)', periodo: '1986–2003', desc: 'V6 usado nos modelos maiores da marca, incluindo o Pajero e o Diamante.' },
       { nome: 'MIVEC', periodo: '1992–atual', desc: 'Tecnologia de variação de comando de válvulas usada nos motores atuais da marca, como no L200 e Outlander.' },
     ]
   },
