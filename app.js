@@ -334,11 +334,10 @@ const marcas = {
   honda: {
     nome: 'Honda', logo: 'logos/honda.png', fundacao: 1948,
     motores: [
-      { nome: 'Motores de motocicleta iniciais', periodo: '1948–1962', desc: 'A Honda nasceu fabricando motores para motos e, somando carros, motos e geradores, é hoje a maior fabricante de motores do mundo.' },
+      { nome: 'Motor do T360 / S500', periodo: '1963–1966', desc: 'Primeiros motores automotivos da Honda: 4 cilindros de duplo comando e alta rotação, herdando a engenharia das motos.' },
       { nome: 'Motores de Fórmula 1', periodo: '1964–atual', desc: 'Em várias fases, os motores Honda dominaram a F1 — inclusive nos títulos de Ayrton Senna pela McLaren.' },
       { nome: 'Motor CVCC', periodo: '1972–1987', desc: 'Tecnologia pioneira de combustão de baixa emissão, que dispensou o catalisador exigido nos EUA na época.' },
       { nome: 'E-series', periodo: '1979–1987', desc: 'Motores dos primeiros Civic e Accord vendidos em larga escala fora do Japão.' },
-      { nome: 'Motores GX (estacionários)', periodo: '1983–atual', desc: 'Motores de uso geral para geradores, bombas e roçadeiras — produzidos às dezenas de milhões pelo mundo.' },
       { nome: 'D-series', periodo: '1984–2005', desc: 'Motores 1.5/1.6 SOHC, usados no Civic das gerações mais populares no Brasil.' },
       { nome: 'B-series (VTEC)', periodo: '1988–2001', desc: 'Motores esportivos com a icônica tecnologia VTEC, marca registrada do Civic Si e do Integra Type R.' },
       { nome: 'C-series (V6)', periodo: '1990–2005', desc: 'V6 que equipou o superesportivo NSX, primeiro carro de produção com bloco totalmente em alumínio.' },
@@ -440,8 +439,7 @@ const marcas = {
   bmw: {
     nome: 'BMW', logo: 'logos/bmw.png', fundacao: 1916,
     motores: [
-      { nome: 'Motores de aviação BMW', periodo: '1917–1928', desc: 'A BMW nasceu fabricando motores de avião; essa origem aeronáutica está até hoje na logomarca da empresa.' },
-      { nome: 'Boxer de motocicleta', periodo: '1923–atual', desc: 'O boxer 2 cilindros da moto R32 inaugurou uma arquitetura que a BMW Motorrad usa até hoje, mais de 100 anos depois.' },
+      { nome: 'Motor do BMW Dixi', periodo: '1928–1932', desc: 'Primeiro motor automotivo da marca: um 750 cc produzido sob licença do Austin Seven, com que a BMW entrou no ramo de carros.' },
       { nome: 'Motor M78 (BMW 303)', periodo: '1933–1936', desc: 'Motor 6 cilindros em linha do primeiro carro a levar o característico grelha "rim duplo" da marca.' },
       { nome: 'M10', periodo: '1962–1988', desc: 'Motor 4 cilindros que formou a base de vários modelos e até de motores de Fórmula 1 turbo da marca.' },
       { nome: 'M20 / M30 (reto-6)', periodo: '1977–1993', desc: 'Icônicos motores 6 cilindros em linha, marca registrada da suavidade BMW.' },
