@@ -584,6 +584,17 @@ ul   { list-style: none; }
 .marca-card__nome { font-size: .9rem; font-weight: 700; display: block; }
 .marca-card__ano  { font-size: .75rem; color: var(--gray); display: block; margin-top: .2rem; }
 
+.marca-card__qtd {
+  display: inline-block;
+  margin-top: .5rem;
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--red);
+  background: #fef2f2;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+}
+
 @media (max-width: 1000px) {
   .marcas__grid { grid-template-columns: repeat(3, 1fr); }
 }
