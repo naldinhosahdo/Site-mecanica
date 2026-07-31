@@ -691,7 +691,9 @@ const marcas = {
     motores: [
       { nome: 'Motores de competição iniciais', periodo: '1910–1950', desc: 'Motores que fizeram a Alfa vencer as duas primeiras temporadas da Fórmula 1, em 1950 e 1951.' },
       { nome: 'Twin Cam Alfa Romeo', periodo: '1954–1994', desc: 'Motor de duplo comando e bloco em alumínio, avançadíssimo para 1954 — ficou 40 anos em produção.' },
+      { nome: 'Boxer do Alfasud', periodo: '1971–1989', desc: 'Motor boxer refrigerado a água do Alfasud, projeto de Rudolf Hruska que rendia ao carro um centro de gravidade baixíssimo.' },
       { nome: 'Busso V6', periodo: '1979–2005', desc: 'V6 de Giuseppe Busso, considerado por muita gente o motor mais bonito de se ouvir já feito em série.' },
+      { nome: 'Twin Spark', periodo: '1987–2009', desc: 'Motor com duas velas por cilindro, solução que melhorava a queima e virou assinatura técnica da marca nos anos 90.' },
       { nome: 'JTD / Multijet', periodo: '1997–2020', desc: 'A Alfa foi pioneira no diesel common-rail de produção, tecnologia depois vendida para a Bosch.' },
       { nome: 'Motores Giorgio', periodo: '2016–atual', desc: 'Geração atual, cujo V6 biturbo do Giulia Quadrifoglio tem arquitetura derivada de um motor Ferrari.' },
     ]
@@ -742,6 +744,7 @@ const marcas = {
       { nome: '1UZ-FE (V8)', periodo: '1989–2011', desc: 'V8 de estreia da marca no LS400, tão suave e silencioso que forçou Mercedes e BMW a reagirem.' },
       { nome: 'Híbridos', periodo: '2005–atual', desc: 'O RX 400h foi o primeiro SUV de luxo híbrido do mundo; depois a tecnologia se espalhou por toda a linha da marca.' },
       { nome: 'Série GR (V6)', periodo: '2005–atual', desc: 'V6 3.5 compartilhado com a Toyota, usado em sedãs e SUVs médios da marca.' },
+      { nome: '2UR-GSE (V8 5.0)', periodo: '2007–2024', desc: 'V8 aspirado dos modelos F, do IS F ao LC 500 — um dos últimos V8 de aspiração natural em produção.' },
       { nome: '1LR-GUE (V10)', periodo: '2010–2012', desc: 'V10 do LFA, afinado com a Yamaha para produzir um dos sons mais elogiados da história.' },
       { nome: 'V35A-FTS (V6 biturbo)', periodo: '2017–atual', desc: 'V6 biturbo que assumiu o lugar dos V8 nos modelos de topo, com menos consumo e mais torque.' },
       { nome: 'Motores elétricos', periodo: '2022–atual', desc: 'Linha elétrica da marca, iniciada com o RZ sobre a mesma base do Toyota bZ.' },
@@ -893,6 +896,7 @@ const marcas = {
       { nome: 'Lampredi V12', periodo: '1950–1959', desc: 'V12 maior criado para a Fórmula 1, que rendeu à Ferrari suas primeiras vitórias sobre a Alfa Romeo.' },
       { nome: 'Dino V6', periodo: '1957–1974', desc: 'V6 batizado em homenagem ao filho de Enzo Ferrari, também produzido pela Fiat para homologação.' },
       { nome: 'Flat-12 (Boxer)', periodo: '1973–1996', desc: 'Motor de 12 cilindros opostos do Berlinetta Boxer e do Testarossa, montado bem baixo para melhorar o centro de gravidade.' },
+      { nome: 'V8 aspirado (do 308 ao 458)', periodo: '1975–2015', desc: 'A linha de V8 centrais que sustentou a marca por 40 anos, do 308 do Magnum ao 458 Italia — o último V8 Ferrari aspirado.' },
       { nome: 'V8 biturbo do F40', periodo: '1987–1992', desc: 'Motor do último carro aprovado por Enzo Ferrari, e o primeiro de série a passar de 320 km/h.' },
       { nome: 'V12 F140', periodo: '2002–atual', desc: 'V12 dos modelos de topo, do Enzo ao 812 — um dos últimos grandes V12 aspirados em produção.' },
       { nome: 'V8 F154 biturbo', periodo: '2013–atual', desc: 'V8 turbo eleito "Motor Internacional do Ano" várias vezes seguidas, usado do 488 ao 296.' },
@@ -941,6 +945,90 @@ const marcas = {
     motores: [
       { nome: 'Motores do Concept One', periodo: '2013–2018', desc: 'Quatro motores elétricos independentes, um por roda, no primeiro hipercarro elétrico de produção da marca.' },
       { nome: 'Motores do Nevera', periodo: '2021–atual', desc: 'Conjunto de quatro motores somando cerca de 1.900 cv, que tornou o Nevera um dos carros de série mais acelerados já feitos.' },
+    ]
+  },
+  subaru: {
+    nome: 'Subaru', logo: 'logos/subaru.png', fundacao: 1953,
+    motores: [
+      { nome: 'Motor do Subaru 360', periodo: '1958–1971', desc: 'Dois cilindros e dois tempos do carrinho que motorizou o Japão do pós-guerra, apelidado de "fusca japonês".' },
+      { nome: 'Série EA (boxer)', periodo: '1966–1994', desc: 'Primeiro boxer da marca, que definiu a identidade técnica da Subaru: motor baixo, plano e com tração integral.' },
+      { nome: 'Série EJ', periodo: '1989–2021', desc: 'O boxer turbo do Impreza WRX STI, lenda dos ralis mundiais e um dos motores mais preparados do planeta.' },
+      { nome: 'Série EZ (boxer 6)', periodo: '2001–2019', desc: 'Boxer de 6 cilindros do Outback e do Tribeca, criado para dar suavidade aos modelos maiores.' },
+      { nome: 'Série EE (diesel)', periodo: '2008–2020', desc: 'O único motor boxer a diesel de produção em série já feito no mundo.' },
+      { nome: 'Série FA / FB', periodo: '2010–atual', desc: 'Geração atual de boxers, incluindo o FA20 do BRZ, desenvolvido em conjunto com a Toyota.' },
+      { nome: 'e-Boxer (híbrido)', periodo: '2019–atual', desc: 'Sistema híbrido leve que mantém o boxer e a tração integral simétrica, marca registrada da Subaru.' },
+      { nome: 'Motores elétricos (Solterra)', periodo: '2022–atual', desc: 'Primeiro elétrico da marca, feito sobre a mesma base do Toyota bZ4X.' },
+    ]
+  },
+  astonmartin: {
+    nome: 'Aston Martin', logo: 'logos/aston-martin.png', fundacao: 1913,
+    motores: [
+      { nome: 'Motores Bamford & Martin', periodo: '1913–1939', desc: 'Motores dos primeiros Aston, quando a marca ainda era uma pequena oficina de competição em Londres.' },
+      { nome: '6 cilindros Lagonda', periodo: '1948–1959', desc: 'Motor projetado por W.O. Bentley, aproveitado quando a Aston e a Lagonda foram compradas pelo mesmo dono.' },
+      { nome: '6 cilindros Tadek Marek', periodo: '1958–1972', desc: 'Motor do DB4 e do DB5 — o Aston que ficou eterno como o carro de James Bond.' },
+      { nome: 'V8 Aston Martin', periodo: '1969–2000', desc: 'V8 próprio de grande cilindrada, montado à mão, símbolo dos GTs britânicos dos anos 70 e 80.' },
+      { nome: 'V12', periodo: '1999–2023', desc: 'V12 nascido da união de dois V6 Ford Duratec, usado do DB7 Vantage ao DBS moderno.' },
+      { nome: 'V8 4.0 biturbo AMG', periodo: '2016–atual', desc: 'Motor fornecido pela Mercedes-AMG dentro da parceria técnica entre as duas marcas.' },
+    ]
+  },
+  mclaren: {
+    nome: 'McLaren', logo: 'logos/mclaren.png', fundacao: 1963,
+    motores: [
+      { nome: 'Motores de Fórmula 1', periodo: '1966–atual', desc: 'A McLaren é a segunda equipe mais vitoriosa da história da F1, com motores Ford, Honda, Mercedes e Renault.' },
+      { nome: 'BMW S70/2 (McLaren F1)', periodo: '1993–1998', desc: 'V12 encomendado à BMW para o McLaren F1, que por muitos anos foi o carro de produção mais rápido do mundo.' },
+      { nome: 'M838T (V8 3.8 biturbo)', periodo: '2011–2020', desc: 'Primeiro motor da fase moderna da marca, no MP4-12C, no 650S e no lendário P1.' },
+      { nome: 'M840T (V8 4.0 biturbo)', periodo: '2017–atual', desc: 'Evolução de maior cilindrada, usada no 720S e no radical 765LT.' },
+      { nome: 'V6 híbrido (Artura)', periodo: '2021–atual', desc: 'V6 biturbo somado a motor elétrico, primeira arquitetura híbrida de série da marca.' },
+    ]
+  },
+  isuzu: {
+    nome: 'Isuzu', logo: 'logos/isuzu.png', fundacao: 1916,
+    motores: [
+      { nome: 'Motores licenciados Wolseley', periodo: '1922–1937', desc: 'A Isuzu começou montando carros ingleses sob licença, antes de desenvolver projetos próprios.' },
+      { nome: 'Série C (diesel)', periodo: '1959–2000', desc: 'Diesel robustos que fizeram a fama da marca em caminhões leves e utilitários pelo mundo todo.' },
+      { nome: '4JB1 / 4JX1', periodo: '1985–2010', desc: 'Diesel do Trooper e da Rodeo, também vendidos para outras montadoras montarem em seus utilitários.' },
+      { nome: '4JJ1 / RZ4E', periodo: '2004–atual', desc: 'Diesel atual da picape D-Max, uma das mais vendidas do mundo fora das Américas.' },
+    ]
+  },
+  ram: {
+    nome: 'RAM', logo: 'logos/ram.png', fundacao: 2010,
+    motores: [
+      { nome: 'Cummins 6.7 (diesel)', periodo: '1989–atual', desc: 'Seis cilindros em linha da Cummins que virou sinônimo de torque para trabalho pesado nas picapes.' },
+      { nome: 'Hemi V8', periodo: '2003–atual', desc: 'V8 5.7 e 6.4 das picapes de topo, herdeiro direto do nome mais famoso da Chrysler.' },
+      { nome: 'Multijet 2.2', periodo: '2023–atual', desc: 'Diesel de origem Fiat que equipa a Rampage, primeira picape média da marca feita no Brasil.' },
+    ]
+  },
+  abarth: {
+    nome: 'Abarth', logo: 'logos/abarth.png', fundacao: 1949,
+    motores: [
+      { nome: 'Preparações sobre motores Fiat', periodo: '1949–1971', desc: 'Carlo Abarth ganhou fama transformando Fiat comuns em carros de corrida, com kits de escape e cabeçote.' },
+      { nome: '1.4 T-Jet', periodo: '2008–2023', desc: 'Turbo de 1.4 litro do Fiat 500 Abarth e do 595, com som de escape propositalmente exagerado.' },
+      { nome: 'Firefly turbo', periodo: '2022–atual', desc: 'Versão mais potente do 1.3 turbo brasileiro, usada no Pulse e no Fastback Abarth.' },
+    ]
+  },
+  chery: {
+    nome: 'Chery', logo: 'logos/chery.png', fundacao: 1997,
+    motores: [
+      { nome: 'Motores licenciados iniciais', periodo: '1999–2005', desc: 'A Chery começou com motores de projeto estrangeiro, prática comum na indústria chinesa dos anos 1990.' },
+      { nome: 'Acteco', periodo: '2005–atual', desc: 'Primeira família própria da marca, tão bem-sucedida que passou a ser exportada para outras montadoras.' },
+      { nome: '1.5 / 1.6 TGDI', periodo: '2018–atual', desc: 'Turbo de injeção direta da linha Tiggo, base da retomada da marca no Brasil com a Caoa.' },
+      { nome: 'Super Hybrid', periodo: '2023–atual', desc: 'Sistema híbrido de alta eficiência térmica, aposta da marca para os mercados fora da China.' },
+    ]
+  },
+  gwm: {
+    nome: 'GWM (Great Wall)', logo: 'logos/great-wall.png', fundacao: 1984,
+    motores: [
+      { nome: 'Diesel GW4D', periodo: '1998–2015', desc: 'Motores diesel das primeiras picapes da marca, voltadas ao mercado interno chinês.' },
+      { nome: 'GW4B / GW4N (turbo)', periodo: '2017–atual', desc: 'Família turbo de injeção direta que equipa os SUVs Haval vendidos no Brasil.' },
+      { nome: 'Motores elétricos (Ora)', periodo: '2018–atual', desc: 'Linha elétrica da marca, com o compacto Ora 03 entre os primeiros elétricos chineses no Brasil.' },
+      { nome: 'Sistema híbrido DHT', periodo: '2021–atual', desc: 'Híbrido com dois motores elétricos e câmbio dedicado, usado no Haval H6 nacional.' },
+    ]
+  },
+  jac: {
+    nome: 'JAC', logo: 'logos/jac.png', fundacao: 1964,
+    motores: [
+      { nome: 'Motores a combustão licenciados', periodo: '2007–2020', desc: 'Motores de projeto compartilhado que equiparam o J3 e o T40, os primeiros JAC vendidos no Brasil.' },
+      { nome: 'Motores elétricos', periodo: '2019–atual', desc: 'A JAC foi uma das primeiras marcas a vender elétricos em volume no Brasil, com o E-JS1 e o iEV.' },
     ]
   },
 };
@@ -1270,7 +1358,7 @@ const grupos = {
   stellantis: {
     nome: 'Stellantis', logo: 'logos/fiat.png', sede: 'Holanda / Itália / França', fundacao: 2021,
     resumo: 'Nasceu da fusão entre a FCA (Fiat Chrysler) e o Grupo PSA (Peugeot Citroën). É o grupo com mais marcas do mundo, somando 14 nomes.',
-    marcas: ['fiat','peugeot','citroen','opel','jeep','alfaromeo','maserati','dodge','chrysler','lancia']
+    marcas: ['fiat','peugeot','citroen','opel','jeep','alfaromeo','maserati','dodge','ram','abarth','chrysler','lancia']
   },
   toyota: {
     nome: 'Grupo Toyota', logo: 'logos/toyota.png', sede: 'Japão', fundacao: 1937,
@@ -1312,6 +1400,11 @@ const grupos = {
     resumo: 'Grupo chinês que comprou a Volvo da Ford em 2010 e desde então acumulou o controle da Lotus, da Polestar e metade da smart.',
     marcas: ['volvo','polestar','lotus']
   },
+  chinesas: {
+    nome: 'Fabricantes chineses', logo: 'logos/byd.png', sede: 'China', fundacao: 1984,
+    resumo: 'Grupos independentes que cresceram no maior mercado automotivo do mundo e hoje disputam espaço no Brasil, com forte aposta em elétricos e híbridos.',
+    marcas: ['byd','chery','gwm','jac']
+  },
   bugattirimac: {
     nome: 'Bugatti Rimac', logo: 'logos/bugatti.png', sede: 'Croácia / França', fundacao: 2021,
     resumo: 'Desde 2021 a Bugatti não pertence mais ao Grupo Volkswagen. Ela passou para a Bugatti Rimac, controlada pela croata Rimac com 55% — a Porsche ficou apenas com os 45% restantes.',
@@ -1319,13 +1412,13 @@ const grupos = {
   },
   independentes: {
     nome: 'Independentes', logo: 'logos/ferrari.png', sede: 'Vários países', fundacao: 1920,
-    resumo: 'Marcas que não pertencem a nenhum grande conglomerado. Mazda e Suzuki mantêm independência mesmo com a Toyota detendo pequenas participações em ambas.',
-    marcas: ['ferrari','mazda','suzuki','tesla','byd']
+    resumo: 'Marcas que não pertencem a nenhum grande conglomerado. Mazda, Suzuki e Subaru mantêm independência mesmo com a Toyota detendo pequenas participações em todas.',
+    marcas: ['ferrari','mazda','subaru','suzuki','isuzu','astonmartin','mclaren','tesla']
   },
 };
 
 // Ordem de exibição no grid de grupos
-const ordemGrupos = ['vw','stellantis','toyota','gm','hyundai','alianca','bmw','mercedes','ford','honda','tata','geely','bugattirimac','independentes'];
+const ordemGrupos = ['vw','stellantis','toyota','gm','hyundai','alianca','bmw','mercedes','ford','honda','tata','geely','chinesas','bugattirimac','independentes'];
 
 // =========================================
 document.addEventListener('DOMContentLoaded', () => {
