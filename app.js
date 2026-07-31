@@ -222,7 +222,6 @@ const marcas = {
       { nome: 'W8', periodo: '2001–2004', desc: 'Motor de 8 cilindros em "W", exclusivo do Passat W8 — uma das apostas mais ousadas e raras da marca.' },
       { nome: 'W12', periodo: '2001–2024', desc: 'Motor de 12 cilindros em "W" usado em modelos de luxo do grupo, como o Phaeton e o Bentley Continental.' },
       { nome: 'EA113 (2.0 TFSI)', periodo: '2003–2008', desc: 'Evolução turbo de alta performance, usada no Golf GTI e no Audi TT da época.' },
-      { nome: '1.4 TSI Twincharger', periodo: '2005–2015', desc: 'Motor que usava turbo E compressor ao mesmo tempo, eliminando o atraso de resposta em baixa rotação.' },
       { nome: '2.5 R5 (5 cilindros)', periodo: '2005–2014', desc: 'Motor 5 cilindros em linha usado no Jetta e Golf vendidos na América do Norte, com som característico.' },
       { nome: 'EA888', periodo: '2007–atual', desc: 'Família turbo 2.0 TSI de alta performance, usada em Golf GTI, Jetta GLI e Tiguan.' },
       { nome: 'EA189', periodo: '2008–2015', desc: 'Motor diesel TDI que ficou conhecido mundialmente por estar no centro do escândalo de emissões "Dieselgate".' },
@@ -244,11 +243,11 @@ const marcas = {
       { nome: 'Iron Duke', periodo: '1977–1993', desc: 'Motor 2.5 de 4 cilindros feito para durar, muito usado nos modelos de entrada da GM nos Estados Unidos.' },
       { nome: 'V6 de 60 graus', periodo: '1980–2011', desc: 'Família de V6 2.8 a 3.9 usada no Camaro, na Blazer e na S10 por três décadas.' },
       { nome: 'Diesel MWM / Maxion', periodo: '1985–2001', desc: 'Motores diesel de fornecedores brasileiros usados na D-20 e na Silverado nacional.' },
-      { nome: 'Família I', periodo: '1989–1996', desc: 'Motores 1.4/1.6 de origem GM/Opel usados no Kadett e Ipanema.' },
+      { nome: 'Família I', periodo: '1989–2019', desc: 'Motores compactos de origem GM/Opel. No Brasil evoluíram para o 1.0 VHC do Celta e o SPE/4 do Onix, durando três décadas.' },
       { nome: 'LT5 (V8 DOHC)', periodo: '1990–1995', desc: 'V8 5.7 de duplo comando projetado com a Lotus, exclusivo do raríssimo Corvette ZR-1.' },
       { nome: 'Família II', periodo: '1993–2016', desc: 'Motores 1.8/2.0 8V e 16V, um dos mais usados da história da GM no Brasil (Vectra, Astra, Omega, Zafira).' },
       { nome: 'LS (Small Block Gen III/IV)', periodo: '1997–2017', desc: 'Sucessor moderno do Small Block clássico, queridinho de preparadores e usado no Camaro, Corvette e picapes.' },
-      { nome: 'Ecotec (Família E)', periodo: '1999–atual', desc: 'Linha global compacta e eficiente, usada em Celta, Corsa, Onix e Prisma.' },
+      { nome: 'Ecotec (Família E)', periodo: '1999–atual', desc: 'Linha global da GM, que no Brasil equipou Astra, Cruze, Cobalt, Spin e Tracker.' },
       { nome: 'Duramax', periodo: '2001–atual', desc: 'Linha de motores diesel robustos usados nas picapes pesadas da marca (Silverado, S10).' },
       { nome: 'LT (Small Block Gen V)', periodo: '2014–atual', desc: 'Geração atual do V8 6.2, incluindo o LT4 supercharged do Camaro ZL1 e o Corvette C8.' },
       { nome: 'Motor 1.0/1.4 Turbo', periodo: '2016–atual', desc: 'Geração turbo compacta atual, usada no Onix Turbo e no Tracker.' },
@@ -595,7 +594,7 @@ const marcas = {
   bentley: {
     nome: 'Bentley', logo: 'logos/bentley.png', fundacao: 1919,
     motores: [
-      { nome: '3 Litre e 4½ Litre "Blower"', periodo: '1921–1931', desc: 'Motores dos Bentley que venceram Le Mans cinco vezes nos anos 1920 — o Blower usava compressor mecânico.' },
+      { nome: '3 Litre, 4½ Litre e Speed Six', periodo: '1921–1931', desc: 'Motores das cinco vitórias em Le Mans nos anos 1920. O famoso "Blower", com compressor, nunca venceu a prova — quebrava sempre.' },
       { nome: 'V8 6.75', periodo: '1959–2020', desc: 'Um dos motores mais longevos da história automotiva: 61 anos em produção, sempre no topo de linha.' },
       { nome: 'W12 6.0', periodo: '2003–2024', desc: 'W12 biturbo do Continental GT, marco da retomada da marca sob o controle da Volkswagen.' },
       { nome: 'V8 4.0 biturbo', periodo: '2012–atual', desc: 'V8 compartilhado com Audi e Porsche, opção mais leve e eficiente frente ao W12.' },
@@ -703,7 +702,7 @@ const marcas = {
       { nome: 'Motores de corrida (250F)', periodo: '1926–1957', desc: 'Motores dos monopostos que deram a Juan Manuel Fangio o título mundial de Fórmula 1 em 1957.' },
       { nome: 'V8 Maserati', periodo: '1959–1990', desc: 'V8 de raiz de competição levado para os grand tourers de rua, como o Ghibli e o Bora.' },
       { nome: 'Biturbo V6', periodo: '1981–1998', desc: 'Motor do modelo que popularizou a marca — e também o que mais manchou sua reputação de confiabilidade.' },
-      { nome: 'Motores Ferrari', periodo: '2001–2019', desc: 'Na fase sob controle da Ferrari, os V8 do Quattroporte e do GranTurismo saíam da fábrica de Maranello.' },
+      { nome: 'Motores Ferrari', periodo: '2001–2019', desc: 'A Ferrari controlou a Maserati de 1997 a 2005 e seguiu fornecendo os V8 do Quattroporte e do GranTurismo até 2019.' },
       { nome: 'Nettuno V6', periodo: '2020–atual', desc: 'Motor próprio de novo, com câmara de pré-combustão herdada da Fórmula 1 — 630 cv no MC20.' },
     ]
   },
@@ -741,7 +740,7 @@ const marcas = {
     nome: 'Lexus', logo: 'logos/lexus.png', fundacao: 1989,
     motores: [
       { nome: '1UZ-FE (V8)', periodo: '1989–2011', desc: 'V8 de estreia da marca no LS400, tão suave e silencioso que forçou Mercedes e BMW a reagirem.' },
-      { nome: 'Híbridos', periodo: '2005–atual', desc: 'A Lexus foi a primeira marca de luxo a oferecer híbridos em toda a linha, com o RX 400h.' },
+      { nome: 'Híbridos', periodo: '2005–atual', desc: 'O RX 400h foi o primeiro SUV de luxo híbrido do mundo; depois a tecnologia se espalhou por toda a linha da marca.' },
       { nome: 'Série GR (V6)', periodo: '2005–atual', desc: 'V6 3.5 compartilhado com a Toyota, usado em sedãs e SUVs médios da marca.' },
       { nome: '1LR-GUE (V10)', periodo: '2010–2012', desc: 'V10 do LFA, afinado com a Yamaha para produzir um dos sons mais elogiados da história.' },
       { nome: 'V35A-FTS (V6 biturbo)', periodo: '2017–atual', desc: 'V6 biturbo que assumiu o lugar dos V8 nos modelos de topo, com menos consumo e mais torque.' },
@@ -967,7 +966,6 @@ const variantes = {
     { nome: 'AP 1.8', periodo: '1984–2005', desc: 'O 1.8 que virou sinônimo de AP, com versões a álcool e gasolina de até 99 cv.' },
     { nome: 'AP 2.0 8V', periodo: '1989–2006', desc: 'Versão 2.0 de 8 válvulas, muito usada no Santana, Quantum e na Kombi.' },
     { nome: 'AP 2.0 16V', periodo: '1997–2002', desc: 'Cabeçote de 16 válvulas que levou o AP a 145 cv no Golf GTI nacional.' },
-    { nome: 'AP 1.8 Turbo', periodo: '1997–2005', desc: 'Versão turbinada de fábrica do Santana e do Golf, queridinha dos preparadores.' },
   ],
   'volkswagen|EA211': [
     { nome: '1.0 MPI 3 cilindros', periodo: '2014–atual', desc: 'Motor 1.0 aspirado de 3 cilindros e 84 cv, usado em Up!, Gol e Polo de entrada.' },
@@ -1007,6 +1005,8 @@ const variantes = {
     { nome: '1.4 8V', periodo: '1989–1996', desc: 'Motor de entrada do Kadett e do Ipanema.' },
     { nome: '1.6 8V', periodo: '1989–2001', desc: 'Versão 1.6 do Kadett, Ipanema e Corsa GSi.' },
     { nome: '1.6 16V', periodo: '1996–2002', desc: 'Motor de 16 válvulas e 106 cv do Corsa GSi e do Tigra.' },
+    { nome: '1.0 8V VHC / VHC-E', periodo: '2000–2015', desc: 'Evolução de alta compressão do 1.0, no Celta, Corsa e Classic — barato de manter.' },
+    { nome: '1.0 e 1.4 SPE/4 (Econo.Flex)', periodo: '2007–2019', desc: 'Última evolução brasileira da família, com 106 cv no Onix, Prisma, Cobalt e Spin.' },
   ],
   'chevrolet|Família II': [
     { nome: '1.8 8V', periodo: '1993–2005', desc: 'Motor de entrada do Monza, Astra e Vectra, com cerca de 110 cv.' },
@@ -1016,9 +1016,8 @@ const variantes = {
     { nome: '2.4 16V Flexpower', periodo: '2005–2012', desc: 'Última evolução, com 147 cv bicombustível no Vectra e na Zafira.' },
   ],
   'chevrolet|Ecotec (Família E)': [
-    { nome: '1.0 8V (VHC/VHC-E)', periodo: '2000–2015', desc: 'Motor do Celta, Corsa e Classic, projetado para ser barato de manter.' },
-    { nome: '1.4 8V (Econo.Flex)', periodo: '2007–2019', desc: 'Motor de 106 cv do Onix, Prisma, Cobalt e Spin — um dos mais vendidos do Brasil.' },
-    { nome: '1.8 8V', periodo: '2009–2019', desc: 'Versão maior usada em Cobalt, Spin e Cruze de entrada.' },
+    { nome: '2.0 16V', periodo: '1999–2011', desc: 'Motor global da linha Ecotec, usado no Astra e no Vectra europeus.' },
+    { nome: '1.8 8V', periodo: '2009–2019', desc: 'Versão usada em Cobalt, Spin e Cruze de entrada no Brasil.' },
     { nome: '1.4 Turbo', periodo: '2011–2021', desc: 'Turbo de 153 cv do Cruze e do Tracker, primeira aposta turbo da GM no Brasil.' },
   ],
   'chevrolet|LS (Small Block Gen III/IV)': [
@@ -1140,7 +1139,7 @@ const variantes = {
   ],
   'honda|L-series': [
     { nome: 'L15A', periodo: '2001–2014', desc: 'Motor 1.5 do Fit e do City, com i-VTEC e foco em economia.' },
-    { nome: 'L18A', periodo: '2006–2012', desc: 'Versão 1.8 usada no Civic de oitava geração no Brasil.' },
+    { nome: 'L18A', periodo: '2000–2006', desc: 'Versão 1.8 do Civic de sétima geração e do Stream — o Civic seguinte já usaria o R18A.' },
     { nome: 'L15B7 (turbo)', periodo: '2016–atual', desc: 'Turbo de 173 a 182 cv do Civic e do HR-V atuais.' },
   ],
 
