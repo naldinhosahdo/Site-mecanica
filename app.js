@@ -261,6 +261,7 @@ const marcas = {
     nome: 'Fiat', logo: 'logos/fiat.png', fundacao: 1899,
     motores: [
       { nome: 'Motor 4 cilindros Fiat 501', periodo: '1919–1926', desc: 'Um dos primeiros motores de produção em massa da Fiat, símbolo da consolidação da marca na Itália.' },
+      { nome: 'Motores do Balilla e do Topolino', periodo: '1932–1955', desc: 'Motores pequenos e baratos dos Fiat 508 Balilla e 500 "Topolino", que puseram a Itália sobre rodas antes e depois da guerra.' },
       { nome: 'Fiat 8V', periodo: '1952–1954', desc: 'V8 2.0 de um raro esportivo feito quase à mão pela Fiat, hoje um dos carros mais valorizados da marca.' },
       { nome: 'Motor traseiro do Fiat 600', periodo: '1955–1969', desc: 'Motor 4 cilindros refrigerado a água e montado atrás, que moveu o Fiat 600 e depois o Fiat 850.' },
       { nome: 'Motor bicilíndrico a ar (Fiat 500)', periodo: '1957–1975', desc: 'Motor de apenas 2 cilindros refrigerado a ar, montado atrás — o coração do icônico Fiat 500 clássico.' },
@@ -295,9 +296,9 @@ const marcas = {
       { nome: 'CHT', periodo: '1982–1996', desc: '"Compound High Turbulence", motor 1.6/1.8 que equipou o Corcel, Belina e Del Rey no Brasil.' },
       { nome: 'Modular V8', periodo: '1991–2014', desc: 'Sucessor mais moderno do Windsor, usado no Mustang GT e em SUVs e picapes maiores da Ford.' },
       { nome: 'Power Stroke (diesel)', periodo: '1994–atual', desc: 'Linha de motores diesel de grande porte que equipa as picapes Super Duty (F-250, F-350) há três décadas.' },
-      { nome: 'Zetec-Rocam', periodo: '1996–2013', desc: 'Motores 1.0/1.6 simples e resistentes, usados em Fiesta, Ka e Escort.' },
+      { nome: 'Zetec-Rocam', periodo: '1996–2014', desc: 'Motores 1.0/1.6 simples e resistentes, usados em Fiesta, Ka e Escort.' },
+      { nome: 'Duratec', periodo: '1996–2019', desc: 'Linha 1.6/2.0 16V mais moderna e potente, presente no Focus e EcoSport.' },
       { nome: 'Triton V10', periodo: '1997–2019', desc: 'V10 6.8 usado nos utilitários e caminhonetes de maior porte, como o gigantesco Ford Excursion.' },
-      { nome: 'Duratec', periodo: '1998–2019', desc: 'Linha 1.6/2.0 16V mais moderna e potente, presente no Focus e EcoSport.' },
       { nome: 'Duratorq / TDCi (diesel)', periodo: '2000–atual', desc: 'Linha diesel da Ford fora dos EUA, incluindo o 3.2 de 5 cilindros da Ranger e o 2.2 da Transit.' },
       { nome: 'Barra (6 cilindros)', periodo: '2002–2016', desc: 'Motor 6 cilindros em linha australiano, cultuado por entusiastas pela enorme capacidade de ganhar potência com turbo.' },
       { nome: 'EcoBoost', periodo: '2009–atual', desc: 'Motores turbo de baixa cilindrada com alta eficiência, adotados globalmente pela Ford.' },
@@ -330,7 +331,7 @@ const marcas = {
       { nome: '2ZZ-GE', periodo: '1999–2006', desc: 'Motor 1.8 de comando com dois perfis, capaz de girar a 8.000 rpm — usado no Celica GT-S e no Lotus Elise.' },
       { nome: 'Série KD (diesel)', periodo: '2000–2015', desc: 'Motores diesel 2.5 e 3.0 turbo que equiparam gerações da Hilux e do SW4 no Brasil.' },
       { nome: 'Série AZ', periodo: '2000–2018', desc: 'Motores 2.0 e 2.4 do Camry, RAV4 e Corolla de mercados asiáticos — dos mais produzidos da marca.' },
-      { nome: 'Série GR (V6)', periodo: '2003–atual', desc: 'V6 3.5 (2GR) usado no Camry, RAV4, Hilux SW4 e em versões V6 da Hilux.' },
+      { nome: 'Série GR (V6)', periodo: '2002–atual', desc: 'V6 3.5 (2GR) usado no Camry, RAV4, Hilux SW4 e em versões V6 da Hilux.' },
       { nome: '1LR-GUE (V10)', periodo: '2010–2012', desc: 'V10 4.8 feito com a Yamaha para o Lexus LFA, com som tão afinado que virou referência entre superesportivos.' },
       { nome: 'Célula de hidrogênio (Mirai)', periodo: '2014–atual', desc: 'Sistema de célula a combustível que gera eletricidade a partir de hidrogênio, emitindo apenas água.' },
       { nome: 'Série GD (diesel)', periodo: '2015–atual', desc: 'Geração diesel atual (1GD 2.8), usada na Hilux e SW4 vendidas hoje.' },
@@ -354,9 +355,9 @@ const marcas = {
       { nome: 'J-series (V6)', periodo: '1996–atual', desc: 'V6 3.0 a 3.5 usado no Accord, Pilot e Odyssey por quase três décadas.' },
       { nome: 'F-series (F20C)', periodo: '1999–2009', desc: 'Motor 2.0 do S2000 que girava até 9.000 rpm — na época, recorde de potência por litro em motor aspirado de série.' },
       { nome: 'IMA (híbrido)', periodo: '1999–2015', desc: 'Sistema híbrido do Insight, o primeiro carro híbrido vendido nos Estados Unidos — antes até do Prius.' },
-      { nome: 'K-series', periodo: '2001–2020', desc: 'Sucessor do B/H-series, motores 1.8/2.0/2.4 usados em Civic, Civic Type R e Accord.' },
+      { nome: 'L-series', periodo: '2000–atual', desc: 'Motores 1.5/1.8 compactos usados no Fit, City e HR-V.' },
+      { nome: 'K-series', periodo: '2001–atual', desc: 'Sucessor do B/H-series, motores 1.8/2.0/2.4 usados em Civic, Civic Type R e Accord.' },
       { nome: 'R-series', periodo: '2006–2015', desc: 'Motores 1.8/2.0 econômicos, usados no Civic de oitava e nona geração — muito comuns no Brasil.' },
-      { nome: 'L-series', periodo: '2008–atual', desc: 'Motores 1.5/1.8 compactos usados no Fit, City e HR-V.' },
       { nome: 'Earth Dreams (i-VTEC turbo / e:HEV)', periodo: '2015–atual', desc: 'Motores turbo modernos e o sistema híbrido e:HEV do Civic, Accord e HR-V atuais.' },
       { nome: 'V6 biturbo híbrido (NSX)', periodo: '2016–2022', desc: 'V6 3.5 biturbo somado a três motores elétricos no NSX moderno, com tração integral inteligente.' },
     ]
@@ -432,6 +433,8 @@ const marcas = {
     nome: 'Peugeot', logo: 'logos/peugeot.png', fundacao: 1810,
     motores: [
       { nome: 'Motor do Peugeot Type 3', periodo: '1891–1900', desc: 'Um dos primeiros automóveis a gasolina da Peugeot, marcando a entrada da marca no setor automotivo.' },
+      { nome: 'Motores do Bébé e do Quadrilette', periodo: '1905–1929', desc: 'Motores dos primeiros Peugeot populares, entre eles o Bébé projetado por Ettore Bugatti antes de fundar a própria marca.' },
+      { nome: 'Motores dos 201, 202 e 203', periodo: '1929–1960', desc: 'Motores dos primeiros Peugeot de produção em massa. O 203 foi o carro que reergueu a marca no pós-guerra.' },
       { nome: 'Motor Indenor (diesel)', periodo: '1959–2000', desc: 'Motor diesel muito conhecido no Brasil por equipar táxis e picapes por sua robustez e economia.' },
       { nome: 'Motores XU/XN', periodo: '1970–2000', desc: 'Motores 1.4 a 2.0 desenvolvidos com a Citroën, usados em várias gerações do 205, 405 e 306.' },
       { nome: 'TU', periodo: '1970–2010', desc: 'Motores 1.0 a 1.6 muito usados nos anos 90 e 2000, presentes no 206 e 306.' },
@@ -454,6 +457,7 @@ const marcas = {
       { nome: 'Motor do BMW Dixi', periodo: '1928–1932', desc: 'Primeiro motor automotivo da marca: um 750 cc produzido sob licença do Austin Seven, com que a BMW entrou no ramo de carros.' },
       { nome: 'Motor M78 (BMW 303)', periodo: '1933–1936', desc: 'Motor 6 cilindros em linha do primeiro carro a levar o característico grelha "rim duplo" da marca.' },
       { nome: 'M328 (BMW 328)', periodo: '1936–1940', desc: 'Seis cilindros com câmara hemisférica do BMW 328, vencedor das Mille Miglia e um dos motores mais copiados do pré-guerra.' },
+      { nome: 'V8 OHV (501/502)', periodo: '1954–1965', desc: 'Primeiro V8 da BMW, em alumínio, usado no sedã apelidado de "Anjo Barroco" — bonito, mas caro demais e quase levou a marca à falência.' },
       { nome: 'M10', periodo: '1962–1988', desc: 'Motor 4 cilindros que formou a base de vários modelos e até de motores de Fórmula 1 turbo da marca.' },
       { nome: 'M20 / M30 (reto-6)', periodo: '1977–1993', desc: 'Icônicos motores 6 cilindros em linha, marca registrada da suavidade BMW.' },
       { nome: 'M88 / S38', periodo: '1978–1995', desc: 'Motores 6 cilindros de competição adaptados à rua, usados no superesportivo M1 e nos primeiros M5.' },
@@ -468,7 +472,7 @@ const marcas = {
       { nome: 'M57 (diesel)', periodo: '1998–2013', desc: '6 cilindros diesel muito respeitado pelo torque e pela durabilidade, usado nas Séries 3, 5, 7 e no X5.' },
       { nome: 'S62 (V8 4.9)', periodo: '1998–2003', desc: 'V8 do M5 E39, primeiro M5 com oito cilindros e para muitos o sedã esportivo mais bem resolvido já feito.' },
       { nome: 'S54 (M3 E46)', periodo: '2000–2006', desc: '6 cilindros em linha 3.2 aspirado, considerado por muitos o melhor motor de M3 já feito.' },
-      { nome: 'Série N', periodo: '2001–2015', desc: 'Motores modulares turbo (N54, N52, N20), que modernizaram a linha da marca.' },
+      { nome: 'Série N', periodo: '2001–2017', desc: 'Motores modulares turbo (N54, N52, N20), que modernizaram a linha da marca.' },
       { nome: 'S85 (V10)', periodo: '2005–2010', desc: 'V10 5.0 inspirado na Fórmula 1, exclusivo do M5 E60 e do M6 — girava até 8.250 rpm.' },
       { nome: 'S65 (V8 4.0)', periodo: '2007–2013', desc: 'V8 4.0 aspirado que girava a 8.400 rpm, exclusivo do M3 E90/E92 — derivado do V10 do M5.' },
       { nome: 'N63 (V8 biturbo)', periodo: '2008–atual', desc: 'V8 4.4 biturbo com turbos no "vale" do V, usado nas Séries 5, 7, X5 e X6 de alto desempenho.' },
@@ -484,6 +488,7 @@ const marcas = {
     motores: [
       { nome: 'Motor Benz Patent-Motorwagen', periodo: '1886', desc: 'Considerado o primeiro motor a combustão interna de um automóvel de produção da história, criado por Karl Benz.' },
       { nome: 'Motor Mercedes 35 HP', periodo: '1901–1905', desc: 'Motor avançado para a época que deu nome ao primeiro carro batizado de "Mercedes".' },
+      { nome: 'Motores Kompressor (S / SSK)', periodo: '1921–1939', desc: 'Motores com compressor acionado a pedal dos lendários SSK, que dominaram as corridas europeias antes da guerra.' },
       { nome: 'OM138', periodo: '1936–1940', desc: 'Motor do Mercedes 260D: o primeiro carro de passeio a diesel produzido em série no mundo.' },
       { nome: 'Linha OM (diesel)', periodo: '1949–atual', desc: 'Depois do pioneiro OM138, a sigla OM seguiu batizando gerações de diesel, sobretudo em caminhões e utilitários da marca.' },
       { nome: 'M180 / M130 (6 em linha)', periodo: '1951–1976', desc: 'Seis cilindros que moveram os clássicos "Ponton", o W114 e o 280 SE por 25 anos.' },
@@ -515,6 +520,7 @@ const marcas = {
     nome: 'Audi', logo: 'logos/audi.png', fundacao: 1909,
     motores: [
       { nome: 'Motores pré-guerra Auto Union', periodo: '1932–1940', desc: 'Motores usados nos famosos "Silver Arrows" de corrida, quando a Audi fazia parte do consórcio Auto Union.' },
+      { nome: 'Dois tempos DKW', periodo: '1950–1969', desc: 'No pós-guerra a Auto Union vivia dos motores dois tempos DKW — que no Brasil moveram os DKW-Vemag até 1967.' },
       { nome: 'EA827 (compartilhado com VW)', periodo: '1972–2000', desc: 'Base dos motores 1.8/2.0 usados nos primeiros Audi 80 e 100.' },
       { nome: '5 cilindros aspirado', periodo: '1976–1997', desc: 'O 5 cilindros do Audi 100 estreou uma arquitetura incomum que viraria assinatura sonora da marca.' },
       { nome: '5 cilindros turbo (Quattro)', periodo: '1980–1991', desc: 'Motor icônico do Audi Quattro original, símbolo da tração integral da marca.' },
@@ -554,7 +560,8 @@ const marcas = {
   mitsubishi: {
     nome: 'Mitsubishi', logo: 'logos/mitsubishi.png', fundacao: 1917,
     motores: [
-      { nome: 'Primeiro motor a combustão Mitsubishi', periodo: '1917', desc: 'Motor usado no Mitsubishi Model A, o primeiro automóvel de produção em série do Japão.' },
+      { nome: 'Primeiro motor a combustão Mitsubishi', periodo: '1917', desc: 'Motor do Mitsubishi Model A, primeiro automóvel de produção em série do Japão. Depois dele a empresa passou décadas voltada a navios e aviões, e só retomou os carros em 1960.' },
+      { nome: 'Motores do Mitsubishi 500 e Colt', periodo: '1960–1970', desc: 'Motores compactos com que a marca voltou aos automóveis de passeio depois de duas décadas focada em outros setores.' },
       { nome: 'Astron / Sirius', periodo: '1970–1990', desc: 'Motores 1.6 a 2.0 dos primeiros modelos exportados globalmente pela marca.' },
       { nome: 'Série 4G', periodo: '1980–2010', desc: 'Família muito conhecida, incluindo o lendário 4G63 do Lancer Evolution.' },
       { nome: 'Série 4D5 (diesel)', periodo: '1980–2007', desc: 'Motor diesel 2.5 (4D56) que equipou gerações da L200 e do Pajero, com fama de robusto.' },
@@ -603,6 +610,7 @@ const marcas = {
     nome: 'Bentley', logo: 'logos/bentley.png', fundacao: 1919,
     motores: [
       { nome: '3 Litre, 4½ Litre e Speed Six', periodo: '1921–1931', desc: 'Motores das cinco vitórias em Le Mans nos anos 1920. O famoso "Blower", com compressor, nunca venceu a prova — quebrava sempre.' },
+      { nome: '6 cilindros Derby e MkVI', periodo: '1933–1959', desc: 'Motores herdados da Rolls-Royce depois que ela comprou a Bentley — daí a fama de "o Rolls esportivo".' },
       { nome: 'V8 6.75', periodo: '1959–2020', desc: 'Um dos motores mais longevos da história automotiva: 61 anos em produção, sempre no topo de linha.' },
       { nome: 'W12 6.0', periodo: '2003–2024', desc: 'W12 biturbo do Continental GT, marco da retomada da marca sob o controle da Volkswagen.' },
       { nome: 'V8 4.0 biturbo', periodo: '2012–atual', desc: 'V8 compartilhado com Audi e Porsche, opção mais leve e eficiente frente ao W12.' },
@@ -613,7 +621,8 @@ const marcas = {
     nome: 'Bugatti', logo: 'logos/bugatti.png', fundacao: 1909,
     motores: [
       { nome: 'Motor do Type 35', periodo: '1924–1930', desc: 'Oito cilindros do carro de corrida mais vitorioso da história, com mais de 2.000 vitórias registradas.' },
-      { nome: 'Motor do Type 41 Royale', periodo: '1926–1933', desc: 'Gigantesco 8 cilindros de 12,7 litros, feito para o carro mais luxuoso já concebido — só 6 unidades saíram.' },
+      { nome: 'Motor do Type 41 Royale', periodo: '1926–1933', desc: 'Gigantesco 8 cilindros de 12,7 litros do carro mais luxuoso já concebido — só 6 unidades saíram. Depois da guerra a Bugatti praticamente desapareceu por meio século.' },
+      { nome: 'V12 do EB110', periodo: '1991–1995', desc: 'V12 de quatro turbos da primeira tentativa de ressuscitar a Bugatti, feita na Itália — a marca faliu de novo em 1995.' },
       { nome: 'W16 8.0 quadriturbo', periodo: '2005–2024', desc: 'Motor de 16 cilindros e quatro turbos do Veyron e do Chiron, que levou carros de série a mais de 400 km/h.' },
       { nome: 'V16 híbrido (Tourbillon)', periodo: '2024–atual', desc: 'Sucessor do W16: um V16 aspirado somado a motores elétricos, anunciado para a nova era da marca.' },
     ]
@@ -648,6 +657,7 @@ const marcas = {
     nome: 'Rolls-Royce', logo: 'logos/rolls-royce.png', fundacao: 1904,
     motores: [
       { nome: 'Motor do Silver Ghost', periodo: '1906–1926', desc: 'Seis cilindros tão silencioso e confiável que rendeu ao carro o apelido de "o melhor do mundo".' },
+      { nome: '6 cilindros Phantom e Silver Wraith', periodo: '1925–1959', desc: 'Motores de seis cilindros dos Rolls do entreguerras, montados sobre chassis que iam para carroçarias feitas sob medida.' },
       { nome: 'V8 6.2/6.75', periodo: '1959–2020', desc: 'V8 de alumínio usado por seis décadas, com a potência historicamente descrita apenas como "suficiente".' },
       { nome: 'V12 BMW (N73/N74)', periodo: '2003–atual', desc: 'Depois da compra pela BMW, a marca passou a usar V12 biturbo derivados da Série 7.' },
       { nome: 'Motores elétricos (Spectre)', periodo: '2023–atual', desc: 'Primeiro Rolls-Royce elétrico — segundo a marca, o silêncio elétrico é o que ela sempre buscou.' },
@@ -665,6 +675,7 @@ const marcas = {
     nome: 'Citroën', logo: 'logos/citroen.png', fundacao: 1919,
     motores: [
       { nome: 'Motor do Type A', periodo: '1919–1921', desc: 'Motor do primeiro carro europeu produzido em linha de montagem em massa, nos moldes de Henry Ford.' },
+      { nome: 'Motor do Traction Avant', periodo: '1934–1957', desc: 'Motor do primeiro carro do mundo a juntar tração dianteira, carroceria monobloco e suspensão independente em produção em massa.' },
       { nome: 'Bicilíndrico a ar (2CV)', periodo: '1948–1990', desc: 'Motor de 2 cilindros refrigerado a ar do 2CV, projetado para ser barato, simples e durar décadas.' },
       { nome: 'Motores XU/TU', periodo: '1970–2010', desc: 'Famílias compartilhadas com a Peugeot dentro do grupo PSA, usadas em quase toda a linha.' },
       { nome: 'Boxer a ar do GS', periodo: '1970–1986', desc: 'Motor boxer de 4 cilindros refrigerado a ar do GS, escolhido para caber sob o capô baixo e aerodinâmico do carro.' },
@@ -790,7 +801,7 @@ const marcas = {
     motores: [
       { nome: 'Motores Renault preparados', periodo: '1955–1977', desc: 'Motores Renault retrabalhados que levaram o A110 original ao título mundial de rali em 1973.' },
       { nome: 'PRV V6 turbo', periodo: '1985–1995', desc: 'V6 turbo do A610, versão mais potente do motor desenvolvido com Peugeot e Volvo.' },
-      { nome: '1.8 turbo', periodo: '2017–atual', desc: 'Motor do novo A110, que aposta em leveza extrema em vez de potência bruta.' },
+      { nome: '1.8 turbo', periodo: '2017–atual', desc: 'Motor do novo A110. A marca havia ficado dormente por mais de 20 anos, até a Renault decidir ressuscitá-la em 2017.' },
       { nome: 'Motores elétricos', periodo: '2024–atual', desc: 'Virada elétrica da marca, começando pelo A290, versão esportiva do Renault 5 elétrico.' },
     ]
   },
@@ -809,6 +820,8 @@ const marcas = {
       { nome: 'Motor monocilíndrico original', periodo: '1902–1908', desc: 'Motor de um cilindro que ficou famoso pela precisão das peças — as primeiras verdadeiramente intercambiáveis.' },
       { nome: 'V8 Type 51', periodo: '1914–1927', desc: 'Primeiro V8 produzido em massa do mundo, que estabeleceu o padrão de refinamento do automóvel de luxo.' },
       { nome: 'V16', periodo: '1930–1940', desc: 'Único V16 de produção em série da história americana, símbolo máximo de ostentação antes da guerra.' },
+      { nome: 'V8 OHV de alta compressão', periodo: '1949–1967', desc: 'V8 leve e de alta compressão que, junto ao Rocket da Oldsmobile, deu início à era dos V8 modernos nos Estados Unidos.' },
+      { nome: 'V8 472 / 500', periodo: '1968–1976', desc: 'V8 de até 8,2 litros do Eldorado, o maior motor já montado em série num automóvel de passeio.' },
       { nome: 'Northstar V8', periodo: '1993–2011', desc: 'V8 de duplo comando com que a marca tentou recuperar prestígio técnico frente aos alemães.' },
       { nome: 'Blackwing V8 biturbo', periodo: '2019–2020', desc: 'V8 4.2 biturbo feito à mão, produzido por pouquíssimo tempo — hoje é item de colecionador.' },
       { nome: 'Motores elétricos Ultium', periodo: '2022–atual', desc: 'A Cadillac foi escolhida pela GM para liderar a transição elétrica, com o Lyriq e o Celestiq.' },
@@ -818,6 +831,7 @@ const marcas = {
     nome: 'Buick', logo: 'logos/buick.png', fundacao: 1899,
     motores: [
       { nome: 'Motor "valve-in-head"', periodo: '1904–1930', desc: 'A Buick foi pioneira nas válvulas no cabeçote, arquitetura que praticamente toda a indústria adotaria.' },
+      { nome: 'Straight-8', periodo: '1931–1953', desc: 'Motor de oito cilindros em linha, longo e suave, que sustentou a imagem de refinamento da marca por duas décadas.' },
       { nome: 'Nailhead V8', periodo: '1953–1966', desc: 'V8 de válvulas pequenas e verticais, cultuado pelo torque em baixa rotação.' },
       { nome: 'V6 3800', periodo: '1962–2008', desc: 'Um dos motores mais produzidos da história americana, com fama de rodar quase sem manutenção.' },
       { nome: 'Motores globais GM', periodo: '2009–atual', desc: 'Hoje a marca usa as famílias Ecotec e turbo da GM, com forte presença no mercado chinês.' },
@@ -837,6 +851,7 @@ const marcas = {
     motores: [
       { nome: 'V8 Lincoln', periodo: '1920–1932', desc: 'V8 de alta qualidade projetado por Henry Leland, o mesmo engenheiro que havia fundado a Cadillac.' },
       { nome: 'V12 Zephyr', periodo: '1936–1948', desc: 'V12 que tornou o luxo de 12 cilindros acessível a mais gente, num período raro da indústria.' },
+      { nome: 'V8 dos anos 50 e 60', periodo: '1952–1980', desc: 'Sucessão de V8 de grande cilindrada, incluindo o 462 do Continental — dos maiores já montados num carro de passeio.' },
       { nome: 'Modular V8', periodo: '1991–2020', desc: 'V8 compartilhado com a Ford, usado no Town Car e no Navigator por três décadas.' },
       { nome: 'EcoBoost V6', periodo: '2010–atual', desc: 'V6 biturbo que substituiu os V8 nos modelos de topo, com mais torque e menos consumo.' },
     ]
@@ -876,6 +891,7 @@ const marcas = {
     nome: 'Volvo', logo: 'logos/volvo.png', fundacao: 1927,
     motores: [
       { nome: 'Motor do ÖV4', periodo: '1927–1929', desc: 'Motor 4 cilindros do primeiro Volvo, projetado para aguentar as estradas ruins da Suécia.' },
+      { nome: 'B4B / B16', periodo: '1944–1961', desc: 'Motores do PV444 e do Amazon, os primeiros Volvo produzidos em grande escala e exportados.' },
       { nome: 'B18 / B20', periodo: '1961–1974', desc: 'Motor do P1800 de Irv Gordon, que rodou mais de 5 milhões de quilômetros — recorde mundial.' },
       { nome: 'Red Block', periodo: '1974–1998', desc: 'Família de 4 cilindros com fama de indestrutível, marca registrada dos Volvo quadrados dos anos 80.' },
       { nome: 'Motores modulares (5 e 6 cilindros)', periodo: '1990–2016', desc: 'Os 5 cilindros em linha que deram aos Volvo um ronco característico, inclusive nas versões turbo R.' },
@@ -1006,9 +1022,9 @@ const marcas = {
     ]
   },
   ram: {
-    nome: 'RAM', logo: 'logos/ram.png', fundacao: 2010,
+    nome: 'RAM', logo: 'logos/ram.png', fundacao: 1981,
     motores: [
-      { nome: 'Cummins 6.7 (diesel)', periodo: '1989–atual', desc: 'Seis cilindros em linha da Cummins que virou sinônimo de torque para trabalho pesado nas picapes.' },
+      { nome: 'Cummins 6.7 (diesel)', periodo: '1989–atual', desc: 'Seis cilindros em linha da Cummins, adotado ainda na fase Dodge Ram e mantido depois que a RAM virou marca própria, em 2010.' },
       { nome: 'Hemi V8', periodo: '2003–atual', desc: 'V8 5.7 e 6.4 das picapes de topo, herdeiro direto do nome mais famoso da Chrysler.' },
       { nome: 'Multijet 2.2', periodo: '2023–atual', desc: 'Diesel de origem Fiat que equipa a Rampage, primeira picape média da marca feita no Brasil.' },
     ]
@@ -1017,7 +1033,7 @@ const marcas = {
     nome: 'Abarth', logo: 'logos/abarth.png', fundacao: 1949,
     motores: [
       { nome: 'Preparações sobre motores Fiat', periodo: '1949–1971', desc: 'Carlo Abarth ganhou fama transformando Fiat comuns em carros de corrida, com kits de escape e cabeçote.' },
-      { nome: '1.4 T-Jet', periodo: '2008–2023', desc: 'Turbo de 1.4 litro do Fiat 500 Abarth e do 595, com som de escape propositalmente exagerado.' },
+      { nome: '1.4 T-Jet', periodo: '2008–2023', desc: 'Turbo do Fiat 500 Abarth, com escape propositalmente exagerado. A Abarth passara décadas apenas como selo esportivo da Fiat, até voltar a ser marca própria em 2007.' },
       { nome: 'Firefly turbo', periodo: '2022–atual', desc: 'Versão mais potente do 1.3 turbo brasileiro, usada no Pulse e no Fastback Abarth.' },
     ]
   },
