@@ -718,21 +718,20 @@ ul   { list-style: none; }
 }
 
 /* famílias que podem ser abertas motor por motor */
-button.motor-item--tem-lista {
+.motor-item__abrir {
   display: block;
   width: 100%;
   text-align: left;
   background: none;
   border: none;
-  border-bottom: 1px solid var(--border);
+  padding: 0;
   font-family: inherit;
   cursor: pointer;
-  transition: background var(--transition);
-  border-radius: 6px;
+  transition: opacity var(--transition);
 }
 
-button.motor-item--tem-lista:hover { background: #fef2f2; }
-button.motor-item--tem-lista .motor-item__nome { color: var(--red); }
+.motor-item__abrir:hover { opacity: .75; }
+.motor-item--tem-lista .motor-item__nome { color: var(--red); }
 
 .motor-item__ver {
   display: inline-block;
@@ -741,6 +740,123 @@ button.motor-item--tem-lista .motor-item__nome { color: var(--red); }
   font-weight: 700;
   color: var(--red);
 }
+
+/* =========================================
+   MONTAGEM DE MOTOR (minijogo)
+   ========================================= */
+.motor-item__montar {
+  display: inline-block;
+  margin-top: .65rem;
+  padding: .4rem .9rem;
+  border: 1.5px solid var(--red);
+  background: var(--white);
+  color: var(--red);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.motor-item__montar:hover { background: var(--red); color: var(--white); }
+
+.montagem__barra {
+  height: 7px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.montagem__barra span {
+  display: block;
+  height: 100%;
+  background: var(--red);
+  border-radius: 999px;
+  transition: width .35s ease;
+}
+
+.montagem__palco {
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .5rem;
+  margin-bottom: 1rem;
+}
+
+.montagem__svg { width: 100%; height: auto; display: block; }
+
+/* silhueta do que ainda falta montar */
+.peca-fantasma { opacity: .1; }
+
+/* o próximo encaixe pisca para guiar sem entregar a resposta */
+.peca-fantasma--proxima { opacity: .3; animation: pisca 1.5s ease-in-out infinite; }
+
+@keyframes pisca {
+  0%, 100% { opacity: .14; }
+  50%      { opacity: .42; }
+}
+
+/* cada peça entra com um pequeno "encaixe" */
+.peca-montada { animation: encaixa .32s ease-out; transform-origin: center; }
+
+@keyframes encaixa {
+  0%   { opacity: 0; transform: scale(1.25); }
+  60%  { opacity: 1; transform: scale(.97); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.montagem__msg {
+  font-size: .88rem;
+  color: var(--gray);
+  line-height: 1.6;
+  min-height: 3.2rem;
+  margin-bottom: 1rem;
+}
+
+.montagem__ok    { display: block; color: #16a34a; font-weight: 600; margin-bottom: .3rem; }
+.montagem__erro  { color: var(--red); font-weight: 700; }
+
+.montagem__bandeja {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.peca-btn {
+  padding: .55rem 1rem;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--dark);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.peca-btn:hover { border-color: var(--red); color: var(--red); }
+
+.peca-btn--ok {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #16a34a;
+  cursor: default;
+}
+
+.peca-btn--erro { animation: treme .4s; border-color: var(--red); background: #fef2f2; }
+
+@keyframes treme {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-6px); }
+  40%     { transform: translateX(6px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+
+.montagem__acoes { margin-top: .5rem; }
 
 /* =========================================
    NEWSLETTER

@@ -1627,19 +1627,28 @@ function abrirModalMarca(id) {
 
   const motoresHtml = m.motores.map((mo, i) => {
     const vs = variantes[id + '|' + mo.nome];
+    const podeMontar = typeof temMontagem === 'function' && temMontagem(id, mo.nome);
+    const btnMontar = podeMontar
+      ? `<button type="button" class="motor-item__montar" data-montar="${i}" data-marca="${id}">🔧 Montar este motor peça por peça</button>`
+      : '';
+
     if (vs) {
       return `
-        <button type="button" class="motor-item motor-item--tem-lista" data-familia="${i}">
-          <span class="motor-item__nome">${mo.nome}</span><span class="motor-item__periodo">${mo.periodo}</span>
-          <p>${mo.desc}</p>
-          <span class="motor-item__ver">Ver os ${vs.length} motores desta família →</span>
-        </button>
+        <div class="motor-item motor-item--tem-lista">
+          <button type="button" class="motor-item__abrir" data-familia="${i}">
+            <span class="motor-item__nome">${mo.nome}</span><span class="motor-item__periodo">${mo.periodo}</span>
+            <p>${mo.desc}</p>
+            <span class="motor-item__ver">Ver os ${vs.length} motores desta família →</span>
+          </button>
+          ${btnMontar}
+        </div>
       `;
     }
     return `
       <div class="motor-item">
         <span class="motor-item__nome">${mo.nome}</span><span class="motor-item__periodo">${mo.periodo}</span>
         <p>${mo.desc}</p>
+        ${btnMontar}
       </div>
     `;
   }).join('');
