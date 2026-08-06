@@ -6,28 +6,77 @@
 import * as THREE from './vendor/three.module.min.js';
 
 const COR = {
-  ferro:   0x6d7684,   // cilindros e bloco
-  aluminio:0xd6dde6,   // cárter e cabeçotes
-  aco:     0x8d97a5,   // virabrequim
-  escuro:  0x333c49,   // comando, distribuidor
-  cobre:   0xb1712c,
-  vermelho:0xd93a2f,
-  amarelo: 0xe8c33a,
-  azul:    0x3aa7dd,
+  ferro:   0x626b78,   // cilindros e bloco
+  aluminio:0xa3adbb,   // cárter e cabeçotes
+  aco:     0x848f9d,   // virabrequim
+  escuro:  0x3b4350,   // comando, distribuidor
+  cobre:   0xb0722c,
+  vermelho:0xcf3327,
+  amarelo: 0xe2bb33,
+  azul:    0x2f9fd8,
   bronze:  0x9a7b4f,   // bielas
 };
 
 const mat = (cor, metal = .85, rug = .38) =>
   new THREE.MeshStandardMaterial({ color: cor, metalness: metal, roughness: rug });
 
+// -----------------------------------------
+// Caixa com quinas chanfradas.
+// Peça de motor não tem aresta viva: o chanfro pega a luz e é
+// o que tira o desenho do aspecto de "bloco de Lego".
+// -----------------------------------------
+const _geosCaixa = new Map();
+
+function geoCaixa(x, y, z) {
+  const chave = x + '|' + y + '|' + z;
+  if (_geosCaixa.has(chave)) return _geosCaixa.get(chave);
+
+  const ch = Math.min(x, y, z) * .11;              // tamanho do chanfro
+  const w = x / 2 - ch, h = y / 2 - ch, prof = z - ch * 2;
+  const canto = Math.min(w, h) * .3;               // quinas levemente arredondadas
+
+  const f = new THREE.Shape();
+  f.moveTo(-w + canto, -h);
+  f.lineTo(w - canto, -h);   f.quadraticCurveTo(w, -h, w, -h + canto);
+  f.lineTo(w, h - canto);    f.quadraticCurveTo(w, h, w - canto, h);
+  f.lineTo(-w + canto, h);   f.quadraticCurveTo(-w, h, -w, h - canto);
+  f.lineTo(-w, -h + canto);  f.quadraticCurveTo(-w, -h, -w + canto, -h);
+
+  const g = new THREE.ExtrudeGeometry(f, {
+    depth: prof, curveSegments: 4, steps: 1,
+    bevelEnabled: true, bevelThickness: ch, bevelSize: ch, bevelOffset: 0, bevelSegments: 2
+  });
+  g.translate(0, 0, -prof / 2);
+  g.computeVertexNormals();
+  g.userData.compartilhada = true;   // fica no cache; limparCena não descarta
+  _geosCaixa.set(chave, g);
+  return g;
+}
+
 // atalhos de geometria
-const caixa = (x,y,z,c,m,r) => new THREE.Mesh(new THREE.BoxGeometry(x,y,z), mat(c,m,r));
-const cil   = (rt,rb,h,c,seg=24,m,r) => new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg), mat(c,m,r));
+const caixa = (x,y,z,c,m,r) => new THREE.Mesh(geoCaixa(x,y,z), mat(c,m,r));
+const cil   = (rt,rb,h,c,seg=32,m,r) =>
+  new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,Math.max(seg,28)), mat(c,m,r));
 const grupo = (...fs) => { const g=new THREE.Group(); fs.forEach(f=>g.add(f)); return g; };
 const põe   = (o,x,y,z) => { o.position.set(x,y,z); return o; };
 const gira  = (o,x,y,z) => { o.rotation.set(x,y,z); return o; };
 
 const PI2 = Math.PI/2;
+
+// cabeça de parafuso: cilindro de 6 lados já sai sextavado
+const _geoParafuso = new THREE.CylinderGeometry(.075, .075, .09, 6);
+_geoParafuso.userData.compartilhada = true;
+const parafuso = () => new THREE.Mesh(_geoParafuso, mat(0x757f8c, .95, .3));
+
+// cremalheira do volante — o dentinho é o que faz o disco virar volante
+function cremalheira(g, raio, z, dentes = 34) {
+  for (let k = 0; k < dentes; k++) {
+    const a = k * Math.PI * 2 / dentes;
+    g.add(gira(põe(caixa(.1, .12, .22, COR.aco, .9, .35),
+                   Math.cos(a) * raio, Math.sin(a) * raio, z), 0, 0, a));
+  }
+  return g;
+}
 
 // =========================================
 // PEÇAS EM 3D, POR ARQUITETURA
@@ -39,7 +88,10 @@ const geo3d = {
   boxerAr: {
     carter: () => ({ obj: (()=>{
         const g = grupo(caixa(2.0,1.5,3.0,COR.aluminio,.7,.45));
-        g.add(põe(caixa(2.05,.08,3.05,COR.aco,.8,.4),0,0,0));
+        g.add(põe(caixa(2.12,.1,3.12,COR.aco,.8,.4),0,0,0));
+        // parafusos que fecham as duas metades do cárter
+        [-1,1].forEach(lado=>[-1.2,-.6,0,.6,1.2].forEach(z=>
+          g.add(põe(gira(parafuso(),0,0,PI2),lado*1.09,0,z))));
         return g; })(), entrada:[0,-4,0] }),
     virabrequim: () => ({ obj: (()=>{
         const g = grupo(gira(cil(.16,.16,3.4,COR.aco),PI2,0,0));
@@ -70,14 +122,22 @@ const geo3d = {
         const g = new THREE.Group();
         [[-1,-.95],[1,-.32],[-1,.32],[1,.95]].forEach(([lado,z])=>{
           g.add(põe(gira(cil(.5,.5,1.5,COR.ferro,20,.75,.5),0,0,PI2),lado*1.75,0,z));
-          for(let k=0;k<5;k++)  // aletas de refrigeração
-            g.add(põe(gira(cil(.62,.62,.06,COR.ferro,20,.7,.55),0,0,PI2),lado*(1.15+k*.3),0,z));
+          for(let k=0;k<8;k++)  // aletas de refrigeração
+            g.add(põe(gira(cil(.65,.65,.05,COR.ferro,20,.7,.55),0,0,PI2),lado*(1.1+k*.2),0,z));
         });
         return g; })(), entrada:[6,0,0] }),
-    cabecotes: () => ({ obj: grupo(
-        põe(caixa(.55,1.5,2.6,COR.aluminio,.6,.4),-2.75,0,0),
-        põe(caixa(.55,1.5,2.6,COR.aluminio,.6,.4), 2.75,0,0)
-      ), entrada:[7,0,0] }),
+    cabecotes: () => ({ obj: (()=>{
+        const g = new THREE.Group();
+        [-1,1].forEach(lado=>{
+          g.add(põe(caixa(.55,1.5,2.6,COR.aluminio,.6,.42),lado*2.75,0,0));
+          // aletas na face de fora — a marca registrada do motor a ar
+          for(let k=0;k<4;k++)
+            g.add(põe(caixa(.13,.07,2.4,COR.aluminio,.55,.5),lado*3.06,-.5+k*.33,0));
+          // parafusos de fixação no bloco
+          [-1.05,1.05].forEach(z=>[-.55,.55].forEach(y=>
+            g.add(põe(gira(parafuso(),0,0,PI2),lado*3.06,y,z))));
+        });
+        return g; })(), entrada:[7,0,0] }),
     balancins: () => ({ obj: (()=>{
         const g = new THREE.Group();
         [-1,1].forEach(lado=>{
@@ -85,12 +145,20 @@ const geo3d = {
           [-.6,.6].forEach(z=>g.add(põe(caixa(.5,.16,.2,COR.vermelho,.6,.4),lado*2.75,.85,z)));
         });
         return g; })(), entrada:[0,5,0] }),
-    volante: () => ({ obj: grupo(
-        põe(gira(cil(1.05,1.05,.24,COR.ferro,36,.8,.45),PI2,0,0),0,0,-1.85),
-        põe(gira(cil(.4,.4,.3,COR.aco,20),PI2,0,0),0,0,-1.9)
-      ), entrada:[0,0,-6], animar:(o,t)=>{ o.rotation.z = t; } }),
+    volante: () => ({ obj: (()=>{
+        const g = grupo(
+          põe(gira(cil(1.02,1.02,.24,COR.ferro,44,.8,.45),PI2,0,0),0,0,-1.85),
+          põe(gira(cil(.4,.4,.3,COR.aco,24),PI2,0,0),0,0,-1.9));
+        // parafusos que prendem o volante ao virabrequim
+        for(let k=0;k<6;k++){ const a=k*Math.PI/3;
+          g.add(põe(gira(parafuso(),PI2,0,0),Math.cos(a)*.62,Math.sin(a)*.62,-1.72)); }
+        return cremalheira(g, 1.06, -1.85); })(),
+      entrada:[0,0,-6], animar:(o,t)=>{ o.rotation.z = t; } }),
     ventoinha: () => ({ obj: (()=>{
-        const g = grupo(põe(gira(cil(.85,.85,.16,COR.aluminio,32,.7,.4),PI2,0,0),0,.15,2.0));
+        const g = grupo(
+          põe(gira(cil(.85,.85,.16,COR.aluminio,40,.7,.4),PI2,0,0),0,.15,2.0),
+          põe(gira(cil(.3,.3,.36,COR.aco,26,.9,.3),PI2,0,0),0,.15,2.22),
+          põe(gira(new THREE.Mesh(new THREE.TorusGeometry(.86,.05,10,44), mat(COR.aluminio,.7,.4)),0,0,0),0,.15,2.06));
         for(let k=0;k<10;k++){
           const a=k*Math.PI/5;
           g.add(põe(gira(caixa(.14,.5,.1,COR.aluminio,.6,.45),0,0,a),Math.sin(a)*.5,.15+Math.cos(a)*.5,2.1));
@@ -116,6 +184,9 @@ const geo3d = {
     bloco: () => ({ obj: (()=>{
         const g = grupo(caixa(3.4,1.7,1.6,COR.ferro,.75,.5));
         [-1.2,-.4,.4,1.2].forEach(x=>g.add(põe(cil(.44,.44,1.72,COR.escuro,20,.6,.6),x,.05,0)));
+        // prisioneiros do cabeçote, em volta dos cilindros
+        [-1.6,-.8,0,.8,1.6].forEach(x=>[-.68,.68].forEach(z=>
+          g.add(põe(parafuso(),x,.88,z))));
         return g; })(), entrada:[0,-5,0] }),
     virabrequim: () => ({ obj: (()=>{
         const g = grupo(gira(cil(.16,.16,3.9,COR.aco),0,0,PI2));
@@ -145,9 +216,14 @@ const geo3d = {
         põe(cil(.12,.12,.2,COR.escuro,12),1.1,-1.95,0)
       ), entrada:[0,-5,0] }),
     junta: () => ({ obj: põe(caixa(3.42,.09,1.62,COR.vermelho,.3,.6),0,.92,0), entrada:[0,4,0] }),
-    cabecote: () => ({ obj: grupo(
-        põe(caixa(3.4,.85,1.6,COR.aluminio,.65,.4),0,1.4,0)
-      ), entrada:[0,5,0] }),
+    cabecote: () => ({ obj: (()=>{
+        const g = grupo(põe(caixa(3.4,.85,1.6,COR.aluminio,.65,.42),0,1.4,0));
+        // parafusos do cabeçote e as tomadas de escape na lateral
+        [-1.6,-.8,0,.8,1.6].forEach(x=>[-.68,.68].forEach(z=>
+          g.add(põe(parafuso(),x,1.85,z))));
+        [-1.2,-.4,.4,1.2].forEach(x=>
+          g.add(põe(gira(cil(.19,.19,.3,COR.escuro,20,.5,.6),PI2,0,0),x,1.35,-.9)));
+        return g; })(), entrada:[0,5,0] }),
     comando: () => ({ obj: (()=>{
         const g = grupo(põe(gira(cil(.13,.13,3.5,COR.escuro,18,.7,.45),0,0,PI2),0,1.95,0));
         [-1.2,-.4,.4,1.2].forEach(x=>
@@ -171,9 +247,18 @@ const geo3d = {
         const g = grupo(põe(caixa(2.4,.4,.45,COR.aluminio,.6,.4),0,1.75,1.15));
         [-.9,-.3,.3,.9].forEach(x=>g.add(põe(gira(cil(.14,.14,.7,COR.aluminio,12,.6,.4),PI2,0,0),x,1.75,.75)));
         return g; })(), entrada:[0,0,6] }),
-    volante: () => ({ obj: grupo(
-        põe(gira(cil(1.0,1.0,.22,COR.ferro,36,.8,.45),0,0,PI2),-2.0,-1.05,0)
-      ), entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
+    volante: () => ({ obj: (()=>{
+        const g = grupo(
+          põe(gira(cil(.98,.98,.22,COR.ferro,44,.8,.45),0,0,PI2),-2.0,-1.05,0),
+          põe(gira(cil(.32,.32,.28,COR.aco,24,.9,.35),0,0,PI2),-2.05,-1.05,0));
+        // cremalheira: fica no plano YZ, por isso o grupo entra girado
+        const dentes = new THREE.Group();
+        cremalheira(dentes, 1.02, 0);
+        dentes.rotation.y = PI2;
+        dentes.position.set(-2.0, -1.05, 0);
+        g.add(dentes);
+        return g; })(),
+      entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
   },
 };
 
@@ -188,21 +273,78 @@ let zoomF=1, alvo=new THREE.Vector3(0,0,0), ZOOM_MIN=.28, ZOOM_MAX=4.5;
 
 let observador = null;
 
+// -----------------------------------------
+// Ambiente de estúdio.
+// Metal só parece metal quando tem o que refletir. Em vez de baixar
+// um HDRI, monto um "estúdio" de caixas luminosas e deixo o Three
+// transformar isso no mapa de reflexo da cena.
+// -----------------------------------------
+let mapaAmbiente = null;
+
+function ambienteEstudio() {
+  if (mapaAmbiente) return mapaAmbiente;
+
+  const est = new THREE.Scene();
+  const painel = (l, a, p, cor, x, y, z) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(l, a, p),
+                             new THREE.MeshBasicMaterial({ color: cor }));
+    m.position.set(x, y, z);
+    est.add(m);
+  };
+
+  est.add(new THREE.Mesh(new THREE.BoxGeometry(24, 16, 24),
+          new THREE.MeshBasicMaterial({ color: 0x6b7686, side: THREE.BackSide })));
+  painel(11, .5, 11, 0xffffff, 0,  7.2, 0);    // luz principal, no teto
+  painel(.5, 8, 12, 0xd9e6ff, -9.4, 1, 0);     // rebatedor frio de um lado
+  painel(.5, 8, 12, 0xffdcb4,  9.4, 1, 0);     // rebatedor quente do outro
+  painel(12, 6, .5, 0xc3cedd, 0, 1, -9.4);     // contraluz atrás
+  painel(14, .5, 14, 0x39414e, 0, -7.2, 0);    // chão escuro, para o metal ter contraste
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const alvo = pmrem.fromScene(est, .05);
+  pmrem.dispose();
+  est.traverse(o => {
+    if (o.geometry) o.geometry.dispose();
+    if (o.material) o.material.dispose();
+  });
+
+  mapaAmbiente = alvo.texture;
+  return mapaAmbiente;
+}
+
 function criarCena(canvas) {
   renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;   // clareia sem estourar o branco
+  renderer.toneMappingExposure = 1.08;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   cena = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(42, 1, .1, 100);
 
-  cena.add(new THREE.HemisphereLight(0xffffff, 0x4a5568, 1.5));
-  const sol = new THREE.DirectionalLight(0xffffff, 2.1);
-  sol.position.set(5, 8, 6); cena.add(sol);
-  const lado = new THREE.DirectionalLight(0xbfd4ff, .9);
-  lado.position.set(-6, 2, -4); cena.add(lado);
-  const contra = new THREE.DirectionalLight(0xffe8c4, .7);
-  contra.position.set(0, -4, -7); cena.add(contra);
+  cena.environment = ambienteEstudio();
+  cena.environmentIntensity = .95;
 
+  cena.add(new THREE.HemisphereLight(0xdfe9ff, 0x2a3140, .5));
+
+  // luz principal: é ela que faz as sombras entre as peças
+  const sol = new THREE.DirectionalLight(0xfff4e6, 1.7);
+  sol.position.set(6, 9, 5);
+  sol.castShadow = true;
+  sol.shadow.mapSize.set(1024, 1024);
+  sol.shadow.radius = 3;
+  sol.shadow.bias = -0.0012;
+  sol.shadow.normalBias = .02;
+  const cs = sol.shadow.camera;
+  cs.left = -9; cs.right = 9; cs.top = 9; cs.bottom = -9; cs.near = .5; cs.far = 40;
+  cs.updateProjectionMatrix();
+  cena.add(sol);
+
+  const lado = new THREE.DirectionalLight(0xbfd4ff, .55);
+  lado.position.set(-7, 1, -3); cena.add(lado);
+  const contra = new THREE.DirectionalLight(0xffe8c4, .45);
+  contra.position.set(0, -5, -7); cena.add(contra);
 
   raiz = new THREE.Group();
   cena.add(raiz);
@@ -320,7 +462,10 @@ function montarPeca(arqId, pecaId, animar) {
   const cx = caixaPeca.getCenter(new THREE.Vector3()).sub(destino);
   const raioPeca = caixaPeca.getSize(new THREE.Vector3()).length() / 2;
   const materiais = [];
-  obj.traverse(o => { if (o.material) materiais.push(o.material); });
+  obj.traverse(o => {
+    if (o.material) materiais.push(o.material);
+    if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+  });
   // na vista explodida a peça sai para fora: manda-a na direção do próprio centro
   // (afasta radialmente, sem empilhar peças) com um empurrão na direção de montagem
   const radial = destino.clone().add(cx);
@@ -350,7 +495,10 @@ function limparCena() {
   ligado = false; giroMotor = 0; explodeAlvo = 0; explodeAtual = 0;
   while (raiz.children.length) {
     const o = raiz.children.pop();
-    o.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); });
+    o.traverse(c => {
+      if (c.geometry && !c.geometry.userData.compartilhada) c.geometry.dispose();
+      if (c.material) c.material.dispose();
+    });
   }
 }
 
