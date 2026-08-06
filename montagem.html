@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Montagem de Motor | MecânicaPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #e63329;
+      --bg:  #0d1117;
+      --painel: rgba(22,27,34,.92);
+      --borda: rgba(255,255,255,.12);
+      --txt: rgba(255,255,255,.86);
+      --txt2: rgba(255,255,255,.5);
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- barra do topo ---------- */
+    .topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .6rem 1rem;
+      background: rgba(13,17,23,.95);
+      border-bottom: 1px solid var(--borda);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .topo__esq { display: flex; align-items: center; gap: .85rem; min-width: 0; }
+
+    .topo__voltar {
+      color: var(--txt2);
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: color .2s;
+    }
+    .topo__voltar:hover { color: var(--red); }
+
+    .topo__sep { width: 1px; height: 20px; background: var(--borda); flex-shrink: 0; }
+
+    .topo__logo { font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .topo__logo span { color: var(--red); }
+
+    .topo__titulo {
+      font-size: .8rem;
+      color: var(--txt2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topo__dir { display: flex; align-items: center; gap: .35rem; flex-shrink: 0; }
+
+    .btn-ico {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--borda);
+      background: rgba(255,255,255,.06);
+      color: var(--txt);
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .18s, border-color .18s;
+    }
+    .btn-ico:hover { background: rgba(230,51,41,.3); border-color: rgba(230,51,41,.6); }
+
+    .pilula {
+      height: 32px;
+      min-width: 56px;
+      padding: 0 .7rem;
+      border-radius: 8px;
+      border: 1px solid var(--borda);
+      background: rgba(255,255,255,.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .76rem; font-weight: 700; color: var(--txt2);
+    }
+
+    /* ---------- palco 3D ---------- */
+    .palco { position: relative; flex: 1; min-height: 0; }
+
+    #canvas3d {
+      width: 100%; height: 100%; display: block;
+      touch-action: none; cursor: grab;
+    }
+    #canvas3d:active { cursor: grabbing; }
+
+    .dica-uso {
+      position: absolute;
+      left: 50%; bottom: .8rem;
+      transform: translateX(-50%);
+      font-size: .72rem;
+      color: var(--txt2);
+      background: rgba(13,17,23,.75);
+      border: 1px solid var(--borda);
+      padding: .3rem .85rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* ---------- painel de progresso (canto superior esquerdo) ---------- */
+    .hud {
+      position: absolute;
+      top: 1rem; left: 1rem;
+      width: min(330px, calc(100% - 2rem));
+      background: var(--painel);
+      border: 1px solid var(--borda);
+      border-radius: 12px;
+      padding: .9rem 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .hud__topo {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .5rem;
+    }
+
+    .hud__passo {
+      font-size: .7rem; font-weight: 800; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--red);
+    }
+
+    .hud__nome { font-size: .95rem; font-weight: 700; margin-bottom: .6rem; }
+
+    .hud__barra { height: 6px; background: rgba(255,255,255,.1); border-radius: 999px; overflow: hidden; }
+    .hud__barra span { display: block; height: 100%; background: var(--red); border-radius: 999px; transition: width .35s ease; }
+
+    .hud__msg { font-size: .8rem; line-height: 1.55; color: var(--txt2); margin-top: .7rem; }
+    .hud__ok   { display: block; color: #4ade80; font-weight: 600; margin-bottom: .3rem; }
+    .hud__erro { color: #f87171; font-weight: 700; }
+
+    /* ---------- bandeja de peças (rodapé) ---------- */
+    .bandeja {
+      flex-shrink: 0;
+      background: rgba(13,17,23,.95);
+      border-top: 1px solid var(--borda);
+      padding: .7rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+      justify-content: center;
+      max-height: 34vh;
+      overflow-y: auto;
+    }
+
+    .peca {
+      padding: .5rem .9rem;
+      border-radius: 9px;
+      border: 1px solid var(--borda);
+      background: rgba(255,255,255,.06);
+      color: var(--txt);
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .18s, background .18s, color .18s;
+    }
+    .peca:hover { border-color: var(--red); color: #fff; background: rgba(230,51,41,.2); }
+
+    .peca--ok {
+      background: rgba(74,222,128,.12);
+      border-color: rgba(74,222,128,.4);
+      color: #4ade80;
+      cursor: default;
+    }
+
+    .peca--erro { animation: treme .4s; border-color: var(--red); background: rgba(230,51,41,.25); }
+
+    @keyframes treme {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); } 40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
+    }
+
+    .peca--acao { border-color: var(--red); color: #fff; background: rgba(230,51,41,.22); font-weight: 700; }
+    .peca--ativo { background: var(--red); border-color: var(--red); color: #fff; }
+
+    .sem-webgl {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 2rem; color: var(--txt2); font-size: .9rem;
+    }
+
+    .so-mobile { display: none; }
+
+    @media (max-width: 760px) {
+      .topo { padding: .5rem .6rem; gap: .4rem; }
+      .topo__esq { gap: .5rem; }
+      .topo__titulo { display: none; }
+      .topo__sep { display: none; }
+      .topo__logo { font-size: .85rem; }
+      .btn-ico { width: 30px; height: 30px; }
+      .pilula { min-width: 48px; padding: 0 .5rem; font-size: .72rem; height: 30px; }
+      .hud { top: .6rem; left: .6rem; right: .6rem; width: auto; padding: .7rem .8rem; }
+      .hud__msg { font-size: .75rem; }
+      .dica-uso { font-size: .66rem; max-width: calc(100% - 1.2rem); }
+      .so-desktop { display: none; }
+      .so-mobile { display: inline; }
+      .bandeja { max-height: 30vh; }
+      .peca { font-size: .78rem; padding: .45rem .75rem; }
+    }
+
+    @media (max-width: 400px) {
+      .topo__logo { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topo">
+    <div class="topo__esq">
+      <a href="index.html#motores" class="topo__voltar">← Voltar</a>
+      <div class="topo__sep"></div>
+      <div class="topo__logo">Mecânica<span>Pro</span></div>
+      <div class="topo__sep"></div>
+      <span class="topo__titulo" id="topo-titulo">Montagem de motor</span>
+    </div>
+    <div class="topo__dir">
+      <button class="btn-ico" id="btn-menos" title="Diminuir zoom">−</button>
+      <div class="pilula"><span id="lbl-zoom">100%</span></div>
+      <button class="btn-ico" id="btn-mais" title="Aumentar zoom">+</button>
+      <button class="btn-ico" id="btn-centro" title="Centralizar">⊙</button>
+    </div>
+  </header>
+
+  <div class="palco">
+    <canvas id="canvas3d"></canvas>
+    <div class="hud">
+      <div class="hud__topo">
+        <span class="hud__passo" id="hud-passo">Peça 1</span>
+      </div>
+      <div class="hud__nome" id="hud-nome">Motor</div>
+      <div class="hud__barra"><span id="hud-barra" style="width:0"></span></div>
+      <div class="hud__msg" id="hud-msg"></div>
+    </div>
+    <div class="dica-uso" id="dica-uso">
+      <span class="so-desktop">Arraste para girar · Scroll para zoom · Shift ou botão direito para mover</span>
+      <span class="so-mobile">Arraste para girar · 2 dedos para zoom e mover</span>
+    </div>
+  </div>
+
+  <div class="bandeja" id="bandeja"></div>
+
+  <script src="montagem-dados.js?v=1"></script>
+  <script src="montagem3d.js?v=9" type="module"></script>
+  <script src="montagem-pagina.js?v=2"></script>
+</body>
+</html>

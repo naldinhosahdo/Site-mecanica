@@ -183,6 +183,9 @@ const geo3d = {
 let cena, camera, renderer, raiz, animId, arrastando=false, ultimo={x:0,y:0};
 let pecasNaCena=[], ligado=false, giroMotor=0, explodeAlvo=0, explodeAtual=0;
 let giroY=.85, giroX=.38, autoGiro=true, tweens=[];
+let dist=8.0, alvo=new THREE.Vector3(0,0,0), DIST_MIN=2.2, DIST_MAX=42;
+
+let observador = null;
 
 function criarCena(canvas) {
   renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
@@ -203,6 +206,15 @@ function criarCena(canvas) {
   raiz = new THREE.Group();
   cena.add(raiz);
   redimensionar(canvas);
+
+  // o tamanho real do canvas só se estabiliza depois do layout;
+  // acompanhar evita o motor sair do quadro em telas estreitas
+  if (observador) observador.disconnect();
+  if (window.ResizeObserver) {
+    observador = new ResizeObserver(() => redimensionar(canvas));
+    observador.observe(canvas);
+  }
+  requestAnimationFrame(() => redimensionar(canvas));
 }
 
 function redimensionar(canvas) {
@@ -214,13 +226,18 @@ function redimensionar(canvas) {
 }
 
 function posicionarCamera() {
-  const d = 8.0 + explodeAtual * 3.2;
+  // em tela estreita (celular em pé) a câmera recua, senão o motor sai do quadro
+  const estreito = camera.aspect < 1 ? 1 + (1 - camera.aspect) * 1.6 : 1;
+  const d = (dist + explodeAtual * 3.2) * estreito;
+  // e o enquadramento desce um pouco, porque o painel de progresso cobre o topo
+  const sobe = camera.aspect < 1 ? 1.15 : 0;
+  const mira = new THREE.Vector3(alvo.x, alvo.y + sobe, alvo.z);
   camera.position.set(
-    d * Math.cos(giroX) * Math.sin(giroY),
-    d * Math.sin(giroX),
-    d * Math.cos(giroX) * Math.cos(giroY)
+    mira.x + d * Math.cos(giroX) * Math.sin(giroY),
+    mira.y + d * Math.sin(giroX),
+    mira.z + d * Math.cos(giroX) * Math.cos(giroY)
   );
-  camera.lookAt(0, 0, 0);
+  camera.lookAt(mira);
 }
 
 function laco() {
@@ -288,25 +305,86 @@ function limparCena() {
   }
 }
 
+let modoPan = false, pincaAnterior = 0;
+
+function deslocar(dx, dy) {
+  // move o alvo no plano da câmera, para o pan acompanhar o que se vê
+  const dir = new THREE.Vector3(); camera.getWorldDirection(dir);
+  const direita = new THREE.Vector3().crossVectors(dir, camera.up).normalize();
+  const cima = new THREE.Vector3().crossVectors(direita, dir).normalize();
+  const k = dist * .0016;
+  alvo.addScaledVector(direita, -dx * k).addScaledVector(cima, dy * k);
+}
+
+function aplicarZoom(fator) {
+  dist = Math.max(DIST_MIN, Math.min(DIST_MAX, dist * fator));
+  if (aoMudarZoom) aoMudarZoom(zoomPercentual());
+}
+
+const zoomPercentual = () => Math.round((8.0 / dist) * 100);
+let aoMudarZoom = null;
+
 function ligarArrasto(canvas) {
-  const inicio = e => { arrastando = true; autoGiro = false;
-    const p = e.touches ? e.touches[0] : e; ultimo = { x:p.clientX, y:p.clientY }; };
+  const inicio = e => {
+    arrastando = true; autoGiro = false;
+    modoPan = (e.button === 2 || e.button === 1 || e.shiftKey);
+    const p = e.touches ? e.touches[0] : e;
+    ultimo = { x:p.clientX, y:p.clientY };
+  };
   const mover = e => {
     if (!arrastando) return;
     const p = e.touches ? e.touches[0] : e;
-    giroY -= (p.clientX - ultimo.x) * .008;
-    giroX = Math.max(-1.2, Math.min(1.2, giroX + (p.clientY - ultimo.y) * .006));
+    const dx = p.clientX - ultimo.x, dy = p.clientY - ultimo.y;
+    if (modoPan) {
+      deslocar(dx, dy);
+    } else {
+      giroY -= dx * .008;
+      giroX = Math.max(-1.35, Math.min(1.35, giroX + dy * .006));
+    }
     ultimo = { x:p.clientX, y:p.clientY };
     if (e.cancelable) e.preventDefault();
   };
-  const fim = () => { arrastando = false; };
+  const fim = () => { arrastando = false; modoPan = false; };
 
   canvas.addEventListener('pointerdown', inicio);
   window.addEventListener('pointermove', mover);
   window.addEventListener('pointerup', fim);
-  canvas.addEventListener('touchstart', inicio, {passive:true});
-  canvas.addEventListener('touchmove', mover, {passive:false});
-  window.addEventListener('touchend', fim);
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault(); autoGiro = false;
+    aplicarZoom(e.deltaY > 0 ? 1.12 : 0.89);
+  }, { passive:false });
+
+  // toque: 1 dedo gira, 2 dedos dão zoom e deslocam
+  canvas.addEventListener('touchstart', e => {
+    autoGiro = false;
+    if (e.touches.length === 2) {
+      arrastando = false;
+      pincaAnterior = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY);
+      ultimo = { x:(e.touches[0].clientX+e.touches[1].clientX)/2,
+                 y:(e.touches[0].clientY+e.touches[1].clientY)/2 };
+    } else { inicio(e); }
+  }, { passive:true });
+
+  canvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 2) {
+      const d = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY);
+      if (pincaAnterior) aplicarZoom(pincaAnterior / d);
+      pincaAnterior = d;
+      const cx = (e.touches[0].clientX+e.touches[1].clientX)/2;
+      const cy = (e.touches[0].clientY+e.touches[1].clientY)/2;
+      deslocar(cx - ultimo.x, cy - ultimo.y);
+      ultimo = { x:cx, y:cy };
+      if (e.cancelable) e.preventDefault();
+    } else { mover(e); }
+  }, { passive:false });
+
+  window.addEventListener('touchend', () => { fim(); pincaAnterior = 0; });
 }
 
 // =========================================
@@ -324,7 +402,7 @@ window.Motor3D = {
     this.parar();
     criarCena(canvas);
     ligarArrasto(canvas);
-    autoGiro = true; giroY = .85; giroX = .38;
+    autoGiro = true; giroY = .85; giroX = .38; dist = 8.0; alvo.set(0,0,0);
     const ids = Object.keys(geo3d[arqId] || {});
     for (let i = 0; i < atePasso; i++) montarPeca(arqId, ids[i], false);
     laco();
@@ -336,8 +414,14 @@ window.Motor3D = {
   },
   ligar(v) { ligado = !!v; if (!v) { giroMotor = 0; pecasNaCena.forEach(p => { if (p.mover) p.mover(p.obj, 0); }); } return ligado; },
   explodir(v) { explodeAlvo = v ? 1 : 0; return !!v; },
+  zoom(f) { aplicarZoom(f); return zoomPercentual(); },
+  centralizar() { dist = 8.0; alvo.set(0,0,0); giroY = .85; giroX = .38; autoGiro = true;
+                  if (aoMudarZoom) aoMudarZoom(zoomPercentual()); return 100; },
+  aoZoom(fn) { aoMudarZoom = fn; },
+  percentual() { return zoomPercentual(); },
   ajustar(canvas) { if (renderer) redimensionar(canvas); },
   parar() {
+    if (observador) { observador.disconnect(); observador = null; }
     if (animId) cancelAnimationFrame(animId);
     animId = null;
     limparCena();

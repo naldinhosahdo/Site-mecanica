@@ -1629,7 +1629,7 @@ function abrirModalMarca(id) {
     const vs = variantes[id + '|' + mo.nome];
     const podeMontar = typeof temMontagem === 'function' && temMontagem(id, mo.nome);
     const btnMontar = podeMontar
-      ? `<button type="button" class="motor-item__montar" data-montar="${i}" data-marca="${id}">🔧 Montar este motor peça por peça</button>`
+      ? `<a class="motor-item__montar" href="montagem.html?arq=${encodeURIComponent(arqDaFamilia(id, mo.nome))}&motor=${encodeURIComponent(m.nome + ' ' + mo.nome)}">🔧 Montar este motor em 3D</a>`
       : '';
 
     if (vs) {

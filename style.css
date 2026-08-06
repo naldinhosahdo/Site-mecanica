@@ -746,6 +746,7 @@ ul   { list-style: none; }
    ========================================= */
 .motor-item__montar {
   display: inline-block;
+  text-decoration: none;
   margin-top: .65rem;
   padding: .4rem .9rem;
   border: 1.5px solid var(--red);
