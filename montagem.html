@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Montagem de Motor | MecânicaPro</title>
+  <title>Motor em 3D | MecânicaPro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -96,6 +96,9 @@
     }
 
     /* ---------- palco 3D ---------- */
+    /* no desktop o painel flutua sobre o palco; no celular ele vira
+       uma faixa acima, para não cobrir o motor */
+    .area { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
     .palco { position: relative; flex: 1; min-height: 0; }
 
     #canvas3d {
@@ -118,7 +121,39 @@
       pointer-events: none;
     }
 
-    /* ---------- painel de progresso (canto superior esquerdo) ---------- */
+    /* ---------- rótulos que seguem as peças ---------- */
+    #rotulos {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .rotulo {
+      position: absolute;
+      top: 0; left: 0;
+      display: none;
+      white-space: nowrap;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .01em;
+      color: #fff;
+      background: rgba(13,17,23,.82);
+      border: 1px solid var(--borda);
+      border-radius: 999px;
+      padding: .18rem .6rem;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 10px rgba(0,0,0,.45);
+    }
+
+    .rotulo--ativo {
+      background: var(--red);
+      border-color: var(--red);
+      box-shadow: 0 2px 14px rgba(230,51,41,.55);
+    }
+
+    /* ---------- painel de informação (canto superior esquerdo) ---------- */
     .hud {
       position: absolute;
       top: 1rem; left: 1rem;
@@ -128,38 +163,41 @@
       border-radius: 12px;
       padding: .9rem 1rem;
       backdrop-filter: blur(8px);
+      z-index: 5;
     }
 
-    .hud__topo {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: .5rem;
-    }
-
-    .hud__passo {
-      font-size: .7rem; font-weight: 800; letter-spacing: .06em;
+    .hud__tipo {
+      font-size: .68rem; font-weight: 800; letter-spacing: .06em;
       text-transform: uppercase; color: var(--red);
+      margin-bottom: .3rem;
     }
 
-    .hud__nome { font-size: .95rem; font-weight: 700; margin-bottom: .6rem; }
+    .hud__nome { font-size: .95rem; font-weight: 700; line-height: 1.35; }
 
-    .hud__barra { height: 6px; background: rgba(255,255,255,.1); border-radius: 999px; overflow: hidden; }
-    .hud__barra span { display: block; height: 100%; background: var(--red); border-radius: 999px; transition: width .35s ease; }
+    .hud__msg { font-size: .8rem; line-height: 1.55; color: var(--txt2); margin-top: .6rem; }
+    .hud__peca { display: block; color: #fff; font-weight: 700; margin-bottom: .2rem; }
 
-    .hud__msg { font-size: .8rem; line-height: 1.55; color: var(--txt2); margin-top: .7rem; }
-    .hud__ok   { display: block; color: #4ade80; font-weight: 600; margin-bottom: .3rem; }
-    .hud__erro { color: #f87171; font-weight: 700; }
-
-    /* ---------- bandeja de peças (rodapé) ---------- */
-    .bandeja {
+    /* ---------- ações + lista de peças (rodapé) ---------- */
+    .acoes {
       flex-shrink: 0;
       background: rgba(13,17,23,.95);
       border-top: 1px solid var(--borda);
+      padding: .7rem 1rem .1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+      justify-content: center;
+    }
+
+    .bandeja {
+      flex-shrink: 0;
+      background: rgba(13,17,23,.95);
       padding: .7rem 1rem;
       display: flex;
       flex-wrap: wrap;
       gap: .45rem;
       justify-content: center;
-      max-height: 34vh;
+      max-height: 26vh;
       overflow-y: auto;
     }
 
@@ -177,22 +215,7 @@
     }
     .peca:hover { border-color: var(--red); color: #fff; background: rgba(230,51,41,.2); }
 
-    .peca--ok {
-      background: rgba(74,222,128,.12);
-      border-color: rgba(74,222,128,.4);
-      color: #4ade80;
-      cursor: default;
-    }
-
-    .peca--erro { animation: treme .4s; border-color: var(--red); background: rgba(230,51,41,.25); }
-
-    @keyframes treme {
-      0%,100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); } 40% { transform: translateX(6px); }
-      60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
-    }
-
-    .peca--acao { border-color: var(--red); color: #fff; background: rgba(230,51,41,.22); font-weight: 700; }
+    .peca--acao { border-color: rgba(230,51,41,.55); color: #fff; background: rgba(230,51,41,.18); font-weight: 700; }
     .peca--ativo { background: var(--red); border-color: var(--red); color: #fff; }
 
     .sem-webgl {
@@ -211,13 +234,36 @@
       .topo__logo { font-size: .85rem; }
       .btn-ico { width: 30px; height: 30px; }
       .pilula { min-width: 48px; padding: 0 .5rem; font-size: .72rem; height: 30px; }
-      .hud { top: .6rem; left: .6rem; right: .6rem; width: auto; padding: .7rem .8rem; }
-      .hud__msg { font-size: .75rem; }
+      .hud {
+        position: static;
+        width: auto;
+        border-radius: 0;
+        border-width: 0 0 1px 0;
+        background: rgba(13,17,23,.95);
+        padding: .55rem .8rem .6rem;
+        backdrop-filter: none;
+      }
+      .hud__nome { font-size: .88rem; }
+      .hud__msg { font-size: .74rem; line-height: 1.45; margin-top: .35rem; }
       .dica-uso { font-size: .66rem; max-width: calc(100% - 1.2rem); }
       .so-desktop { display: none; }
       .so-mobile { display: inline; }
-      .bandeja { max-height: 30vh; }
-      .peca { font-size: .78rem; padding: .45rem .75rem; }
+      .acoes { padding: .5rem .4rem .1rem; gap: .3rem; }
+      /* no celular a lista de peças vira uma faixa que rola de lado,
+         para sobrar o máximo de tela possível para o motor */
+      .bandeja {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-height: none;
+        padding: .5rem .6rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      .bandeja .peca { flex: 0 0 auto; white-space: nowrap; }
+      .peca { font-size: .75rem; padding: .4rem .6rem; }
+      .peca--acao { font-size: .72rem; padding: .42rem .5rem; }
+      .rotulo { font-size: .62rem; padding: .12rem .45rem; }
     }
 
     @media (max-width: 400px) {
@@ -233,7 +279,7 @@
       <div class="topo__sep"></div>
       <div class="topo__logo">Mecânica<span>Pro</span></div>
       <div class="topo__sep"></div>
-      <span class="topo__titulo" id="topo-titulo">Montagem de motor</span>
+      <span class="topo__titulo" id="topo-titulo">Motor em 3D</span>
     </div>
     <div class="topo__dir">
       <button class="btn-ico" id="btn-menos" title="Diminuir zoom">−</button>
@@ -243,26 +289,32 @@
     </div>
   </header>
 
-  <div class="palco">
-    <canvas id="canvas3d"></canvas>
+  <div class="area">
     <div class="hud">
-      <div class="hud__topo">
-        <span class="hud__passo" id="hud-passo">Peça 1</span>
-      </div>
+      <div class="hud__tipo" id="hud-tipo">Motor</div>
       <div class="hud__nome" id="hud-nome">Motor</div>
-      <div class="hud__barra"><span id="hud-barra" style="width:0"></span></div>
       <div class="hud__msg" id="hud-msg"></div>
     </div>
-    <div class="dica-uso" id="dica-uso">
-      <span class="so-desktop">Arraste para girar · Scroll para zoom · Shift ou botão direito para mover</span>
-      <span class="so-mobile">Arraste para girar · 2 dedos para zoom e mover</span>
+    <div class="palco">
+      <canvas id="canvas3d"></canvas>
+      <div id="rotulos"></div>
+      <div class="dica-uso" id="dica-uso">
+        <span class="so-desktop">Arraste para girar · Scroll para zoom · Shift ou botão direito para mover</span>
+        <span class="so-mobile">Arraste para girar · 2 dedos para zoom e mover</span>
+      </div>
     </div>
+  </div>
+
+  <div class="acoes">
+    <button class="peca peca--acao" id="btn-explodir">💥 Vista explodida</button>
+    <button class="peca peca--acao" id="btn-ligar">▶ Ligar o motor</button>
+    <button class="peca peca--acao" id="btn-nomes">🏷 Nomes das peças</button>
   </div>
 
   <div class="bandeja" id="bandeja"></div>
 
   <script src="montagem-dados.js?v=1"></script>
-  <script src="montagem3d.js?v=9" type="module"></script>
-  <script src="montagem-pagina.js?v=2"></script>
+  <script src="montagem3d.js?v=20" type="module"></script>
+  <script src="montagem-pagina.js?v=8"></script>
 </body>
 </html>

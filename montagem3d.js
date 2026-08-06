@@ -183,7 +183,8 @@ const geo3d = {
 let cena, camera, renderer, raiz, animId, arrastando=false, ultimo={x:0,y:0};
 let pecasNaCena=[], ligado=false, giroMotor=0, explodeAlvo=0, explodeAtual=0;
 let giroY=.85, giroX=.38, autoGiro=true, tweens=[];
-let dist=8.0, alvo=new THREE.Vector3(0,0,0), DIST_MIN=2.2, DIST_MAX=42;
+// o zoom é um multiplicador do enquadramento automático: 1 = motor inteiro na tela
+let zoomF=1, alvo=new THREE.Vector3(0,0,0), ZOOM_MIN=.28, ZOOM_MAX=4.5;
 
 let observador = null;
 
@@ -225,13 +226,35 @@ function redimensionar(canvas) {
   camera.updateProjectionMatrix();
 }
 
+// distância em que o motor inteiro cabe na tela.
+// mede a silhueta de verdade (largura e altura vistas pela câmera),
+// e não uma esfera — assim o motor ocupa bem a tela em qualquer formato.
+const _eixoFrente = new THREE.Vector3();
+const _eixoLado   = new THREE.Vector3();
+const _eixoCima   = new THREE.Vector3();
+const _ponto      = new THREE.Vector3();
+const CIMA        = new THREE.Vector3(0, 1, 0);
+
+function distanciaQueCabe() {
+  _eixoFrente.set(Math.cos(giroX) * Math.sin(giroY), Math.sin(giroX), Math.cos(giroX) * Math.cos(giroY));
+  _eixoLado.crossVectors(CIMA, _eixoFrente).normalize();
+  _eixoCima.crossVectors(_eixoFrente, _eixoLado).normalize();
+
+  let meiaLarg = .5, meiaAlt = .5;
+  pecasNaCena.forEach(p => {
+    _ponto.copy(p.base).addScaledVector(p.dir, explodeAtual * p.alcance).add(p.centro).sub(alvo);
+    meiaLarg = Math.max(meiaLarg, Math.abs(_ponto.dot(_eixoLado)) + p.raioPeca);
+    meiaAlt  = Math.max(meiaAlt,  Math.abs(_ponto.dot(_eixoCima)) + p.raioPeca);
+  });
+
+  const vertical = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+  const horizontal = vertical * camera.aspect;
+  return Math.max(meiaAlt / vertical, meiaLarg / horizontal) * 1.06;
+}
+
 function posicionarCamera() {
-  // em tela estreita (celular em pé) a câmera recua, senão o motor sai do quadro
-  const estreito = camera.aspect < 1 ? 1 + (1 - camera.aspect) * 1.6 : 1;
-  const d = (dist + explodeAtual * 3.2) * estreito;
-  // e o enquadramento desce um pouco, porque o painel de progresso cobre o topo
-  const sobe = camera.aspect < 1 ? 1.15 : 0;
-  const mira = new THREE.Vector3(alvo.x, alvo.y + sobe, alvo.z);
+  const d = distanciaQueCabe() * zoomF;
+  const mira = alvo.clone();
   camera.position.set(
     mira.x + d * Math.cos(giroX) * Math.sin(giroY),
     mira.y + d * Math.sin(giroX),
@@ -266,12 +289,24 @@ function laco() {
   if (Math.abs(explodeAlvo - explodeAtual) > .001) {
     pecasNaCena.forEach(p => {
       if (tweens.some(t => t.obj === p.obj)) return;   // não atropela quem está encaixando
-      p.obj.position.copy(p.base).addScaledVector(p.dir, explodeAtual * 1.35);
+      p.obj.position.copy(p.base).addScaledVector(p.dir, explodeAtual * p.alcance);
     });
   }
 
   posicionarCamera();
   renderer.render(cena, camera);
+
+  if (aoProjetar && renderer) {
+    const larg = renderer.domElement.clientWidth, alt = renderer.domElement.clientHeight;
+    const v = new THREE.Vector3();
+    aoProjetar(pecasNaCena.map((p, i) => {
+      v.copy(p.obj.position).add(p.centro).project(camera);
+      return { i,
+        x: (v.x * .5 + .5) * larg,
+        y: (-v.y * .5 + .5) * alt,
+        visivel: v.z < 1 };
+    }));
+  }
 }
 
 function montarPeca(arqId, pecaId, animar) {
@@ -280,7 +315,21 @@ function montarPeca(arqId, pecaId, animar) {
   const { obj, entrada, animar: mover } = fab();
   const destino = obj.position.clone();
   raiz.add(obj);
-  pecasNaCena.push({ obj, base: destino.clone(), dir: new THREE.Vector3(...entrada).normalize(), mover });
+  // centro da peça, usado para ancorar o rótulo na tela
+  const caixaPeca = new THREE.Box3().setFromObject(obj);
+  const cx = caixaPeca.getCenter(new THREE.Vector3()).sub(destino);
+  const raioPeca = caixaPeca.getSize(new THREE.Vector3()).length() / 2;
+  const materiais = [];
+  obj.traverse(o => { if (o.material) materiais.push(o.material); });
+  // na vista explodida a peça sai para fora: manda-a na direção do próprio centro
+  // (afasta radialmente, sem empilhar peças) com um empurrão na direção de montagem
+  const radial = destino.clone().add(cx);
+  const raio = radial.length();
+  if (raio < .2) radial.copy(new THREE.Vector3(...entrada));
+  const dir = radial.normalize().addScaledVector(new THREE.Vector3(...entrada).normalize(), .55).normalize();
+  // quem já está mais para fora anda mais: assim as "camadas" do motor se separam
+  const alcance = 1.0 + raio * 1.8;
+  pecasNaCena.push({ obj, base: destino.clone(), dir, alcance, mover, centro: cx, raioPeca, materiais });
 
   if (animar) {
     obj.traverse(o => { if (o.material) { o.material.transparent = true; o.material.opacity = 0; } });
@@ -312,17 +361,17 @@ function deslocar(dx, dy) {
   const dir = new THREE.Vector3(); camera.getWorldDirection(dir);
   const direita = new THREE.Vector3().crossVectors(dir, camera.up).normalize();
   const cima = new THREE.Vector3().crossVectors(direita, dir).normalize();
-  const k = dist * .0016;
+  const k = distanciaQueCabe() * zoomF * .0016;
   alvo.addScaledVector(direita, -dx * k).addScaledVector(cima, dy * k);
 }
 
 function aplicarZoom(fator) {
-  dist = Math.max(DIST_MIN, Math.min(DIST_MAX, dist * fator));
+  zoomF = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomF * fator));
   if (aoMudarZoom) aoMudarZoom(zoomPercentual());
 }
 
-const zoomPercentual = () => Math.round((8.0 / dist) * 100);
-let aoMudarZoom = null;
+const zoomPercentual = () => Math.round(100 / zoomF);
+let aoMudarZoom = null, aoProjetar = null;
 
 function ligarArrasto(canvas) {
   const inicio = e => {
@@ -402,10 +451,25 @@ window.Motor3D = {
     this.parar();
     criarCena(canvas);
     ligarArrasto(canvas);
-    autoGiro = true; giroY = .85; giroX = .38; dist = 8.0; alvo.set(0,0,0);
+    autoGiro = true; giroY = .85; giroX = .38; zoomF = 1; alvo.set(0,0,0);
     const ids = Object.keys(geo3d[arqId] || {});
-    for (let i = 0; i < atePasso; i++) montarPeca(arqId, ids[i], false);
+    const quantas = (atePasso === undefined) ? ids.length : atePasso;
+    for (let i = 0; i < quantas; i++) montarPeca(arqId, ids[i], false);
     laco();
+  },
+  quantasPecas(arqId) { return Object.keys(geo3d[arqId] || {}).length; },
+  aoProjetar(fn) { aoProjetar = fn; },
+  destacar(indice) {
+    pecasNaCena.forEach((p, i) => {
+      const escolhida = (indice !== null && i === indice);
+      const cheia = (indice === null || escolhida);
+      p.materiais.forEach(m => {
+        m.emissive && m.emissive.setHex(escolhida ? 0x7a1a12 : 0x000000);
+        m.opacity = cheia ? 1 : .18;
+        if (m.transparent !== !cheia) { m.transparent = !cheia; m.needsUpdate = true; }
+        m.depthWrite = cheia;     // sem isso a peça apagada continua tapando o resto
+      });
+    });
   },
   encaixar(arqId, indice) {
     const ids = Object.keys(geo3d[arqId] || {});
@@ -415,7 +479,7 @@ window.Motor3D = {
   ligar(v) { ligado = !!v; if (!v) { giroMotor = 0; pecasNaCena.forEach(p => { if (p.mover) p.mover(p.obj, 0); }); } return ligado; },
   explodir(v) { explodeAlvo = v ? 1 : 0; return !!v; },
   zoom(f) { aplicarZoom(f); return zoomPercentual(); },
-  centralizar() { dist = 8.0; alvo.set(0,0,0); giroY = .85; giroX = .38; autoGiro = true;
+  centralizar() { zoomF = 1; alvo.set(0,0,0); giroY = .85; giroX = .38; autoGiro = true;
                   if (aoMudarZoom) aoMudarZoom(zoomPercentual()); return 100; },
   aoZoom(fn) { aoMudarZoom = fn; },
   percentual() { return zoomPercentual(); },
