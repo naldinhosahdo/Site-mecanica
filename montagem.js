@@ -247,6 +247,7 @@ const montagens = {
   'toyota|Série NZ':                      'linha4',
 };
 
+
 // =========================================
 // JOGO
 // =========================================
@@ -256,6 +257,7 @@ let jogo = null;
 // então aqui buscamos por conta própria.
 const elConteudo = () => document.getElementById('modal-content');
 const elOverlay  = () => document.getElementById('modal-overlay');
+const tem3D = () => !!(window.Motor3D && window.Motor3D.suportado());
 
 function temMontagem(marcaId, nomeFamilia) {
   return !!montagens[marcaId + '|' + nomeFamilia];
@@ -266,92 +268,134 @@ function abrirMontagem(marcaId, indiceFamilia) {
   if (!m) return;
   const familia = m.motores[Number(indiceFamilia)];
   if (!familia) return;
-  const arq = arquiteturas[montagens[marcaId + '|' + familia.nome]];
+  const arqId = montagens[marcaId + '|' + familia.nome];
+  const arq = arquiteturas[arqId];
   if (!arq) return;
 
-  // embaralha a bandeja para virar um quebra-cabeça de verdade
+  // bandeja embaralhada para virar um quebra-cabeça de verdade
   const ordemBandeja = arq.pecas.map((_, i) => i);
   for (let i = ordemBandeja.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [ordemBandeja[i], ordemBandeja[j]] = [ordemBandeja[j], ordemBandeja[i]];
   }
 
-  jogo = { marcaId, indiceFamilia, arq, familia, passo: 0, erros: 0, ordemBandeja };
-  desenharMontagem();
+  jogo = { marcaId, indiceFamilia, arqId, arq, familia, passo: 0, erros: 0, ordemBandeja };
+  desenharTela();
 }
 
-function desenharMontagem() {
-  const { arq, familia, passo, erros, ordemBandeja, marcaId } = jogo;
-  const total = arq.pecas.length;
-  const pronto = passo >= total;
+// desenha a tela inteira (abertura, recomeço e conclusão)
+function desenharTela() {
+  const { arq, familia, marcaId, arqId } = jogo;
   const m = marcas[marcaId];
+  const total = arq.pecas.length;
+  const pronto = jogo.passo >= total;
+  const usa3D = tem3D();
 
-  // silhueta apagada das peças que ainda faltam, para o jogador ver o alvo
-  const fantasma = arq.pecas.slice(passo)
-    .map((p, k) => `<g class="peca-fantasma${k === 0 ? ' peca-fantasma--proxima' : ''}">${p.svg}</g>`).join('');
-
-  const montado = arq.pecas.slice(0, passo)
-    .map(p => `<g class="peca-montada">${p.svg}</g>`).join('');
-
-  const bandeja = ordemBandeja.map(i => {
-    const p = arq.pecas[i];
-    const jaFoi = i < passo;
-    return `<button type="button" class="peca-btn${jaFoi ? ' peca-btn--ok' : ''}"
-              data-peca="${i}" ${jaFoi ? 'disabled' : ''}>${p.nome}</button>`;
-  }).join('');
-
-  const proxima = pronto ? null : arq.pecas[passo];
+  const palco = pronto
+    ? `<div class="montagem__pronto">🏁</div>`
+    : usa3D
+      ? `<canvas id="montagem-canvas" class="montagem__canvas"></canvas>
+         <span class="montagem__girar">Arraste para girar o motor</span>`
+      : `<svg viewBox="${arq.viewBox}" class="montagem__svg" id="montagem-svg"></svg>`;
 
   elConteudo().innerHTML = `
     <button type="button" class="modal__voltar" data-voltar-marca="${marcaId}">← Motores ${m.nome}</button>
-    <span class="modal__cat">${pronto ? 'Motor montado!' : 'Peça ' + (passo + 1) + ' de ' + total}</span>
+    <span class="modal__cat" id="montagem-passo"></span>
     <h2>Montar ${familia.nome}</h2>
     <p style="color:var(--gray);margin:.4rem 0 1rem;">${arq.titulo}</p>
-
-    <div class="montagem__barra"><span style="width:${(passo / total) * 100}%"></span></div>
-
-    <div class="montagem__palco">
-      <svg viewBox="${arq.viewBox}" class="montagem__svg" aria-label="Motor em montagem">${fantasma}${montado}</svg>
-    </div>
-
-    <div class="montagem__msg" id="montagem-msg">
-      ${pronto
-        ? `<strong>Parabéns, o motor está completo!</strong> ${erros === 0
-             ? 'E você acertou todas as peças de primeira.'
-             : 'Você errou ' + erros + (erros === 1 ? ' vez' : ' vezes') + ' pelo caminho.'}`
-        : `<strong>Próxima peça:</strong> ${proxima.dica}`}
-    </div>
-
-    ${pronto
-      ? `<div class="montagem__acoes">
-           <button type="button" class="btn btn--primary" data-remontar="1">Montar de novo</button>
-         </div>`
-      : `<div class="montagem__bandeja">${bandeja}</div>`}
+    <div class="montagem__barra"><span id="montagem-barra"></span></div>
+    <div class="montagem__palco">${palco}</div>
+    <div class="montagem__msg" id="montagem-msg"></div>
+    <div class="montagem__bandeja" id="montagem-bandeja"></div>
   `;
+
   const modal = elOverlay().querySelector('.modal');
   if (modal) modal.scrollTop = 0;
+
+  if (!pronto) {
+    if (usa3D) {
+      const cv = document.getElementById('montagem-canvas');
+      requestAnimationFrame(() => window.Motor3D.iniciar(cv, arqId, jogo.passo));
+    } else {
+      redesenharSVG();
+    }
+  } else if (usa3D) {
+    window.Motor3D.parar();
+  }
+  atualizarPainel();
+}
+
+// reserva 2D: redesenha a silhueta e as peças montadas
+function redesenharSVG() {
+  const svg = document.getElementById('montagem-svg');
+  if (!svg) return;
+  const { arq, passo } = jogo;
+  svg.innerHTML =
+    arq.pecas.slice(passo).map((p, k) =>
+      `<g class="peca-fantasma${k === 0 ? ' peca-fantasma--proxima' : ''}">${p.svg}</g>`).join('') +
+    arq.pecas.slice(0, passo).map(p => `<g class="peca-montada">${p.svg}</g>`).join('');
+}
+
+// atualiza só o painel — nunca recria o canvas, para não matar a cena 3D
+function atualizarPainel(feedback) {
+  const { arq, passo, erros, ordemBandeja } = jogo;
+  const total = arq.pecas.length;
+  const pronto = passo >= total;
+
+  const elPasso = document.getElementById('montagem-passo');
+  if (elPasso) elPasso.textContent = pronto ? 'Motor montado!' : `Peça ${passo + 1} de ${total}`;
+
+  const barra = document.getElementById('montagem-barra');
+  if (barra) barra.style.width = ((passo / total) * 100) + '%';
+
+  const msg = document.getElementById('montagem-msg');
+  if (msg) {
+    if (pronto) {
+      msg.innerHTML = `<strong>Parabéns, o motor está completo!</strong> ` + (erros === 0
+        ? 'E você acertou todas as peças de primeira.'
+        : `Você errou ${erros}${erros === 1 ? ' vez' : ' vezes'} pelo caminho.`);
+    } else {
+      const acerto = feedback && feedback.tipo === 'ok'
+        ? `<span class="montagem__ok">✔ ${feedback.peca.nome}: ${feedback.peca.aoEncaixar}</span>` : '';
+      const erro = feedback && feedback.tipo === 'erro'
+        ? `<span class="montagem__erro">✘ Ainda não dá para montar ${feedback.peca.nome}.</span> ${feedback.peca.seErrar}`
+        : `<strong>Próxima peça:</strong> ${arq.pecas[passo].dica}`;
+      msg.innerHTML = acerto + erro;
+    }
+  }
+
+  const bandeja = document.getElementById('montagem-bandeja');
+  if (bandeja) {
+    bandeja.innerHTML = pronto
+      ? `<button type="button" class="btn btn--primary" data-remontar="1">Montar de novo</button>`
+      : ordemBandeja.map(i => {
+          const p = arq.pecas[i];
+          const jaFoi = i < passo;
+          return `<button type="button" class="peca-btn${jaFoi ? ' peca-btn--ok' : ''}"
+                    data-peca="${i}" ${jaFoi ? 'disabled' : ''}>${p.nome}</button>`;
+        }).join('');
+  }
 }
 
 function tentarPeca(indice) {
   if (!jogo) return;
-  const msg = document.getElementById('montagem-msg');
   const i = Number(indice);
+  const p = jogo.arq.pecas[i];
 
   if (i === jogo.passo) {
-    const p = jogo.arq.pecas[i];
+    if (tem3D()) window.Motor3D.encaixar(jogo.arqId, i);
     jogo.passo++;
-    desenharMontagem();
-    const novo = document.getElementById('montagem-msg');
-    if (novo && jogo.passo < jogo.arq.pecas.length) {
-      novo.insertAdjacentHTML('afterbegin',
-        `<span class="montagem__ok">✔ ${p.nome}: ${p.aoEncaixar}</span>`);
+    if (jogo.passo >= jogo.arq.pecas.length) {
+      desenharTela();                 // tela de conclusão
+    } else {
+      if (!tem3D()) redesenharSVG();
+      atualizarPainel({ tipo: 'ok', peca: p });
     }
   } else {
     jogo.erros++;
-    const p = jogo.arq.pecas[i];
     const btn = elConteudo().querySelector(`[data-peca="${i}"]`);
     if (btn) { btn.classList.remove('peca-btn--erro'); void btn.offsetWidth; btn.classList.add('peca-btn--erro'); }
-    if (msg) msg.innerHTML = `<span class="montagem__erro">✘ Ainda não dá para montar ${p.nome}.</span> ${p.seErrar}`;
+    atualizarPainel({ tipo: 'erro', peca: p });
   }
 }
 
@@ -365,6 +409,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const bPeca = e.target.closest('[data-peca]');
     if (bPeca) { tentarPeca(bPeca.dataset.peca); return; }
     const bRe = e.target.closest('[data-remontar]');
-    if (bRe && jogo) abrirMontagem(jogo.marcaId, jogo.indiceFamilia);
+    if (bRe && jogo) { abrirMontagem(jogo.marcaId, jogo.indiceFamilia); return; }
+    // sair da montagem encerra a cena 3D
+    if (e.target.closest('[data-voltar-marca], [data-marca], [data-grupo]') && window.Motor3D) window.Motor3D.parar();
   });
+  const fechar = document.getElementById('modal-close');
+  if (fechar) fechar.addEventListener('click', () => { if (window.Motor3D) window.Motor3D.parar(); });
 });
