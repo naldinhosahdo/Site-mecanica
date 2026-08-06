@@ -291,7 +291,7 @@ function desenharTela() {
   const pronto = jogo.passo >= total;
   const usa3D = tem3D();
 
-  const palco = pronto
+  const palco = (pronto && !usa3D)
     ? `<div class="montagem__pronto">🏁</div>`
     : usa3D
       ? `<canvas id="montagem-canvas" class="montagem__canvas"></canvas>
@@ -312,16 +312,13 @@ function desenharTela() {
   const modal = elOverlay().querySelector('.modal');
   if (modal) modal.scrollTop = 0;
 
-  if (!pronto) {
-    if (usa3D) {
-      const cv = document.getElementById('montagem-canvas');
-      requestAnimationFrame(() => window.Motor3D.iniciar(cv, arqId, jogo.passo));
-    } else {
-      redesenharSVG();
-    }
-  } else if (usa3D) {
-    window.Motor3D.parar();
+  if (usa3D) {
+    const cv = document.getElementById('montagem-canvas');
+    if (cv) requestAnimationFrame(() => window.Motor3D.iniciar(cv, arqId, jogo.passo));
+  } else if (!pronto) {
+    redesenharSVG();
   }
+  jogo.ligado = false; jogo.explodido = false;
   atualizarPainel();
 }
 
@@ -352,8 +349,9 @@ function atualizarPainel(feedback) {
   if (msg) {
     if (pronto) {
       msg.innerHTML = `<strong>Parabéns, o motor está completo!</strong> ` + (erros === 0
-        ? 'E você acertou todas as peças de primeira.'
-        : `Você errou ${erros}${erros === 1 ? ' vez' : ' vezes'} pelo caminho.`);
+        ? 'E você acertou todas as peças de primeira. '
+        : `Você errou ${erros}${erros === 1 ? ' vez' : ' vezes'} pelo caminho. `)
+        + (tem3D() ? 'Agora ligue o motor para ver as peças em movimento, ou abra a vista explodida.' : '');
     } else {
       const acerto = feedback && feedback.tipo === 'ok'
         ? `<span class="montagem__ok">✔ ${feedback.peca.nome}: ${feedback.peca.aoEncaixar}</span>` : '';
@@ -367,7 +365,11 @@ function atualizarPainel(feedback) {
   const bandeja = document.getElementById('montagem-bandeja');
   if (bandeja) {
     bandeja.innerHTML = pronto
-      ? `<button type="button" class="btn btn--primary" data-remontar="1">Montar de novo</button>`
+      ? (tem3D()
+          ? `<button type="button" class="peca-btn peca-btn--acao${jogo.ligado ? ' peca-btn--ligado' : ''}" data-ligar="1">${jogo.ligado ? '⏸ Desligar motor' : '▶ Ligar o motor'}</button>
+             <button type="button" class="peca-btn peca-btn--acao${jogo.explodido ? ' peca-btn--ligado' : ''}" data-explodir="1">${jogo.explodido ? '🔧 Juntar as peças' : '💥 Vista explodida'}</button>
+             <button type="button" class="btn btn--primary" data-remontar="1">Montar de novo</button>`
+          : `<button type="button" class="btn btn--primary" data-remontar="1">Montar de novo</button>`)
       : ordemBandeja.map(i => {
           const p = arq.pecas[i];
           const jaFoi = i < passo;
@@ -408,6 +410,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bMont) { abrirMontagem(bMont.dataset.marca, bMont.dataset.montar); return; }
     const bPeca = e.target.closest('[data-peca]');
     if (bPeca) { tentarPeca(bPeca.dataset.peca); return; }
+    const bLig = e.target.closest('[data-ligar]');
+    if (bLig && jogo) { jogo.ligado = window.Motor3D.ligar(!jogo.ligado); atualizarPainel(); return; }
+    const bExp = e.target.closest('[data-explodir]');
+    if (bExp && jogo) { jogo.explodido = window.Motor3D.explodir(!jogo.explodido); atualizarPainel(); return; }
     const bRe = e.target.closest('[data-remontar]');
     if (bRe && jogo) { abrirMontagem(jogo.marcaId, jogo.indiceFamilia); return; }
     // sair da montagem encerra a cena 3D

@@ -47,18 +47,25 @@ const geo3d = {
           const off = i%2 ? .34 : -.34;
           g.add(põe(gira(cil(.34,.34,.22,COR.ferro),PI2,0,0),0,off,z));
         });
-        return g; })(), entrada:[0,0,-5] }),
+        return g; })(), entrada:[0,0,-5], animar:(o,t)=>{ o.rotation.z = t; } }),
     comando: () => ({ obj: grupo(
         põe(gira(cil(.1,.1,2.9,COR.escuro),PI2,0,0),0,-.52,0),
         ...[-.8,-.27,.27,.8].map(z=>põe(gira(cil(.19,.19,.16,COR.aco),PI2,0,0),0,-.52,z))
-      ), entrada:[0,-4,0] }),
-    bielas: () => ({ obj: (()=>{
-        const g = new THREE.Group();
-        [[-1,-.95],[1,-.32],[-1,.32],[1,.95]].forEach(([lado,z])=>{
-          g.add(põe(gira(cil(.42,.42,.42,COR.aluminio,20,.6,.35),0,0,PI2),lado*1.35,0,z));
-          g.add(põe(gira(cil(.09,.09,1.0,COR.bronze),0,0,PI2),lado*.75,0,z));
-        });
-        return g; })(), entrada:[0,4,0] }),
+      ), entrada:[0,-4,0], animar:(o,t)=>{ o.rotation.z = t/2; } }),
+    bielas: () => {
+      const g = new THREE.Group(); const moveis = [];
+      [[-1,-.95],[1,-.32],[-1,.32],[1,.95]].forEach(([lado,z])=>{
+        const pist = põe(gira(cil(.42,.42,.42,COR.aluminio,20,.6,.35),0,0,PI2),lado*1.35,0,z);
+        const biela= põe(gira(cil(.09,.09,1.0,COR.bronze),0,0,PI2),lado*.75,0,z);
+        g.add(pist); g.add(biela);
+        moveis.push({pist, biela, lado, bp:lado*1.35, bb:lado*.75});
+      });
+      return { obj:g, entrada:[0,4,0], animar:(o,t)=>{
+        // no boxer, os pistões opostos avançam ao mesmo tempo
+        const d = Math.cos(t) * .32;
+        moveis.forEach(m=>{ m.pist.position.x = m.bp + m.lado*d; m.biela.position.x = m.bb + m.lado*d*.5; });
+      }};
+    },
     cilindros: () => ({ obj: (()=>{
         const g = new THREE.Group();
         [[-1,-.95],[1,-.32],[-1,.32],[1,.95]].forEach(([lado,z])=>{
@@ -81,14 +88,14 @@ const geo3d = {
     volante: () => ({ obj: grupo(
         põe(gira(cil(1.05,1.05,.24,COR.ferro,36,.8,.45),PI2,0,0),0,0,-1.85),
         põe(gira(cil(.4,.4,.3,COR.aco,20),PI2,0,0),0,0,-1.9)
-      ), entrada:[0,0,-6] }),
+      ), entrada:[0,0,-6], animar:(o,t)=>{ o.rotation.z = t; } }),
     ventoinha: () => ({ obj: (()=>{
         const g = grupo(põe(gira(cil(.85,.85,.16,COR.aluminio,32,.7,.4),PI2,0,0),0,.15,2.0));
         for(let k=0;k<10;k++){
           const a=k*Math.PI/5;
           g.add(põe(gira(caixa(.14,.5,.1,COR.aluminio,.6,.45),0,0,a),Math.sin(a)*.5,.15+Math.cos(a)*.5,2.1));
         }
-        return g; })(), entrada:[0,0,6] }),
+        return g; })(), entrada:[0,0,6], animar:(o,t)=>{ o.rotation.z = t*1.4; } }),
     distribuidor: () => ({ obj: grupo(
         põe(cil(.24,.24,.6,COR.escuro,20,.4,.6),.55,1.05,-.6),
         põe(cil(.3,.3,.14,COR.escuro,20,.4,.6),.55,1.4,-.6)
@@ -115,15 +122,24 @@ const geo3d = {
         [-1.2,-.4,.4,1.2].forEach((x,i)=>
           g.add(põe(gira(cil(.36,.36,.24,COR.ferro),0,0,PI2),x,(i%2?.32:-.32),0)));
         g.position.y=-1.05;
-        return g; })(), entrada:[0,-5,0] }),
-    pistoes: () => ({ obj: (()=>{
-        const g = new THREE.Group();
-        [-1.2,-.4,.4,1.2].forEach((x,i)=>{
-          const alto = i%2===0;
-          g.add(põe(cil(.4,.4,.46,COR.aluminio,20,.6,.35),x,alto?.5:.1,0));
-          g.add(põe(cil(.08,.08,.95,COR.bronze,12),x,alto?-.2:-.5,0));
+        return g; })(), entrada:[0,-5,0], animar:(o,t)=>{ o.rotation.x = t; } }),
+    pistoes: () => {
+      const g = new THREE.Group(); const moveis = [];
+      [-1.2,-.4,.4,1.2].forEach((x,i)=>{
+        const alto = i%2===0;
+        const pist = põe(cil(.4,.4,.46,COR.aluminio,20,.6,.35),x,alto?.5:.1,0);
+        const biela= põe(cil(.08,.08,.95,COR.bronze,12),x,alto?-.2:-.5,0);
+        g.add(pist); g.add(biela);
+        // ordem de ignição: 1 e 4 sobem enquanto 2 e 3 descem
+        moveis.push({pist, biela, fase: (i===0||i===3)?0:Math.PI, bp:.3, bb:-.35});
+      });
+      return { obj:g, entrada:[0,5,0], animar:(o,t)=>{
+        moveis.forEach(m=>{
+          const d = Math.cos(t + m.fase) * .3;
+          m.pist.position.y = m.bp + d; m.biela.position.y = m.bb + d;
         });
-        return g; })(), entrada:[0,5,0] }),
+      }};
+    },
     carteroleo: () => ({ obj: grupo(
         põe(caixa(3.2,.7,1.4,COR.aco,.7,.5),0,-1.6,0),
         põe(cil(.12,.12,.2,COR.escuro,12),1.1,-1.95,0)
@@ -136,7 +152,7 @@ const geo3d = {
         const g = grupo(põe(gira(cil(.13,.13,3.5,COR.escuro,18,.7,.45),0,0,PI2),0,1.95,0));
         [-1.2,-.4,.4,1.2].forEach(x=>
           g.add(põe(gira(cil(.26,.26,.2,COR.aco,18),0,0,PI2),x,1.95,0)));
-        return g; })(), entrada:[0,5,0] }),
+        return g; })(), entrada:[0,5,0], animar:(o,t)=>{ o.rotation.x = t/2; } }),
     correia: () => ({ obj: (()=>{
         const g = new THREE.Group();
         g.add(põe(gira(new THREE.Mesh(new THREE.TorusGeometry(.42,.07,10,28), mat(COR.escuro,.3,.7)),0,PI2,0),1.85,1.95,0));
@@ -157,7 +173,7 @@ const geo3d = {
         return g; })(), entrada:[0,0,6] }),
     volante: () => ({ obj: grupo(
         põe(gira(cil(1.0,1.0,.22,COR.ferro,36,.8,.45),0,0,PI2),-2.0,-1.05,0)
-      ), entrada:[-6,0,0] }),
+      ), entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
   },
 };
 
@@ -165,6 +181,7 @@ const geo3d = {
 // CENA
 // =========================================
 let cena, camera, renderer, raiz, animId, arrastando=false, ultimo={x:0,y:0};
+let pecasNaCena=[], ligado=false, giroMotor=0, explodeAlvo=0, explodeAtual=0;
 let giroY=.85, giroX=.38, autoGiro=true, tweens=[];
 
 function criarCena(canvas) {
@@ -197,7 +214,7 @@ function redimensionar(canvas) {
 }
 
 function posicionarCamera() {
-  const d = 8.0;
+  const d = 8.0 + explodeAtual * 3.2;
   camera.position.set(
     d * Math.cos(giroX) * Math.sin(giroY),
     d * Math.sin(giroX),
@@ -221,6 +238,21 @@ function laco() {
     return k < 1;
   });
 
+  // motor em funcionamento
+  if (ligado) {
+    giroMotor += .09;
+    pecasNaCena.forEach(p => { if (p.mover) p.mover(p.obj, giroMotor); });
+  }
+
+  // vista explodida: as peças se afastam pela direção por onde entraram
+  explodeAtual += (explodeAlvo - explodeAtual) * .12;
+  if (Math.abs(explodeAlvo - explodeAtual) > .001) {
+    pecasNaCena.forEach(p => {
+      if (tweens.some(t => t.obj === p.obj)) return;   // não atropela quem está encaixando
+      p.obj.position.copy(p.base).addScaledVector(p.dir, explodeAtual * 1.35);
+    });
+  }
+
   posicionarCamera();
   renderer.render(cena, camera);
 }
@@ -228,9 +260,10 @@ function laco() {
 function montarPeca(arqId, pecaId, animar) {
   const fab = geo3d[arqId] && geo3d[arqId][pecaId];
   if (!fab) return;
-  const { obj, entrada } = fab();
+  const { obj, entrada, animar: mover } = fab();
   const destino = obj.position.clone();
   raiz.add(obj);
+  pecasNaCena.push({ obj, base: destino.clone(), dir: new THREE.Vector3(...entrada).normalize(), mover });
 
   if (animar) {
     obj.traverse(o => { if (o.material) { o.material.transparent = true; o.material.opacity = 0; } });
@@ -247,6 +280,8 @@ function montarPeca(arqId, pecaId, animar) {
 function limparCena() {
   if (!raiz) return;
   tweens = [];
+  pecasNaCena = [];
+  ligado = false; giroMotor = 0; explodeAlvo = 0; explodeAtual = 0;
   while (raiz.children.length) {
     const o = raiz.children.pop();
     o.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); });
@@ -299,6 +334,8 @@ window.Motor3D = {
     montarPeca(arqId, ids[indice], true);
     autoGiro = true;
   },
+  ligar(v) { ligado = !!v; if (!v) { giroMotor = 0; pecasNaCena.forEach(p => { if (p.mover) p.mover(p.obj, 0); }); } return ligado; },
+  explodir(v) { explodeAlvo = v ? 1 : 0; return !!v; },
   ajustar(canvas) { if (renderer) redimensionar(canvas); },
   parar() {
     if (animId) cancelAnimationFrame(animId);

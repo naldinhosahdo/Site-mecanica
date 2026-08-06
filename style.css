@@ -1329,3 +1329,15 @@ button.article-card__link:hover { color: var(--red-dark); }
     max-width: 280px;
   }
 }
+
+/* botões de ligar o motor e vista explodida */
+.peca-btn--acao { border-color: var(--red); color: var(--red); font-weight: 700; }
+.peca-btn--acao:hover { background: #fef2f2; }
+
+.peca-btn--ligado {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white);
+}
+
+.peca-btn--ligado:hover { background: var(--red-dark); color: var(--white); }
