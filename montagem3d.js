@@ -17,8 +17,12 @@ const COR = {
   bronze:  0x9a7b4f,   // bielas
 };
 
+// Peça de motor é metal fosco, não espelho: com metalness alto demais a
+// peça só reflete o ambiente e some quando está sozinha no palco.
 const mat = (cor, metal = .85, rug = .38) =>
-  new THREE.MeshStandardMaterial({ color: cor, metalness: metal, roughness: rug });
+  new THREE.MeshStandardMaterial({ color: cor,
+                                   metalness: Math.min(metal, .55),
+                                   roughness: Math.max(rug, .42) });
 
 // -----------------------------------------
 // Caixa com quinas chanfradas.
@@ -298,7 +302,7 @@ function ambienteEstudio() {
   painel(.5, 8, 12, 0xd9e6ff, -9.4, 1, 0);     // rebatedor frio de um lado
   painel(.5, 8, 12, 0xffdcb4,  9.4, 1, 0);     // rebatedor quente do outro
   painel(12, 6, .5, 0xc3cedd, 0, 1, -9.4);     // contraluz atrás
-  painel(14, .5, 14, 0x39414e, 0, -7.2, 0);    // chão escuro, para o metal ter contraste
+  painel(14, .5, 14, 0x555f6f, 0, -7.2, 0);    // chão escuro, para o metal ter contraste
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   const alvo = pmrem.fromScene(est, .05);
@@ -326,7 +330,7 @@ function criarCena(canvas) {
   cena.environment = ambienteEstudio();
   cena.environmentIntensity = .95;
 
-  cena.add(new THREE.HemisphereLight(0xdfe9ff, 0x2a3140, .5));
+  cena.add(new THREE.HemisphereLight(0xdfe9ff, 0x424b59, .6));
 
   // luz principal: é ela que faz as sombras entre as peças
   const sol = new THREE.DirectionalLight(0xfff4e6, 1.7);
@@ -377,17 +381,53 @@ const _eixoCima   = new THREE.Vector3();
 const _ponto      = new THREE.Vector3();
 const CIMA        = new THREE.Vector3(0, 1, 0);
 
+const _aux = new THREE.Vector3();
+
+// Enquadramento fixo do motor inteiro.
+// Na montagem peça por peça o palco começa vazio; sem isso a câmera
+// enquadraria só a primeira peça e o motor iria encolhendo a cada encaixe.
+const _medidas = new Map();
+let enquadramentoFixo = null;
+
+function medirArquitetura(arqId) {
+  if (_medidas.has(arqId)) return _medidas.get(arqId);
+  const temp = new THREE.Group();
+  const pontos = [];
+  Object.keys(geo3d[arqId] || {}).forEach(id => {
+    const { obj } = geo3d[arqId][id]();
+    temp.add(obj);
+    const b = new THREE.Box3().setFromObject(obj);
+    pontos.push({ p: b.getCenter(new THREE.Vector3()),
+                  r: b.getSize(new THREE.Vector3()).length() / 2 });
+  });
+  temp.traverse(o => {
+    if (o.geometry && !o.geometry.userData.compartilhada) o.geometry.dispose();
+    if (o.material) o.material.dispose();
+  });
+  _medidas.set(arqId, pontos);
+  return pontos;
+}
+
 function distanciaQueCabe() {
   _eixoFrente.set(Math.cos(giroX) * Math.sin(giroY), Math.sin(giroX), Math.cos(giroX) * Math.cos(giroY));
   _eixoLado.crossVectors(CIMA, _eixoFrente).normalize();
   _eixoCima.crossVectors(_eixoFrente, _eixoLado).normalize();
 
   let meiaLarg = .5, meiaAlt = .5;
-  pecasNaCena.forEach(p => {
-    _ponto.copy(p.base).addScaledVector(p.dir, explodeAtual * p.alcance).add(p.centro).sub(alvo);
-    meiaLarg = Math.max(meiaLarg, Math.abs(_ponto.dot(_eixoLado)) + p.raioPeca);
-    meiaAlt  = Math.max(meiaAlt,  Math.abs(_ponto.dot(_eixoCima)) + p.raioPeca);
-  });
+  const medir = (ponto, raioP) => {
+    _ponto.copy(ponto).sub(alvo);
+    meiaLarg = Math.max(meiaLarg, Math.abs(_ponto.dot(_eixoLado)) + raioP);
+    meiaAlt  = Math.max(meiaAlt,  Math.abs(_ponto.dot(_eixoCima)) + raioP);
+  };
+
+  // com a vista explodida aberta o tamanho muda, aí volta a medir ao vivo
+  if (enquadramentoFixo && explodeAtual < .01) {
+    enquadramentoFixo.forEach(m => medir(m.p, m.r));
+  } else {
+    pecasNaCena.forEach(p => medir(
+      _aux.copy(p.base).addScaledVector(p.dir, explodeAtual * p.alcance).add(p.centro),
+      p.raioPeca));
+  }
 
   const vertical = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
   const horizontal = vertical * camera.aspect;
@@ -417,6 +457,11 @@ function laco() {
     t.obj.position.lerpVectors(t.de, t.para, e);
     t.obj.scale.setScalar(.6 + .4 * e);
     t.obj.traverse(o => { if (o.material) o.material.opacity = e; });
+    // peça encaixada volta a ser opaca de verdade, senão fica na fila
+    // de transparência e passa a se desenhar fora de ordem
+    if (k >= 1) t.obj.traverse(o => {
+      if (o.material) { o.material.opacity = 1; o.material.transparent = false; o.material.needsUpdate = true; }
+    });
     return k < 1;
   });
 
@@ -637,6 +682,8 @@ window.Motor3D = {
     criarCena(canvas);
     ligarArrasto(canvas);
     autoGiro = true; giroY = .85; giroX = .38; zoomF = 1; alvo.set(0,0,0);
+    // montando peça por peça: a câmera já enquadra o motor inteiro desde o começo
+    enquadramentoFixo = (atePasso === undefined) ? null : medirArquitetura(arqId);
     const ids = Object.keys(geo3d[arqId] || {});
     const quantas = (atePasso === undefined) ? ids.length : atePasso;
     for (let i = 0; i < quantas; i++) montarPeca(arqId, ids[i], false);

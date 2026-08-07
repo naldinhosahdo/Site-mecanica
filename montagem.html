@@ -208,6 +208,27 @@
       color: #fff; font-weight: 700; margin-bottom: .25rem;
       font-size: .92rem;
     }
+    .hud__peca--ok  { color: #4ade80; }
+    .hud__peca--erro .num { background: #f87171; }
+    .hud__erro { color: #f87171; font-weight: 700; }
+
+    /* progresso da montagem peça por peça */
+    .hud__passo {
+      display: none;
+      margin-top: .5rem; margin-bottom: .35rem;
+      font-size: .68rem; font-weight: 800; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--txt2);
+    }
+    .hud__barra {
+      display: none;
+      height: 5px; border-radius: 999px;
+      background: rgba(255,255,255,.1); overflow: hidden;
+    }
+    .hud__barra span {
+      display: block; height: 100%; width: 0;
+      background: var(--red); border-radius: 999px;
+      transition: width .4s ease;
+    }
 
     /* ---------- ações + lista de peças (rodapé) ---------- */
     .acoes {
@@ -251,6 +272,29 @@
 
     .peca--acao { border-color: rgba(230,51,41,.55); color: #fff; background: rgba(230,51,41,.18); font-weight: 700; }
     .peca--ativo { background: var(--red); border-color: var(--red); color: #fff; }
+
+    .peca:disabled { opacity: .35; cursor: default; }
+    .peca:disabled:hover { border-color: var(--borda); background: rgba(255,255,255,.06); color: var(--txt); }
+
+    /* estados da montagem peça por peça */
+    .peca--ok {
+      background: rgba(74,222,128,.12);
+      border-color: rgba(74,222,128,.4);
+      color: #4ade80;
+      cursor: default;
+    }
+    .peca--ok:hover { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.4); color: #4ade80; }
+    .peca--ok .num { background: rgba(74,222,128,.25); color: #4ade80; }
+
+    .peca--vez { border-color: var(--red); background: rgba(230,51,41,.2); color: #fff; }
+    .peca--vez .num { background: var(--red); color: #fff; }
+
+    .peca--erro { animation: treme .45s; border-color: var(--red); background: rgba(230,51,41,.3); }
+    @keyframes treme {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); } 40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
+    }
 
     .sem-webgl {
       position: absolute; inset: 0;
@@ -327,6 +371,8 @@
     <div class="hud">
       <div class="hud__tipo" id="hud-tipo">Motor</div>
       <div class="hud__nome" id="hud-nome">Motor</div>
+      <div class="hud__passo" id="hud-passo"></div>
+      <div class="hud__barra" id="hud-barra-caixa"><span id="hud-barra"></span></div>
       <div class="hud__msg" id="hud-msg"></div>
     </div>
     <div class="palco">
@@ -340,6 +386,7 @@
   </div>
 
   <div class="acoes">
+    <button class="peca peca--acao" id="btn-modo">🔧 Montar peça por peça</button>
     <button class="peca peca--acao" id="btn-explodir">💥 Vista explodida</button>
     <button class="peca peca--acao" id="btn-ligar">▶ Ligar o motor</button>
     <button class="peca peca--acao" id="btn-nomes">🏷 Nomes das peças</button>
@@ -348,7 +395,7 @@
   <div class="bandeja" id="bandeja"></div>
 
   <script src="montagem-dados.js?v=1"></script>
-  <script src="montagem3d.js?v=30" type="module"></script>
-  <script src="montagem-pagina.js?v=10"></script>
+  <script src="montagem3d.js?v=33" type="module"></script>
+  <script src="montagem-pagina.js?v=12"></script>
 </body>
 </html>
