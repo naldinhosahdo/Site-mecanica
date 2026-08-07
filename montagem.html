@@ -153,6 +153,34 @@
       box-shadow: 0 2px 14px rgba(230,51,41,.55);
     }
 
+    /* sem os nomes ligados, o rótulo encolhe e fica só a bolinha do número */
+    .rotulo--so-num { padding: .12rem; }
+    .rotulo--so-num .txt { display: none; }
+    .rotulo--so-num .num { margin-right: 0; }
+
+    /* ---------- numeração das peças (ordem de montagem) ---------- */
+    .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.5em;
+      height: 1.5em;
+      padding: 0 .3em;
+      margin-right: .45em;
+      border-radius: 999px;
+      background: var(--red);
+      color: #fff;
+      font-size: .78em;
+      font-weight: 800;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .rotulo--ativo .num { background: rgba(0,0,0,.32); }
+    .peca .num { background: rgba(255,255,255,.13); color: var(--txt2); }
+    .peca:hover .num { background: rgba(230,51,41,.6); color: #fff; }
+    .peca--ativo .num { background: rgba(0,0,0,.28); color: #fff; }
+    .peca--acao .num { display: none; }
+
     /* ---------- painel de informação (canto superior esquerdo) ---------- */
     .hud {
       position: absolute;
@@ -175,7 +203,11 @@
     .hud__nome { font-size: .95rem; font-weight: 700; line-height: 1.35; }
 
     .hud__msg { font-size: .8rem; line-height: 1.55; color: var(--txt2); margin-top: .6rem; }
-    .hud__peca { display: block; color: #fff; font-weight: 700; margin-bottom: .2rem; }
+    .hud__peca {
+      display: flex; align-items: center;
+      color: #fff; font-weight: 700; margin-bottom: .25rem;
+      font-size: .92rem;
+    }
 
     /* ---------- ações + lista de peças (rodapé) ---------- */
     .acoes {
@@ -202,6 +234,8 @@
     }
 
     .peca {
+      display: inline-flex;
+      align-items: center;
       padding: .5rem .9rem;
       border-radius: 9px;
       border: 1px solid var(--borda);
@@ -314,7 +348,7 @@
   <div class="bandeja" id="bandeja"></div>
 
   <script src="montagem-dados.js?v=1"></script>
-  <script src="montagem3d.js?v=25" type="module"></script>
-  <script src="montagem-pagina.js?v=8"></script>
+  <script src="montagem3d.js?v=30" type="module"></script>
+  <script src="montagem-pagina.js?v=10"></script>
 </body>
 </html>

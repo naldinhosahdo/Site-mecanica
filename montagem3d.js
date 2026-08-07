@@ -439,16 +439,44 @@ function laco() {
   renderer.render(cena, camera);
 
   if (aoProjetar && renderer) {
+    if (quadros++ % 5 === 0) medirOclusao();   // roda já no primeiro quadro
     const larg = renderer.domElement.clientWidth, alt = renderer.domElement.clientHeight;
     const v = new THREE.Vector3();
     aoProjetar(pecasNaCena.map((p, i) => {
-      v.copy(p.obj.position).add(p.centro).project(camera);
+      v.copy(p.obj.position).add(p.ancora || p.centro).project(camera);
       return { i,
         x: (v.x * .5 + .5) * larg,
         y: (-v.y * .5 + .5) * alt,
-        visivel: v.z < 1 };
+        visivel: v.z < 1,
+        tapada: !!p.tapada };
     }));
   }
+}
+
+// Quais peças estão realmente à vista? Sem isso, com o motor montado
+// os números das peças internas se empilham todos no meio da tela.
+const raio = new THREE.Raycaster();
+const _ndc = new THREE.Vector2();
+const _centroTela = new THREE.Vector3();
+let quadros = 0;
+
+function medirOclusao() {
+  pecasNaCena.forEach(p => {
+    p.tapada = true;
+    // testa o centro e alguns pontos espalhados pela peça: basta um estar
+    // à mostra para valer, e é nele que o rótulo se ancora
+    for (const amostra of p.amostras) {
+      _centroTela.copy(p.obj.position).add(amostra).project(camera);
+      if (_centroTela.z >= 1) continue;
+      _ndc.set(_centroTela.x, _centroTela.y);
+      raio.setFromCamera(_ndc, camera);
+      const batidas = raio.intersectObjects(raiz.children, true);
+      let o = batidas.length ? batidas[0].object : null;
+      while (o && o.parent !== raiz) o = o.parent;
+      if (!o || o === p.obj) { p.tapada = false; p.ancora = amostra; break; }
+    }
+    if (p.tapada) p.ancora = p.centro;
+  });
 }
 
 function montarPeca(arqId, pecaId, animar) {
@@ -461,11 +489,19 @@ function montarPeca(arqId, pecaId, animar) {
   const caixaPeca = new THREE.Box3().setFromObject(obj);
   const cx = caixaPeca.getCenter(new THREE.Vector3()).sub(destino);
   const raioPeca = caixaPeca.getSize(new THREE.Vector3()).length() / 2;
-  const materiais = [];
+  const materiais = [], malhas = [];
   obj.traverse(o => {
     if (o.material) materiais.push(o.material);
-    if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+    if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; malhas.push(o); }
   });
+
+  // pontos de referência da peça, para saber se ela está à vista
+  const amostras = [cx.clone()];
+  const salto = Math.max(1, Math.floor(malhas.length / 5));
+  for (let k = 0; k < malhas.length && amostras.length < 6; k += salto) {
+    amostras.push(new THREE.Box3().setFromObject(malhas[k])
+                    .getCenter(new THREE.Vector3()).sub(destino));
+  }
   // na vista explodida a peça sai para fora: manda-a na direção do próprio centro
   // (afasta radialmente, sem empilhar peças) com um empurrão na direção de montagem
   const radial = destino.clone().add(cx);
@@ -474,7 +510,8 @@ function montarPeca(arqId, pecaId, animar) {
   const dir = radial.normalize().addScaledVector(new THREE.Vector3(...entrada).normalize(), .55).normalize();
   // quem já está mais para fora anda mais: assim as "camadas" do motor se separam
   const alcance = 1.0 + raio * 1.8;
-  pecasNaCena.push({ obj, base: destino.clone(), dir, alcance, mover, centro: cx, raioPeca, materiais });
+  pecasNaCena.push({ obj, base: destino.clone(), dir, alcance, mover,
+                     centro: cx, ancora: cx, amostras, raioPeca, materiais });
 
   if (animar) {
     obj.traverse(o => { if (o.material) { o.material.transparent = true; o.material.opacity = 0; } });

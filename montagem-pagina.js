@@ -44,29 +44,37 @@ function iniciarPagina() {
   window.addEventListener('resize', () => { if (tem3D) window.Motor3D.ajustar(canvas); });
 
   // ---------- rótulos que seguem as peças ----------
-  const divsRotulo = arq.pecas.map(p => {
+  // o número é a ordem em que a peça entra no motor: 1 é a primeira a ser montada
+  const divsRotulo = arq.pecas.map((p, i) => {
     const d = document.createElement('div');
     d.className = 'rotulo';
-    d.textContent = p.nome;
+    d.innerHTML = `<span class="num">${i + 1}</span><span class="txt">${p.nome}</span>`;
     camadaRotulos.appendChild(d);
     return d;
   });
 
-  const larguras = [];   // largura de cada rótulo, medida uma vez só
+  // largura de cada rótulo, medida uma vez em cada modo (só o número / número + nome)
+  const larguras = [[], []];
 
   function posicionarRotulos(pontos) {
-    const mostrar = nomes || explodido;
+    // o número aparece sempre; o nome só na vista explodida ou com "nomes" ligado
+    const comNome = nomes || explodido;
+    const modo = comNome ? 1 : 0;
     const visiveis = [];
 
     pontos.forEach(pt => {
       const d = divsRotulo[pt.i];
       if (!d) return;
-      const visivel = mostrar && pt.visivel && (selecionada === null || selecionada === pt.i);
+      // com o motor montado, a bolinha só aparece na peça que dá para ver;
+      // com os nomes ligados mostra todas, inclusive as de dentro
+      const visivel = pt.visivel && (selecionada === null || selecionada === pt.i)
+                      && (comNome || !pt.tapada);
       d.style.display = visivel ? 'block' : 'none';
+      d.classList.toggle('rotulo--so-num', !comNome);
       d.classList.toggle('rotulo--ativo', selecionada === pt.i);
       if (visivel) {
-        if (!larguras[pt.i]) larguras[pt.i] = d.offsetWidth || 80;
-        visiveis.push({ d, x: pt.x, y: pt.y, w: larguras[pt.i] });
+        if (!larguras[modo][pt.i]) larguras[modo][pt.i] = d.offsetWidth || 80;
+        visiveis.push({ d, x: pt.x, y: pt.y, w: larguras[modo][pt.i] });
       }
     });
 
@@ -96,8 +104,8 @@ function iniciarPagina() {
   function pintar() {
     const p = selecionada !== null ? arq.pecas[selecionada] : null;
     el('hud-msg').innerHTML = p
-      ? `<span class="hud__peca">${p.nome}</span>${p.aoEncaixar}`
-      : `${arq.pecas.length} peças. Toque numa peça da lista para destacar, ou abra a vista explodida.`;
+      ? `<span class="hud__peca"><span class="num">${selecionada + 1}</span>${p.nome}</span>${p.aoEncaixar}`
+      : `${arq.pecas.length} peças, numeradas na ordem em que entram no motor. Toque numa peça da lista para destacar, ou abra a vista explodida.`;
 
     el('btn-explodir').textContent = explodido ? '🔧 Juntar as peças' : '💥 Vista explodida';
     el('btn-explodir').classList.toggle('peca--ativo', explodido);
@@ -106,7 +114,8 @@ function iniciarPagina() {
     el('btn-nomes').classList.toggle('peca--ativo', nomes);
 
     el('bandeja').innerHTML = arq.pecas.map((pe, i) =>
-      `<button class="peca${selecionada === i ? ' peca--ativo' : ''}" data-peca="${i}">${pe.nome}</button>`
+      `<button class="peca${selecionada === i ? ' peca--ativo' : ''}" data-peca="${i}">` +
+      `<span class="num">${i + 1}</span>${pe.nome}</button>`
     ).join('');
 
     // no celular a lista rola de lado: traz a peça escolhida para a vista
