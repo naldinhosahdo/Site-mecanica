@@ -135,7 +135,8 @@ function iniciarPagina() {
     const p = selecionada !== null ? arq.pecas[selecionada] : null;
     return p
       ? `<span class="hud__peca"><span class="num">${selecionada + 1}</span>${p.nome}</span>${p.aoEncaixar}`
-      : `${total} peças, numeradas na ordem em que entram no motor. Toque numa peça da lista para destacar, ou abra a vista explodida.`;
+      : `${total} peças, numeradas na ordem em que entram no motor. Toque numa peça da lista para destacar, ou abra a vista explodida.` +
+        `<span class="hud__nota">Esquema da arquitetura ${arq.titulo.toLowerCase()} — não é uma réplica exata deste motor.</span>`;
   }
 
   function pintar() {

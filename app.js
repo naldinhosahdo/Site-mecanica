@@ -1629,7 +1629,7 @@ function abrirModalMarca(id) {
     const vs = variantes[id + '|' + mo.nome];
     const podeMontar = typeof temMontagem === 'function' && temMontagem(id, mo.nome);
     const btnMontar = podeMontar
-      ? `<a class="motor-item__montar" href="montagem.html?arq=${encodeURIComponent(arqDaFamilia(id, mo.nome))}&motor=${encodeURIComponent(m.nome + ' ' + mo.nome)}">🔩 Ver este motor em 3D</a>`
+      ? `<a class="motor-item__montar" href="montagem.html?arq=${encodeURIComponent(arqDaFamilia(id, mo))}&motor=${encodeURIComponent(m.nome + ' ' + mo.nome)}">🔩 Ver este motor em 3D</a>`
       : '';
 
     if (vs) {

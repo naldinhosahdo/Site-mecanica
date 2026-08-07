@@ -92,6 +92,33 @@ const scan=(txt,onde)=>{ citaveis.forEach(c=>{ if(new RegExp('\\b'+c+'\\b','i').
 for(const mid in marcas) marcas[mid].motores.forEach(mo=>scan(mo.desc));
 for(const k in variantes) variantes[k].forEach(v=>scan(v.desc));
 
+// ---------- H. COBERTURA DO 3D ----------
+// toda família precisa cair numa arquitetura que exista de verdade
+{
+  const src = fs.readFileSync('./montagem-dados.js','utf8').replace(/^const /gm,'var ')
+            + '\nmodule.exports={arquiteturas,arqDaFamilia};';
+  const Mod = new module.constructor();
+  Mod._compile(src, process.cwd()+'/_montagem-dados-audit.js');
+  const {arquiteturas, arqDaFamilia} = Mod.exports;
+  const usadas = new Set();
+  for(const mid in marcas) marcas[mid].motores.forEach(mo=>{
+    const a = arqDaFamilia(mid, mo);
+    if(!a) E.push('[3d] familia sem arquitetura: '+mid+' / '+mo.nome);
+    else if(!arquiteturas[a]) E.push('[3d] arquitetura inexistente ('+a+') em '+mid+' / '+mo.nome);
+    else usadas.add(a);
+  });
+  for(const a in arquiteturas){
+    const p = arquiteturas[a].pecas;
+    if(!p || p.length < 8) E.push('[3d] arquitetura com poucas pecas: '+a);
+    if(!arquiteturas[a].titulo) E.push('[3d] arquitetura sem titulo: '+a);
+    const ids = new Set(p.map(x=>x.id));
+    if(ids.size !== p.length) E.push('[3d] arquitetura com id repetido: '+a);
+    p.forEach(x=>{ if(!x.nome||!x.dica||!x.aoEncaixar||!x.seErrar) E.push('[3d] peca incompleta em '+a+': '+x.id); });
+    if(!usadas.has(a)) W.push('[3d] arquitetura desenhada mas nenhum motor usa: '+a);
+  }
+  console.log('arquiteturas 3D: '+Object.keys(arquiteturas).length+' | usadas pelo catalogo: '+usadas.size);
+}
+
 console.log('==== AUDITORIA COMPLETA ====');
 console.log('grupos: '+ordem.length+' | marcas: '+Object.keys(marcas).length+' | familias: '+Object.values(marcas).reduce((s,m)=>s+m.motores.length,0)+' | variantes: '+Object.values(variantes).reduce((s,v)=>s+v.length,0));
 console.log('afirmacoes absolutas no texto (revisar manualmente): '+nSup);
