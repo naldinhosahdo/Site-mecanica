@@ -5,16 +5,22 @@
 // =========================================
 import * as THREE from './vendor/three.module.min.js';
 
+// No motor de verdade cada peça é de um material diferente e isso salta
+// aos olhos: bloco escuro, cabeçote de alumínio claro, tampas de
+// plástico preto, protetores amarelos. É esse contraste que faz o
+// conjunto parecer um motor, e não uma escultura de um bloco só.
 const COR = {
-  ferro:   0x8b95a4,   // cilindros e bloco
-  aluminio:0xc3ccd8,   // cárter e cabeçotes
-  aco:     0x99a4b2,   // virabrequim
-  escuro:  0x4c5563,   // comando, distribuidor
-  cobre:   0xb0722c,
-  vermelho:0xcf3327,
-  amarelo: 0xe2bb33,
-  azul:    0x2f9fd8,
-  bronze:  0x9a7b4f,   // bielas
+  ferro:    0x4e555e,   // bloco: ferro fundido, bem escuro
+  aluminio: 0xccd4de,   // cabeçote e tampas usinadas: alumínio claro
+  aluminioEsc: 0x9099a4, // cárter, tampa de distribuição: alumínio fosco
+  plastico: 0x25282d,   // tampa de válvulas e coletor: plástico preto
+  aco:      0xa8b2be,   // virabrequim, comando: aço usinado
+  escuro:   0x3d444d,   // correias, mangueiras, escape
+  cobre:    0xb0722c,
+  vermelho: 0xb8362b,
+  amarelo:  0xd8cf52,   // protetores e tampões de fábrica
+  azul:     0x2f9fd8,
+  bronze:   0x9a7b4f,   // bielas
 };
 
 // -----------------------------------------
@@ -100,6 +106,14 @@ const mat = (cor, metal = .85, rug = .38, liso = false) => {
 
 // peça usinada/polida: sem o granulado do fundido
 const matLiso = (cor, metal = .9, rug = .25) => mat(cor, metal, rug, true);
+
+// plástico não reflete como metal: quase nada de metalness e bem fosco
+const matPlastico = (cor = COR.plastico, rug = .62) => {
+  const m = mat(cor, 0, rug);
+  m.metalness = 0.04;
+  m.normalScale = new THREE.Vector2(.5, .5);
+  return m;
+};
 
 // -----------------------------------------
 // Caixa com quinas chanfradas.
@@ -357,6 +371,19 @@ function polia(raio, larg, cor) {
   ], 30)), matLiso(cor, .7, .35));
 }
 
+// polia do virabrequim: os canais da correia serpentina são ranhuras
+function poliaCorreias(raio, larg, cor) {
+  const p = [[0,-larg/2],[raio*.3,-larg/2],[raio*.3,-larg/2+.04],[raio*.55,-larg/2+.06]];
+  const canais = 5, passo = (larg - .12) / canais;
+  for (let k = 0; k < canais; k++) {
+    const y = -larg/2 + .06 + k*passo;
+    p.push([raio, y], [raio*.9, y + passo*.5], [raio, y + passo]);
+  }
+  p.push([raio, larg/2-.06],[raio*.55, larg/2-.06],[raio*.3, larg/2-.04],[raio*.3, larg/2],[0, larg/2]);
+  return new THREE.Mesh(geoCache('poliaCor|'+raio+'|'+larg, () => geoTorneada(p, 32)),
+                        matLiso(cor, .55, .45));
+}
+
 // correia com dentes, passando por duas polias no plano YZ
 function correiaDentada(x, a, ra, b, rb, cor) {
   const g = new THREE.Group();
@@ -422,6 +449,24 @@ function extrudado(contorno, prof, cor, m, r, opts = {}) {
 // deita o perfil: a seção fica no plano YZ e o corpo corre no eixo X
 const aoLongoDeX = (malha, x) => { malha.rotation.y = PI2; malha.position.x = x || 0; return malha; };
 
+// espalha parafusos ao longo de um contorno, como num flange de verdade
+function parafusosNoContorno(g, contorno, x, passo, encolher) {
+  const k = encolher === undefined ? .93 : encolher;
+  let sobra = 0;
+  for (let i = 0; i < contorno.length; i++) {
+    const a = contorno[i], b = contorno[(i + 1) % contorno.length];
+    const dy = b[0] - a[0], dz = b[1] - a[1];
+    const comp = Math.hypot(dy, dz);
+    for (let d = sobra; d < comp; d += passo) {
+      const t = d / comp;
+      g.add(põe(gira(parafuso(), 0, 0, PI2), x,
+                (a[1] + dz * t) * k, (a[0] + dy * t) * k));
+    }
+    sobra = Math.max(0, passo - ((comp - sobra) % passo));
+  }
+  return g;
+}
+
 // ---------- SEÇÃO DO BLOCO ----------
 // convés em cima, paredes, degrau para a saia e a aba do cárter embaixo
 function secaoBloco(meiaLarg, alturaConves, fundo) {
@@ -476,6 +521,26 @@ function secaoCarter(meiaLarg, fundo) {
     [p, fundo + .1], [p - .1, fundo], [-p + .1, fundo], [-p, fundo + .1],
     [-p, -.5], [-s + .04, -.34], [-s, -.14], [-s - .12, -.1],
   ];
+}
+
+// ---------- TAMPA DE DISTRIBUIÇÃO ----------
+// a peça que dá a cara da frente do motor: uma chapa fundida grande,
+// parafusada em toda a volta, com o pinhão do virabrequim saindo dela
+function tampaDistribuicao(altoY, baixoY, meiaLarg, x) {
+  // pontos em [z, y], a mesma convenção das outras seções
+  const c = [
+    [0, altoY], [meiaLarg * .55, altoY - .16], [meiaLarg * .9, altoY - .55],
+    [meiaLarg, (altoY + baixoY) / 2], [meiaLarg * .92, baixoY + .55],
+    [meiaLarg * .5, baixoY + .14], [0, baixoY],
+    [-meiaLarg * .5, baixoY + .14], [-meiaLarg * .92, baixoY + .55],
+    [-meiaLarg, (altoY + baixoY) / 2], [-meiaLarg * .9, altoY - .55],
+    [-meiaLarg * .55, altoY - .16]
+  ];
+  const g = new THREE.Group();
+  g.add(aoLongoDeX(extrudado(c, .16, COR.aluminioEsc, .6, .5,
+                             { chave: 'tampaDist|' + altoY + '|' + baixoY, chanfro: .04, curvas: 8 }), x));
+  parafusosNoContorno(g, c, x + .1, .42, .9);
+  return g;
 }
 
 // ---------- CILINDRO ALETADO (motor a ar) ----------
@@ -620,7 +685,7 @@ function geoLinha(n) {
 
     virabrequim: () => ({ obj: (()=>{
         const g = virabrequimX(xs, CURSO, fase, L + .6);
-        g.add(põe(polia(.34,.16,COR.ferro), meia + .32, 0, 0));
+        g.add(põe(gira(polia(.34,.16,COR.ferro),0,0,PI2), meia + .32, 0, 0));
         g.position.y = Y_VIRA;
         return g; })(), entrada:[0,-5,0], animar:(o,t)=>{ o.rotation.x = t; } }),
 
@@ -652,9 +717,12 @@ function geoLinha(n) {
 
     carteroleo: () => ({ obj: (()=>{
         const g = new THREE.Group();
-        g.add(põe(aoLongoDeX(extrudado(secaoCarter(.92, -.95), L, COR.aco, .7, .5,
+        g.add(põe(aoLongoDeX(extrudado(secaoCarter(.92, -.95), L, COR.aluminioEsc, .55, .5,
                                        { chave:'secCarter|'+L, chanfro:.03 })), 0, -1.3, 0));
-        furos.forEach(x=>[-.95,.95].forEach(z=>g.add(põe(parafuso(),x,-1.28,z))));
+        // nervuras de reforço do cárter de alumínio
+        furos.forEach(x=>[-1,1].forEach(lado=>
+          g.add(põe(caixa(.08,.55,.1,COR.aluminioEsc,.55,.5),x,-1.75,lado*.62))));
+        furos.forEach(x=>[-1.0,1.0].forEach(z=>g.add(põe(parafuso(),x,-1.28,z))));
         g.add(põe(gira(cil(.1,.1,.18,COR.escuro,12,.85,.35),0,0,PI2),meia-.55,-2.1,0));  // bujão
         g.add(põe(cil(.12,.12,.5,COR.aco,14,.8,.4),-meia+.55,-2.05,0));                  // pescador
         return g; })(), entrada:[0,-5,0] }),
@@ -676,10 +744,18 @@ function geoLinha(n) {
         // dutos de escape saindo pela lateral
         xs.forEach(x=>g.add(tuboCurvo([[x,1.35,-.8],[x,1.32,-1.05],[x,1.12,-1.3]],.16,COR.escuro,.6,.5)));
         // tampa de válvulas com aba parafusada
-        g.add(põe(aoLongoDeX(extrudado(
-          [[-.66,0],[.66,0],[.66,.1],[.56,.16],[.5,.36],[-.5,.36],[-.56,.16],[-.66,.1]],
-          L-.1, COR.aluminio, .5, .5, { chave:'tampaVal|'+L, chanfro:.025 })), 0, 2.1, 0));
+        const tampa = aoLongoDeX(extrudado(
+          [[-.66,0],[.66,0],[.66,.1],[.56,.16],[.5,.42],[-.5,.42],[-.56,.16],[-.66,.1]],
+          L-.1, COR.plastico, 0, .6, { chave:'tampaVal|'+L, chanfro:.025 }));
+        tampa.material = matPlastico();
+        g.add(põe(tampa, 0, 2.1, 0));
+        // nervuras da tampa plástica
+        furos.forEach(x=>g.add(põe(caixa(.07,.36,1.0,COR.plastico,0,.62),x,2.34,0)));
         furos.forEach(x=>[-.58,.58].forEach(z=>g.add(põe(parafuso(),x,2.16,z))));
+        // bocas de admissão usinadas na lateral do cabeçote
+        xs.forEach(x=>[-.16,.16].forEach(dx=>
+          g.add(põe(gira(cil(.13,.13,.26,COR.escuro,14,.5,.6),PI2,0,0),x+dx,1.35,.86))));
+        g.add(põe(caixa(L-.2,.5,.06,COR.aluminio,.7,.35),0,1.35,.9));   // face de flange usinada
         return g; })(), entrada:[0,5,0] }),
 
     comando: () => ({ obj: (()=>{
@@ -691,8 +767,13 @@ function geoLinha(n) {
 
     correia: () => ({ obj: (()=>{
         const g = correiaDentada(xCor, [1.95,0], .42, [Y_VIRA,0], .3, COR.escuro);
-        g.add(põe(polia(.44,.14,COR.escuro), xCor, 1.95, 0));
-        g.add(põe(polia(.32,.14,COR.escuro), xCor, Y_VIRA, 0));
+        g.add(põe(gira(polia(.44,.14,COR.escuro),0,0,PI2), xCor, 1.95, 0));
+        g.add(põe(gira(polia(.32,.14,COR.escuro),0,0,PI2), xCor, Y_VIRA, 0));
+        // a tampa fundida que fecha a frente do motor, parafusada em volta
+        g.add(tampaDistribuicao(2.5, -1.85, .95, xCor + .2));
+        // polia do virabrequim, para fora da tampa
+        g.add(põe(gira(poliaCorreias(.5,.24,COR.escuro),0,0,PI2), xCor + .42, Y_VIRA, 0));
+        g.add(põe(gira(cil(.11,.11,.18,COR.aco,14,.9,.3),0,0,PI2), xCor + .54, Y_VIRA, 0));
         return g; })(), entrada:[6,0,0] }),
 
     bomba: () => ({ obj: (()=>{
@@ -701,7 +782,7 @@ function geoLinha(n) {
           [0,-.16],[.36,-.16],[.4,-.1],[.4,.1],[.36,.16],[.22,.2],[.22,.3],[0,.3]
         ], 26)), mat(COR.azul,.4,.5));
         corpo.rotation.z = PI2; corpo.position.set(xBomba,.5,0);
-        const g = grupo(corpo, põe(polia(.28,.12,COR.escuro), xBomba-.34,.5,0));
+        const g = grupo(corpo, põe(gira(polia(.28,.12,COR.escuro),0,0,PI2), xBomba-.34,.5,0));
         g.add(põe(gira(cil(.07,.07,.5,COR.aco,14,.9,.3),0,0,PI2),xBomba-.2,.5,0));
         g.add(tuboCurvo([[xBomba,.42,.25],[xBomba-.06,.28,.72],[xBomba-.06,.05,1.05]],.13,COR.azul,.4,.5));
         return g; })(), entrada:[-5,0,0] }),
@@ -713,14 +794,14 @@ function geoLinha(n) {
 
     coletor: () => ({ obj: (()=>{
         const plenum = new THREE.Mesh(geoCache('plenum|'+L, () => geoTorneada([
-          [0,-(L-.9)/2],[.16,-(L-.9)/2],[.24,-(L-.9)/2+.14],[.26,0],
-          [.24,(L-.9)/2-.14],[.16,(L-.9)/2],[0,(L-.9)/2]
-        ], 22)), mat(COR.aluminio,.6,.42));
+          [0,-(L-.9)/2],[.16,-(L-.9)/2],[.21,-(L-.9)/2+.14],[.23,0],
+          [.21,(L-.9)/2-.14],[.15,(L-.9)/2],[0,(L-.9)/2]
+        ], 22)), matPlastico());
         plenum.rotation.z = PI2; plenum.position.set(0,1.95,1.5);
         const g = grupo(plenum);
         // corredores curvos até o cabeçote, não tubos retos
-        xs.forEach(x=>g.add(tuboCurvo([[x*.8,1.92,1.35],[x*.9,1.8,1.05],[x,1.5,.75]],.13,COR.aluminio,.6,.42)));
-        g.add(põe(gira(cil(.2,.2,.35,COR.aluminio,18,.6,.42),PI2,0,0),-(L/2-.6),1.95,1.85));
+        xs.forEach(x=>{ const t = tuboCurvo([[x*.8,1.92,1.35],[x*.9,1.8,1.05],[x,1.5,.82]],.13,COR.plastico,0,.62); t.material = matPlastico(); g.add(t); });
+        g.add(põe(gira(cil(.22,.22,.4,COR.plastico,18,0,.62),PI2,0,0),-(L/2-.6),1.95,1.9));
         return g; })(), entrada:[0,0,6] }),
 
     volante: () => ({ obj: (()=>{
@@ -789,7 +870,7 @@ function geoV(n, grausTotal, qtdBancos) {
 
     virabrequim: () => ({ obj: (()=>{
         const g = virabrequimX(xs, .3, i => i * Math.PI * 2 / porBanco, L + .6);
-        g.add(põe(polia(.36,.18,COR.ferro), meia + .32, 0, 0));
+        g.add(põe(gira(polia(.36,.18,COR.ferro),0,0,PI2), meia + .32, 0, 0));
         return g; })(), entrada:[0,-5,0], animar:(o,t)=>{ o.rotation.x = t; } }),
 
     pistoes: () => {
@@ -830,9 +911,11 @@ function geoV(n, grausTotal, qtdBancos) {
         xs.forEach(x=>b.add(põe(gira(cil(.4,.4,.12,COR.escuro,22,.5,.6),0,0,PI2),x,2.1,0)));
         [...Array(porBanco+1)].map((_,i)=>(i-porBanco/2)*.85)
           .forEach(x=>[-.55,.55].forEach(z=>b.add(põe(parafuso(),x,2.9,z))));
-        b.add(põe(aoLongoDeX(extrudado(
-          [[-.54,0],[.54,0],[.54,.09],[.44,.14],[.4,.32],[-.4,.32],[-.44,.14],[-.54,.09]],
-          L-.1, COR.aluminio, .5, .5, { chave:'tampaV|'+L, chanfro:.022 })), 0, 3.0, 0));
+        const tv = aoLongoDeX(extrudado(
+          [[-.54,0],[.54,0],[.54,.09],[.44,.14],[.4,.34],[-.4,.34],[-.44,.14],[-.54,.09]],
+          L-.1, COR.plastico, 0, .6, { chave:'tampaV|'+L, chanfro:.022 }));
+        tv.material = matPlastico();
+        b.add(põe(tv, 0, 3.0, 0));
       }), entrada:[0,6,0] }),
 
     comandos: () => ({ obj: construir(b => {
@@ -850,6 +933,9 @@ function geoV(n, grausTotal, qtdBancos) {
           g.add(põe(gira(new THREE.Mesh(new THREE.TorusGeometry(.26,.06,10,24), mat(COR.escuro,.4,.6)),0,PI2,0),x,p[0],p[1])));
         for (let i = 0; i < pontos.length; i++)
           g.add(elo(pontos[i], pontos[(i+1)%pontos.length], x, COR.escuro));
+        // tampa fundida fechando a frente, com a polia do virabrequim
+        g.add(tampaDistribuicao(noBanco(angulos[0], 3.2)[0], -1.5, 1.5, x + .22));
+        g.add(põe(gira(poliaCorreias(.5,.24,COR.escuro),0,0,PI2), x + .44, 0, 0));
         return g; })(), entrada:[6,0,0] }),
 
     bomba: () => ({ obj: grupo(
@@ -862,14 +948,16 @@ function geoV(n, grausTotal, qtdBancos) {
 
     coletor: () => ({ obj: (()=>{
         const alto = noBanco(angulos[0], 2.75)[0] + .3;
-        const g = grupo(põe(caixa(L-.4,.5,1.3,COR.aluminio,.6,.4),0,alto,0));
+        const plenumV = caixa(L-.4,.5,1.3,COR.plastico,0,.6); plenumV.material = matPlastico();
+        const g = grupo(põe(plenumV,0,alto,0));
         // corredores curvos descendo do plenum para cada banco
         angulos.forEach(ang => xs.forEach(x => {
           const meio = noBanco(ang, 2.75, .45);
           const boca = noBanco(ang, 2.45, .5);
-          g.add(tuboCurvo([[x, alto - .22, Math.sign(meio[1]) * .2],
-                           [x, (alto + meio[0]) / 2, meio[1] * .8],
-                           [x, boca[0], boca[1]]], .11, COR.aluminio, .6, .42));
+          const tv2 = tuboCurvo([[x, alto - .22, Math.sign(meio[1]) * .2],
+                                 [x, (alto + meio[0]) / 2, meio[1] * .8],
+                                 [x, boca[0], boca[1]]], .11, COR.plastico, 0, .6);
+          tv2.material = matPlastico(); g.add(tv2);
         }));
         return g; })(), entrada:[0,7,0] }),
 
@@ -1101,7 +1189,8 @@ function geoBoxer(n, ar) {
       ), entrada:[0,0,5] }),
     velas: comum.velas,
     coletor: () => ({ obj: (()=>{
-        const g = grupo(põe(caixa(3.4,.4,.9,COR.aluminio,.6,.4),0,1.25,0));
+        const plenumB = caixa(3.4,.4,.9,COR.plastico,0,.6); plenumB.material = matPlastico();
+        const g = grupo(põe(plenumB,0,1.25,0));
         pares.forEach(([lado,z])=>
           g.add(põe(gira(cil(.13,.13,1.4,COR.aluminio,12,.6,.4),0,0,PI2),lado*2.1,1.0,z)));
         return g; })(), entrada:[0,6,0] }),
