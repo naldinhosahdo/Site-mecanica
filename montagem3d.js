@@ -17,12 +17,89 @@ const COR = {
   bronze:  0x9a7b4f,   // bielas
 };
 
+// -----------------------------------------
+// Textura de peça fundida.
+// Bloco e cabeçote saem da areia com a superfície granulada; sem isso
+// o metal fica liso demais e a peça parece plástico. O relevo é gerado
+// aqui mesmo, num canvas, para não depender de arquivo de imagem.
+// -----------------------------------------
+let _mapaRelevo = null, _mapaRugosidade = null;
+
+function texturasFundido() {
+  if (_mapaRelevo) return;
+  const N = 256;
+  const alt = new Float32Array(N * N);
+
+  // ruído de valor em três escalas: manchas, grão e granulado fino
+  const oitava = (celulas, peso) => {
+    const g = new Float32Array(celulas * celulas);
+    for (let i = 0; i < g.length; i++) g[i] = Math.random();
+    const em = (i, j) => g[(((j % celulas) + celulas) % celulas) * celulas +
+                           (((i % celulas) + celulas) % celulas)];
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const fx = x * celulas / N, fy = y * celulas / N;
+      const x0 = Math.floor(fx), y0 = Math.floor(fy);
+      const tx = fx - x0, ty = fy - y0;
+      const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+      alt[y * N + x] += peso * ((em(x0, y0) * (1 - sx) + em(x0 + 1, y0) * sx) * (1 - sy) +
+                                (em(x0, y0 + 1) * (1 - sx) + em(x0 + 1, y0 + 1) * sx) * sy);
+    }
+  };
+  oitava(12, .45); oitava(40, .33); oitava(110, .22);
+
+  const tela = () => { const c = document.createElement('canvas'); c.width = c.height = N; return c; };
+
+  // mapa de relevo (normal map) a partir da inclinação do ruído
+  const cR = tela(), ctxR = cR.getContext('2d'), imgR = ctxR.createImageData(N, N);
+  const cG = tela(), ctxG = cG.getContext('2d'), imgG = ctxG.createImageData(N, N);
+  const FORCA = 2.4;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const i = (y * N + x) * 4;
+    const dx = alt[y * N + (x + 1) % N] - alt[y * N + (x + N - 1) % N];
+    const dy = alt[((y + 1) % N) * N + x] - alt[((y + N - 1) % N) * N + x];
+    const nx = -dx * FORCA, ny = -dy * FORCA;
+    const inv = 1 / Math.hypot(nx, ny, 1);
+    imgR.data[i]     = (nx * inv * .5 + .5) * 255;
+    imgR.data[i + 1] = (ny * inv * .5 + .5) * 255;
+    imgR.data[i + 2] = (inv * .5 + .5) * 255;
+    imgR.data[i + 3] = 255;
+    // superfície mais alta = mais polida; mais baixa = mais fosca
+    const v = 208 + alt[y * N + x] * 47;
+    imgR.data[i + 3] = 255;
+    imgG.data[i] = imgG.data[i + 1] = imgG.data[i + 2] = v;
+    imgG.data[i + 3] = 255;
+  }
+  ctxR.putImageData(imgR, 0, 0);
+  ctxG.putImageData(imgG, 0, 0);
+
+  const preparar = c => {
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(3, 3);
+    return t;
+  };
+  _mapaRelevo = preparar(cR);
+  _mapaRugosidade = preparar(cG);
+}
+
 // Peça de motor é metal fosco, não espelho: com metalness alto demais a
 // peça só reflete o ambiente e some quando está sozinha no palco.
-const mat = (cor, metal = .85, rug = .38) =>
-  new THREE.MeshStandardMaterial({ color: cor,
-                                   metalness: Math.min(metal, .55),
-                                   roughness: Math.max(rug, .42) });
+const mat = (cor, metal = .85, rug = .38, liso = false) => {
+  const m = new THREE.MeshStandardMaterial({ color: cor,
+                                             metalness: Math.min(metal, .55),
+                                             roughness: Math.max(rug, .42) });
+  if (!liso) {
+    texturasFundido();
+    m.normalMap = _mapaRelevo;
+    m.normalScale = new THREE.Vector2(.4, .4);
+    m.roughnessMap = _mapaRugosidade;
+    m.roughness = Math.min(1, m.roughness * 1.12);
+  }
+  return m;
+};
+
+// peça usinada/polida: sem o granulado do fundido
+const matLiso = (cor, metal = .9, rug = .25) => mat(cor, metal, rug, true);
 
 // -----------------------------------------
 // Caixa com quinas chanfradas.
@@ -82,6 +159,233 @@ function cremalheira(g, raio, z, dentes = 34) {
   return g;
 }
 
+
+// =========================================
+// PEÇAS COM FORMA DE VERDADE
+// Cilindro e caixa dão conta do bloco, mas pistão, virabrequim,
+// válvula e vela têm silhueta própria — é ela que faz a peça ser
+// reconhecida. Aqui essas formas são torneadas (perfil revolvido),
+// extrudadas ou varridas ao longo de uma curva.
+// =========================================
+
+// cache de geometria: a mesma peça se repete muitas vezes no motor
+const _cacheGeo = new Map();
+function geoCache(chave, fabrica) {
+  if (!_cacheGeo.has(chave)) {
+    const g = fabrica();
+    g.userData.compartilhada = true;   // limparCena não descarta
+    _cacheGeo.set(chave, g);
+  }
+  return _cacheGeo.get(chave);
+}
+
+// perfil revolvido no eixo Y: [raio, altura]
+const geoTorneada = (perfil, seg = 34) =>
+  new THREE.LatheGeometry(perfil.map(([x, y]) => new THREE.Vector2(Math.max(x, .0005), y)), seg);
+
+// tubo varrido ao longo de uma curva suave
+function tuboCurvo(pontos, raio, cor, m, r) {
+  const curva = new THREE.CatmullRomCurve3(pontos.map(p => new THREE.Vector3(...p)));
+  return new THREE.Mesh(new THREE.TubeGeometry(curva, 22, raio, 12, false), mat(cor, m, r));
+}
+
+// mola helicoidal (válvulas)
+function geoMola(raio, altura, voltas, fio) {
+  const pts = [];
+  const passos = Math.round(voltas * 12);
+  for (let i = 0; i <= passos; i++) {
+    const t = i / passos, a = t * voltas * Math.PI * 2;
+    pts.push(new THREE.Vector3(Math.cos(a) * raio, t * altura, Math.sin(a) * raio));
+  }
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), passos, fio, 6, false);
+}
+
+// ---------- PISTÃO ----------
+// coroa, canaletas de anel e saia: o perfil clássico
+function pistao(r, cor) {
+  const g = geoCache('pistao|' + r, () => geoTorneada([
+    [0, -.34], [r * .82, -.34], [r * .82, -.30], [r, -.26],
+    [r, -.16], [r * .93, -.145], [r, -.13],        // canaleta do anel de óleo
+    [r, -.05], [r * .93, -.035], [r, -.02],        // anel de compressão
+    [r, .07], [r * .93, .085], [r, .10],           // anel de fogo
+    [r, .16], [r * .97, .19], [r * .55, .21], [0, .19]
+  ], 30));
+  return new THREE.Mesh(g, matLiso(cor, .55, .3));
+}
+
+// ---------- BIELA ----------
+// olhal maior embaixo (no virabrequim), menor em cima (no pino do pistão)
+function biela(comp, cor) {
+  const g = new THREE.Group();
+  const rGrande = .26, rPequeno = .13, larg = .17;
+  const anel = (raio, esp) => {
+    const f = new THREE.Shape();
+    f.absarc(0, 0, raio, 0, Math.PI * 2, false);
+    const furo = new THREE.Path();
+    furo.absarc(0, 0, raio - esp, 0, Math.PI * 2, true);
+    f.holes.push(furo);
+    const geo = new THREE.ExtrudeGeometry(f, { depth: larg, curveSegments: 14, bevelEnabled: false });
+    geo.translate(0, 0, -larg / 2);
+    return new THREE.Mesh(geo, matLiso(cor, .6, .35));
+  };
+  g.add(anel(rGrande, .09));                                   // olhal do moente
+  g.add(põe(anel(rPequeno, .05), 0, comp, 0));                 // olhal do pino
+  // haste em I: duas abas finas e uma alma no meio
+  [-.055, .055].forEach(z => g.add(põe(caixa(.13, comp - .28, .04, cor, .6, .35), 0, comp / 2 + .04, z)));
+  g.add(põe(caixa(.055, comp - .28, .12, cor, .6, .35), 0, comp / 2 + .04, 0));
+  // capa do olhal grande, com os dois parafusos
+  [-.2, .2].forEach(x => g.add(põe(gira(parafuso(), 0, 0, PI2), x, -.16, 0)));
+  return g;
+}
+
+// ---------- VIRABREQUIM ----------
+// mancais, moentes deslocados e contrapesos em meia-lua
+function contrapeso(raio, esp, cor) {
+  return new THREE.Mesh(geoCache('contrapeso|' + raio + '|' + esp, () => {
+    const f = new THREE.Shape();
+    f.absarc(0, 0, raio, Math.PI * .12, Math.PI * .88, false);
+    f.absarc(0, 0, raio * .42, Math.PI * .88, Math.PI * .12, true);
+    const g = new THREE.ExtrudeGeometry(f, { depth: esp, curveSegments: 12, bevelEnabled: true,
+                                             bevelThickness: .02, bevelSize: .02, bevelSegments: 1 });
+    g.translate(0, 0, -esp / 2);
+    return g;
+  }), matLiso(cor, .7, .35));
+}
+
+// eixo ao longo de X; cada cilindro ganha moente e dois contrapesos
+function virabrequimX(xs, curso, angDe, comprimento) {
+  const g = new THREE.Group();
+  const rMancal = .19, rMoente = .17, esp = .13;
+  g.add(gira(cil(rMancal, rMancal, comprimento, COR.aco, 24, .9, .3), 0, 0, PI2));
+  xs.forEach((x, i) => {
+    const a = angDe(i);
+    const cy = Math.cos(a) * curso, cz = Math.sin(a) * curso;
+    // moente, onde a biela se prende
+    g.add(põe(gira(cil(rMoente, rMoente, .34, COR.aco, 20, .9, .3), 0, 0, PI2), x, cy, cz));
+    [-1, 1].forEach(lado => {
+      const c = contrapeso(.42, esp, COR.ferro);
+      c.rotation.y = PI2;                   // deitar o disco no plano YZ
+      c.rotation.x = a + Math.PI / 2;       // apontar para o lado oposto ao moente
+      c.position.set(x + lado * .27, 0, 0);
+      g.add(c);
+    });
+  });
+  return g;
+}
+
+// ---------- ÁRVORE DE COMANDO ----------
+// came de verdade: círculo de base com um nariz, não um disco
+function loboCame(raio, alcance, esp, cor) {
+  return new THREE.Mesh(geoCache('came|' + raio + '|' + alcance + '|' + esp, () => {
+    const f = new THREE.Shape();
+    for (let k = 0; k <= 72; k++) {
+      const t = k / 72 * Math.PI * 2;
+      const sobe = Math.max(0, Math.cos(t));
+      const r = raio + alcance * sobe * sobe * sobe;
+      k ? f.lineTo(Math.cos(t) * r, Math.sin(t) * r) : f.moveTo(Math.cos(t) * r, Math.sin(t) * r);
+    }
+    const g = new THREE.ExtrudeGeometry(f, { depth: esp, curveSegments: 4, bevelEnabled: false });
+    g.translate(0, 0, -esp / 2);
+    return g;
+  }), matLiso(cor, .8, .3));
+}
+
+// comando ao longo de X, com dois lobos por cilindro (admissão e escape)
+function comandoX(xs, comprimento, y, z) {
+  const g = new THREE.Group();
+  g.add(põe(gira(cil(.11, .11, comprimento, COR.escuro, 20, .8, .35), 0, 0, PI2), 0, y, z || 0));
+  xs.forEach((x, i) => [-.14, .14].forEach((dx, k) => {
+    const l = loboCame(.17, .13, .11, COR.aco);
+    l.rotation.y = PI2;
+    l.rotation.x = i * 1.4 + k * 2.1;      // cada came na sua fase
+    l.position.set(x + dx, y, z || 0);
+    g.add(l);
+  }));
+  // mancais do eixo
+  xs.forEach(x => g.add(põe(gira(cil(.16, .16, .1, COR.aluminio, 18, .5, .5), 0, 0, PI2), x - .38, y, z || 0)));
+  return g;
+}
+
+// ---------- VÁLVULA COM MOLA ----------
+function valvula(cor) {
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(geoCache('valvula', () => geoTorneada([
+    [0, 0], [.19, .02], [.19, .06], [.05, .16], [.045, .78], [.06, .82], [0, .84]
+  ], 20)), matLiso(cor, .85, .28)));
+  const mola = new THREE.Mesh(geoCache('mola', () => geoMola(.115, .34, 5.5, .022)),
+                              matLiso(COR.aco, .9, .3));
+  mola.position.y = .28;
+  g.add(mola);
+  g.add(põe(new THREE.Mesh(geoCache('prato', () => geoTorneada([[0,0],[.15,0],[.15,.045],[0,.045]], 18)),
+                           matLiso(COR.ferro, .8, .35)), 0, .64, 0));
+  return g;
+}
+
+// as válvulas de um cabeçote: duas por cilindro, inclinadas em V
+function valvulas(xs, y, cor) {
+  const g = new THREE.Group();
+  xs.forEach(x => [-1, 1].forEach(lado => {
+    const v = valvula(cor);
+    v.rotation.x = lado * .17;
+    v.position.set(x, y, lado * .3);
+    g.add(v);
+  }));
+  return g;
+}
+
+// ---------- VELA DE IGNIÇÃO ----------
+function vela() {
+  const corpo = new THREE.Mesh(geoCache('vela', () => geoTorneada([
+    [0, 0], [.055, 0], [.055, .12], [.075, .14], [.075, .30],   // rosca
+    [.105, .32], [.105, .44],                                    // sextavado
+    [.075, .46], [.075, .62], [.09, .64], [.09, .78],            // isolador
+    [.055, .82], [.055, .92], [0, .94]
+  ], 16)), matLiso(0xd9d2c4, .25, .55));
+  const g = grupo(corpo);
+  g.add(põe(new THREE.Mesh(geoCache('velaHex', () => new THREE.CylinderGeometry(.115, .115, .13, 6)),
+                           matLiso(COR.aco, .9, .3)), 0, .38, 0));
+  g.add(põe(cil(.024, .024, .12, COR.aco, 10, .9, .3), 0, -.05, 0));   // eletrodo
+  return g;
+}
+
+// ---------- POLIA E CORREIA DENTADA ----------
+function polia(raio, larg, cor) {
+  return new THREE.Mesh(geoCache('polia|' + raio + '|' + larg, () => geoTorneada([
+    [0, -larg / 2], [raio * .35, -larg / 2], [raio * .35, -larg / 2 + .03],
+    [raio, -larg / 2 + .05], [raio, larg / 2 - .05],
+    [raio * .35, larg / 2 - .03], [raio * .35, larg / 2], [0, larg / 2]
+  ], 30)), matLiso(cor, .7, .35));
+}
+
+// correia com dentes, passando por duas polias no plano YZ
+function correiaDentada(x, a, ra, b, rb, cor) {
+  const g = new THREE.Group();
+  const dy = b[0] - a[0], dz = b[1] - a[1];
+  const dist = Math.hypot(dy, dz), ang = Math.atan2(dz, dy);
+  [[a, ra], [b, rb]].forEach(([p, r]) => {
+    const t = new THREE.Mesh(new THREE.TorusGeometry(r, .055, 8, 30), mat(cor, .2, .8));
+    t.rotation.y = PI2; t.position.set(x, p[0], p[1]); g.add(t);
+  });
+  [-1, 1].forEach(lado => {
+    const c = caixa(.1, dist, .05, cor, .2, .8);
+    c.position.set(x, (a[0] + b[0]) / 2 + Math.sin(ang) * lado * ra,
+                      (a[1] + b[1]) / 2 - Math.cos(ang) * lado * ra);
+    c.rotation.x = -ang;
+    g.add(c);
+    // dentes da correia
+    const n = Math.max(4, Math.round(dist / .17));
+    for (let k = 0; k < n; k++) {
+      const t = (k + .5) / n;
+      const d = caixa(.09, .06, .05, cor, .2, .8);
+      d.position.set(x, a[0] + dy * t + Math.sin(ang) * lado * (ra - .05),
+                        a[1] + dz * t - Math.cos(ang) * lado * (ra - .05));
+      d.rotation.x = -ang;
+      g.add(d);
+    }
+  });
+  return g;
+}
+
 // =========================================
 // PEÇAS EM 3D, POR ARQUITETURA
 // A geometria é gerada por parâmetro (nº de cilindros e layout), na
@@ -130,86 +434,116 @@ function geoLinha(n) {
   const furos= [...Array(n + 1)].map((_, i) => (i - n / 2) * .8);
   const L    = n * .8 + .2;
   const meia = L / 2;
-  const xCor = meia + .15, xBomba = -(meia + .25), xVol = -(meia + .3);
+  const xCor = meia + .18, xBomba = -(meia + .25), xVol = -(meia + .3);
   const fase = i => (n === 4 ? ((i === 0 || i === n - 1) ? 0 : Math.PI) : (i % 2) * Math.PI);
+  const CURSO = .3, BIELA = .95, Y_VIRA = -1.05;
 
   return {
     bloco: () => ({ obj: (()=>{
         const g = grupo(caixa(L,1.7,1.6,COR.ferro,.75,.5));
         xs.forEach(x=>g.add(põe(cil(.44,.44,1.72,COR.escuro,20,.6,.6),x,.05,0)));
         furos.forEach(x=>[-.68,.68].forEach(z=>g.add(põe(parafuso(),x,.88,z))));
+        // nervuras de reforço e bujões de água na lateral
+        furos.slice(1,-1).forEach(x=>[-1,1].forEach(lado=>
+          g.add(põe(caixa(.1,1.4,.09,COR.ferro,.75,.5),x,-.1,lado*.82))));
+        xs.forEach(x=>g.add(põe(gira(cil(.16,.16,.06,COR.aco,16,.8,.4),PI2,0,0),x,-.35,.83)));
+        // flange da caixa de câmbio
+        g.add(põe(caixa(.16,1.9,1.75,COR.aluminio,.6,.45),-(meia+.06),-.35,0));
         return g; })(), entrada:[0,-5,0] }),
 
     virabrequim: () => ({ obj: (()=>{
-        const g = grupo(gira(cil(.16,.16,L+.5,COR.aco),0,0,PI2));
-        xs.forEach((x,i)=>g.add(põe(gira(cil(.36,.36,.24,COR.ferro),0,0,PI2),x,(i%2?.32:-.32),0)));
-        g.position.y=-1.05;
+        const g = virabrequimX(xs, CURSO, fase, L + .6);
+        g.add(põe(polia(.34,.16,COR.ferro), meia + .32, 0, 0));
+        g.position.y = Y_VIRA;
         return g; })(), entrada:[0,-5,0], animar:(o,t)=>{ o.rotation.x = t; } }),
 
+    // pistão, biela e moente ligados de verdade: o ângulo da biela sai
+    // da geometria (biela-manivela), não de uma animação aproximada
     pistoes: () => {
       const g = new THREE.Group(); const moveis = [];
       xs.forEach((x,i)=>{
-        const alto = fase(i) === 0;
-        const pist = põe(cil(.4,.4,.46,COR.aluminio,20,.6,.35),x,alto?.5:.1,0);
-        const biela= põe(cil(.08,.08,.95,COR.bronze,12),x,alto?-.2:-.5,0);
-        g.add(pist); g.add(biela);
-        moveis.push({pist, biela, fase: fase(i), bp:.3, bb:-.35});
+        const p = põe(pistao(.4, COR.aluminio), x, .3, 0);
+        const b = põe(biela(BIELA, COR.bronze), x, -.4, 0);
+        g.add(p); g.add(b);
+        moveis.push({ p, b, x, fase: fase(i) });
       });
-      return { obj:g, entrada:[0,5,0], animar:(o,t)=>{
+      const mover = (o,t)=>{
         moveis.forEach(m=>{
-          const d = Math.cos(t + m.fase) * .3;
-          m.pist.position.y = m.bp + d; m.biela.position.y = m.bb + d;
+          const a = t + m.fase;
+          const py = Math.cos(a)*CURSO, pz = Math.sin(a)*CURSO;   // moente
+          const moenteY = Y_VIRA + py;
+          // altura do pino do pistão pela relação biela-manivela
+          const alturaPino = moenteY + Math.sqrt(Math.max(.01, BIELA*BIELA - pz*pz));
+          m.p.position.y = alturaPino + .12;
+          m.b.position.set(m.x, moenteY, pz);
+          m.b.rotation.x = -Math.atan2(pz, alturaPino - moenteY);
         });
-      }};
+      };
+      mover(g, 0);
+      return { obj:g, entrada:[0,5,0], animar: mover };
     },
 
-    carteroleo: () => ({ obj: grupo(
-        põe(caixa(L-.2,.7,1.4,COR.aco,.7,.5),0,-1.6,0),
-        põe(cil(.12,.12,.2,COR.escuro,12),meia-.5,-1.95,0)
-      ), entrada:[0,-5,0] }),
+    carteroleo: () => ({ obj: (()=>{
+        const g = grupo(põe(caixa(L-.2,.7,1.4,COR.aco,.7,.5),0,-1.6,0));
+        g.add(põe(caixa(L-.1,.12,1.5,COR.aco,.7,.5),0,-1.24,0));    // flange de vedação
+        g.add(põe(gira(cil(.1,.1,.16,COR.escuro,12,.85,.35),0,0,PI2),meia-.5,-1.9,0));  // bujão
+        return g; })(), entrada:[0,-5,0] }),
 
-    junta: () => ({ obj: põe(caixa(L+.02,.09,1.62,COR.vermelho,.3,.6),0,.92,0), entrada:[0,4,0] }),
+    junta: () => ({ obj: (()=>{
+        const g = grupo(põe(caixa(L+.02,.06,1.62,COR.vermelho,.3,.6),0,.92,0));
+        xs.forEach(x=>g.add(põe(gira(cil(.44,.44,.08,COR.vermelho,22,.3,.6),0,0,PI2),x,.92,0)));
+        return g; })(), entrada:[0,4,0] }),
 
     cabecote: () => ({ obj: (()=>{
         const g = grupo(põe(caixa(L,.85,1.6,COR.aluminio,.65,.42),0,1.4,0));
         furos.forEach(x=>[-.68,.68].forEach(z=>g.add(põe(parafuso(),x,1.85,z))));
-        xs.forEach(x=>g.add(põe(gira(cil(.19,.19,.3,COR.escuro,20,.5,.6),PI2,0,0),x,1.35,-.9)));
+        // dutos de escape saindo pela lateral
+        xs.forEach(x=>g.add(tuboCurvo([[x,1.35,-.75],[x,1.35,-1.0],[x,1.15,-1.25]],.16,COR.escuro,.6,.5)));
+        // tampa de válvulas por cima
+        g.add(põe(caixa(L-.15,.3,1.35,COR.aluminio,.5,.5),0,2.35,0));
         return g; })(), entrada:[0,5,0] }),
 
     comando: () => ({ obj: (()=>{
-        const g = grupo(põe(gira(cil(.13,.13,L+.1,COR.escuro,18,.7,.45),0,0,PI2),0,1.95,0));
-        xs.forEach(x=>g.add(põe(gira(cil(.26,.26,.2,COR.aco,18),0,0,PI2),x,1.95,0)));
-        return g; })(), entrada:[0,5,0], animar:(o,t)=>{ o.rotation.x = t/2; } }),
+        const g = comandoX(xs, L + .1, 1.95, 0);
+        g.add(valvulas(xs, 1.05, COR.aco));
+        return g; })(), entrada:[0,5,0], animar:(o,t)=>{
+        o.children.forEach(c=>{ if (c.isMesh && c.rotation.y === PI2) c.rotation.x += 0; });
+        o.rotation.x = t/2; } }),
 
     correia: () => ({ obj: (()=>{
-        const g = new THREE.Group();
-        g.add(põe(gira(new THREE.Mesh(new THREE.TorusGeometry(.42,.07,10,28), mat(COR.escuro,.3,.7)),0,PI2,0),xCor,1.95,0));
-        g.add(põe(gira(new THREE.Mesh(new THREE.TorusGeometry(.3,.07,10,28), mat(COR.escuro,.3,.7)),0,PI2,0),xCor,-1.05,0));
-        [-.36,.36].forEach(z=>g.add(põe(caixa(.06,3.1,.14,COR.escuro,.2,.8),xCor,.45,z)));
+        const g = correiaDentada(xCor, [1.95,0], .42, [Y_VIRA,0], .3, COR.escuro);
+        g.add(põe(polia(.44,.14,COR.escuro), xCor, 1.95, 0));
+        g.add(põe(polia(.32,.14,COR.escuro), xCor, Y_VIRA, 0));
         return g; })(), entrada:[6,0,0] }),
 
-    bomba: () => ({ obj: grupo(
-        põe(gira(cil(.34,.34,.4,COR.azul,20,.4,.4),0,0,PI2),xBomba,.5,0)
-      ), entrada:[-5,0,0] }),
+    bomba: () => ({ obj: (()=>{
+        const g = grupo(põe(gira(cil(.34,.34,.4,COR.azul,22,.4,.45),0,0,PI2),xBomba,.5,0));
+        g.add(põe(gira(cil(.2,.2,.16,COR.azul,18,.4,.45),0,0,PI2),xBomba-.26,.5,0));
+        g.add(tuboCurvo([[xBomba,.5,.2],[xBomba-.1,.35,.7],[xBomba-.1,.1,1.0]],.13,COR.azul,.4,.5));
+        return g; })(), entrada:[-5,0,0] }),
 
     velas: () => ({ obj: (()=>{
         const g = new THREE.Group();
-        xs.forEach(x=>g.add(põe(cil(.1,.1,.5,COR.amarelo,14,.5,.4),x,2.05,.5)));
+        xs.forEach(x=>g.add(põe(vela(),x,1.72,0)));
         return g; })(), entrada:[0,5,0] }),
 
     coletor: () => ({ obj: (()=>{
-        const g = grupo(põe(caixa(L-1,.4,.45,COR.aluminio,.6,.4),0,1.75,1.15));
-        xs.forEach(x=>g.add(põe(gira(cil(.14,.14,.7,COR.aluminio,12,.6,.4),PI2,0,0),x*.75,1.75,.75)));
+        const g = grupo(põe(caixa(L-.9,.42,.5,COR.aluminio,.6,.42),0,1.95,1.5));
+        // corredores curvos até o cabeçote, não tubos retos
+        xs.forEach(x=>g.add(tuboCurvo([[x*.8,1.92,1.35],[x*.9,1.8,1.05],[x,1.5,.75]],.13,COR.aluminio,.6,.42)));
+        g.add(põe(gira(cil(.2,.2,.35,COR.aluminio,18,.6,.42),PI2,0,0),-(L/2-.6),1.95,1.85));
         return g; })(), entrada:[0,0,6] }),
 
     volante: () => ({ obj: (()=>{
         const g = grupo(
-          põe(gira(cil(.98,.98,.22,COR.ferro,44,.8,.45),0,0,PI2),xVol,-1.05,0),
-          põe(gira(cil(.32,.32,.28,COR.aco,24,.9,.35),0,0,PI2),xVol-.05,-1.05,0));
+          põe(gira(cil(.98,.98,.22,COR.ferro,44,.8,.45),0,0,PI2),xVol,Y_VIRA,0),
+          põe(gira(cil(.32,.32,.28,COR.aco,24,.9,.35),0,0,PI2),xVol-.05,Y_VIRA,0));
+        for(let k=0;k<6;k++){ const a=k*Math.PI/3;
+          g.add(põe(gira(parafuso(),0,0,PI2),xVol-.14,Y_VIRA+Math.cos(a)*.55,Math.sin(a)*.55)); }
         const dentes = new THREE.Group();
         cremalheira(dentes, 1.02, 0);
         dentes.rotation.y = PI2;
-        dentes.position.set(xVol, -1.05, 0);
+        dentes.position.set(xVol, Y_VIRA, 0);
         g.add(dentes);
         return g; })(),
       entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
@@ -249,13 +583,15 @@ function geoV(n, grausTotal, qtdBancos) {
         const g = construir(b => {
           b.add(põe(caixa(L,1.5,1.3,COR.ferro,.75,.5),0,1.2,0));
           xs.forEach(x=>b.add(põe(cil(.4,.4,1.35,COR.escuro,20,.6,.6),x,1.2,0)));
+          xs.forEach(x=>b.add(põe(gira(cil(.14,.14,.06,COR.aco,16,.8,.4),PI2,0,0),x,1.0,.68)));
         });
         g.add(põe(caixa(L,1.1,2.1,COR.ferro,.75,.5),0,-.15,0));      // cárter estrutural
+        g.add(põe(caixa(.16,2.0,2.2,COR.aluminio,.6,.45),-(meia+.06),.1,0));   // flange do câmbio
         return g; })(), entrada:[0,-5,0] }),
 
     virabrequim: () => ({ obj: (()=>{
-        const g = grupo(gira(cil(.18,.18,L+.5,COR.aco),0,0,PI2));
-        xs.forEach((x,i)=>g.add(põe(gira(cil(.4,.4,.26,COR.ferro),0,0,PI2),x,(i%2?.34:-.34),0)));
+        const g = virabrequimX(xs, .3, i => i * Math.PI * 2 / porBanco, L + .6);
+        g.add(põe(polia(.36,.18,COR.ferro), meia + .32, 0, 0));
         return g; })(), entrada:[0,-5,0], animar:(o,t)=>{ o.rotation.x = t; } }),
 
     pistoes: () => {
@@ -263,10 +599,10 @@ function geoV(n, grausTotal, qtdBancos) {
       const g = construir((b, k) => {
         xs.forEach((x,i)=>{
           const alto = ((i + k) % 2) === 0;
-          const pist = põe(cil(.36,.36,.42,COR.aluminio,20,.6,.35),x,alto?1.5:1.1,0);
-          const biela= põe(cil(.08,.08,.9,COR.bronze,12),x,alto?.85:.45,0);
-          b.add(pist); b.add(biela);
-          moveis.push({pist, biela, fase:(i+k)%2 ? Math.PI : 0, bp:1.3, bb:.65});
+          const pist = põe(pistao(.36, COR.aluminio),x,alto?1.5:1.1,0);
+          const haste = põe(biela(.9, COR.bronze),x,alto?.62:.22,0);
+          b.add(pist); b.add(haste);
+          moveis.push({pist, biela: haste, fase:(i+k)%2 ? Math.PI : 0, bp:1.3, bb:.42});
         });
       });
       return { obj:g, entrada:[0,5,0], animar:(o,t)=>{
@@ -290,12 +626,13 @@ function geoV(n, grausTotal, qtdBancos) {
         b.add(põe(caixa(L,.8,1.32,COR.aluminio,.65,.42),0,2.4,0));
         [...Array(porBanco+1)].map((_,i)=>(i-porBanco/2)*.85)
           .forEach(x=>[-.55,.55].forEach(z=>b.add(põe(parafuso(),x,2.82,z))));
+        b.add(põe(caixa(L-.12,.28,1.1,COR.aluminio,.5,.5),0,3.15,0));   // tampa de válvulas
       }), entrada:[0,6,0] }),
 
     comandos: () => ({ obj: construir(b => {
-        b.add(põe(gira(cil(.12,.12,L+.1,COR.escuro,18,.7,.45),0,0,PI2),0,2.9,0));
-        xs.forEach(x=>b.add(põe(gira(cil(.24,.24,.18,COR.aco,18),0,0,PI2),x,2.9,0)));
-      }), entrada:[0,6,0], animar:(o,t)=>{ o.children.forEach(b=>b.children.forEach(c=>{ c.rotation.x = t/2; })); } }),
+        b.add(comandoX(xs, L + .1, 2.95, 0));
+        b.add(valvulas(xs, 2.05, COR.aco));
+      }), entrada:[0,6,0], animar:(o,t)=>{ o.children.forEach(b=>{ b.children[0].rotation.x = t/2; }); } }),
 
     corrente: () => ({ obj: (()=>{
         const g = new THREE.Group();
@@ -314,28 +651,37 @@ function geoV(n, grausTotal, qtdBancos) {
       ), entrada:[-5,0,0] }),
 
     velas: () => ({ obj: construir(b =>
-        xs.forEach(x=>b.add(põe(cil(.09,.09,.45,COR.amarelo,14,.5,.4),x,3.0,.4)))
+        xs.forEach(x=>b.add(põe(vela(),x,2.62,.42)))
       ), entrada:[0,6,0] }),
 
     coletor: () => ({ obj: (()=>{
-        const alto = noBanco(angulos[0], 2.75)[0] + .35;
-        const g = grupo(põe(caixa(L-.4,.55,1.5,COR.aluminio,.6,.4),0,alto,0));
-        xs.forEach(x=>[-1,1].forEach(lado=>
-          g.add(põe(gira(cil(.13,.13,.7,COR.aluminio,12,.6,.4),0,0,0),x,alto-.4,lado*.55))));
+        const alto = noBanco(angulos[0], 2.75)[0] + .3;
+        const g = grupo(põe(caixa(L-.4,.5,1.3,COR.aluminio,.6,.4),0,alto,0));
+        // corredores curvos descendo do plenum para cada banco
+        angulos.forEach(ang => xs.forEach(x => {
+          const meio = noBanco(ang, 2.75, .45);
+          const boca = noBanco(ang, 2.45, .5);
+          g.add(tuboCurvo([[x, alto - .22, Math.sign(meio[1]) * .2],
+                           [x, (alto + meio[0]) / 2, meio[1] * .8],
+                           [x, boca[0], boca[1]]], .11, COR.aluminio, .6, .42));
+        }));
         return g; })(), entrada:[0,7,0] }),
 
-    escape: () => ({ obj: construir((b,k) =>
-        xs.forEach(x=>{
-          b.add(põe(gira(cil(.13,.13,.55,COR.escuro,14,.6,.5),PI2,0,0),x,2.05,-.9));
-          b.add(põe(gira(cil(.12,.12,L*.92,COR.escuro,14,.6,.5),0,0,PI2),0,2.05,-1.12));
-        })
-      ), entrada:[0,0,-7] }),
+    escape: () => ({ obj: construir(b => {
+        // cada cilindro sai por um tubo curvo até o coletor, que corre
+        // por fora do banco — não uma vareta reta atravessando o motor
+        xs.forEach(x => b.add(tuboCurvo([[x,2.35,-.62],[x,2.2,-.95],[x,1.95,-1.18]],.12,COR.escuro,.6,.5)));
+        b.add(põe(gira(cil(.15,.15,L*.95,COR.escuro,16,.6,.5),0,0,PI2),0,1.95,-1.18));
+        b.add(põe(gira(cil(.17,.17,.45,COR.escuro,16,.6,.5),0,0,PI2),-(L/2+.18),1.95,-1.18));
+      }), entrada:[0,0,-7] }),
 
     volante: () => ({ obj: (()=>{
         const xv = -(meia + .35);
         const g = grupo(
           põe(gira(cil(1.0,1.0,.24,COR.ferro,44,.8,.45),0,0,PI2),xv,0,0),
           põe(gira(cil(.34,.34,.3,COR.aco,24,.9,.35),0,0,PI2),xv-.06,0,0));
+        for(let k=0;k<6;k++){ const ang=k*Math.PI/3;
+          g.add(põe(gira(parafuso(),0,0,PI2),xv-.15,Math.cos(ang)*.56,Math.sin(ang)*.56)); }
         const dentes = new THREE.Group();
         cremalheira(dentes, 1.04, 0);
         dentes.rotation.y = PI2;
@@ -365,18 +711,19 @@ function geoBoxer(n, ar) {
         return g; })(), entrada:[0,-4,0] }),
 
     virabrequim: () => ({ obj: (()=>{
-        const g = grupo(gira(cil(.16,.16,C+.4,COR.aco),PI2,0,0));
-        pares.forEach(([,z],i)=>
-          g.add(põe(gira(cil(.34,.34,.22,COR.ferro),PI2,0,0),0,i%2?.34:-.34,z)));
-        return g; })(), entrada:[0,0,-5], animar:(o,t)=>{ o.rotation.z = t; } }),
+        // o virabrequim é construído no eixo X e deitado no Z do boxer
+        const eixo = virabrequimX(pares.map(p => -p[1]), .3, i => i * Math.PI, C + .4);
+        eixo.rotation.y = PI2;
+        return grupo(eixo); })(),
+      entrada:[0,0,-5], animar:(o,t)=>{ o.rotation.z = t; } }),
 
     bielas: () => {
       const g = new THREE.Group(); const moveis = [];
       pares.forEach(([lado,z])=>{
-        const pist = põe(gira(cil(.42,.42,.42,COR.aluminio,20,.6,.35),0,0,PI2),lado*1.35,0,z);
-        const biela= põe(gira(cil(.09,.09,1.0,COR.bronze),0,0,PI2),lado*.75,0,z);
-        g.add(pist); g.add(biela);
-        moveis.push({pist, biela, lado, bp:lado*1.35, bb:lado*.75});
+        const pist = põe(gira(pistao(.42, COR.aluminio),0,0,-lado*PI2),lado*1.35,0,z);
+        const haste = põe(gira(biela(.95, COR.bronze),0,0,-lado*PI2),lado*.42,0,z);
+        g.add(pist); g.add(haste);
+        moveis.push({pist, biela: haste, lado, bp:lado*1.35, bb:lado*.42});
       });
       return { obj:g, entrada:[0,4,0], animar:(o,t)=>{
         const d = Math.cos(t) * .32;
@@ -396,7 +743,7 @@ function geoBoxer(n, ar) {
     velas: () => ({ obj: (()=>{
         const g = new THREE.Group();
         pares.forEach(([lado,z])=>
-          g.add(põe(gira(cil(.09,.09,.5,COR.amarelo,14,.5,.4),0,0,PI2),lado*3.15,.25,z)));
+          g.add(põe(gira(vela(),0,0,-lado*PI2),lado*2.75,.2,z)));
         return g; })(), entrada:[8,0,0] }),
   };
 
@@ -486,10 +833,16 @@ function geoBoxer(n, ar) {
     comandos: () => ({ obj: (()=>{
         const g = new THREE.Group();
         [-1,1].forEach(lado=>{
-          g.add(põe(gira(cil(.11,.11,C-.4,COR.escuro,18,.7,.45),PI2,0,0),lado*2.85,.62,0));
-          ladoZ(lado).forEach(z=>g.add(põe(gira(cil(.22,.22,.16,COR.aco,18),PI2,0,0),lado*2.85,.62,z)));
+          const eixo = comandoX(ladoZ(lado).map(z=>-z), C - .4, 0, 0);
+          eixo.rotation.y = PI2;
+          eixo.position.set(lado*2.85, .62, 0);
+          g.add(eixo);
+          const v = valvulas(ladoZ(lado).map(z=>-z), 0, COR.aco);
+          v.rotation.y = PI2; v.rotation.z = -lado*PI2;
+          v.position.set(lado*2.35, .1, 0);
+          g.add(v);
         });
-        return g; })(), entrada:[0,5,0], animar:(o,t)=>{ o.children.forEach(c=>{ c.rotation.z = t/2; }); } }),
+        return g; })(), entrada:[0,5,0] }),
     correia: () => ({ obj: (()=>{
         const g = new THREE.Group();
         const z = meia + .18;
