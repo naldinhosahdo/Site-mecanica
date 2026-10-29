@@ -70,8 +70,10 @@ function iniciarPagina() {
   const larguras = [[], []];
 
   function posicionarRotulos(pontos) {
-    // o número aparece sempre; o nome só na vista explodida ou com "nomes" ligado
-    const comNome = nomes || explodido;
+    // O número aparece sempre; o nome, só com "nomes" ligado. Quem decide
+    // é só esta variável: antes a vista explodida também acendia os nomes
+    // aqui, e aí o botão não tinha como apagá-los.
+    const comNome = nomes;
     const largo = comNome ? 1 : 0;
     const visiveis = [];
 
@@ -221,6 +223,9 @@ function iniciarPagina() {
 
   el('btn-explodir').addEventListener('click', () => {
     explodido = window.Motor3D.explodir(!explodido);
+    // abrir a vista explodida acende os nomes, que é o que quase todo mundo
+    // quer ver ali — mas quem manda continua sendo o botão de nomes
+    nomes = explodido;
     pintar();
   });
   el('btn-ligar').addEventListener('click', () => {
