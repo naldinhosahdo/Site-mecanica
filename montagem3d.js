@@ -1123,16 +1123,20 @@ function geoBoxer(n, ar, op) {
         return g; })(), entrada:[0,5,0] }),
     volante: comum.volante,
     ventoinha: () => ({ obj: (()=>{
+        // A ventoinha é parafusada na ponta do virabrequim, então o cubo
+        // dela fica NO eixo (y = 0). Estava 0.15 acima: além de nascer
+        // torta, girava em órbita em volta do eixo em vez de girar no
+        // próprio cubo, porque a animação roda o grupo em torno de y = 0.
         const g = grupo(
-          põe(gira(cil(.85,.85,.16,COR.aluminio,40,.7,.4),PI2,0,0),0,.15,zVent),
-          põe(gira(cil(.3,.3,.36,COR.aco,26,.9,.3),PI2,0,0),0,.15,zVent+.22),
-          põe(new THREE.Mesh(new THREE.TorusGeometry(.86,.05,10,44), mat(COR.aluminio,.7,.4)),0,.15,zVent+.06));
+          põe(gira(cil(.85,.85,.16,COR.aluminio,40,.7,.4),PI2,0,0),0,0,zVent),
+          põe(gira(cil(.3,.3,.36,COR.aco,26,.9,.3),PI2,0,0),0,0,zVent+.22),
+          põe(new THREE.Mesh(new THREE.TorusGeometry(.86,.05,10,44), mat(COR.aluminio,.7,.4)),0,0,zVent+.06));
         for(let k=0;k<12;k++){
           const ang=k*Math.PI/6;
           // pá com passo: mais larga na ponta e inclinada, como pá de verdade
           const pa = extrudado([[-.07,-.3],[.07,-.26],[.11,.3],[-.11,.26]], .06, COR.aluminio,.6,.5,
                                { chave:'paVent', chanfro:.015, curvas:2 });
-          pa.position.set(Math.sin(ang)*.52, .15+Math.cos(ang)*.52, zVent+.1);
+          pa.position.set(Math.sin(ang)*.52, Math.cos(ang)*.52, zVent+.1);
           pa.rotation.z = -ang; pa.rotation.y = .5;
           g.add(pa);
         }
