@@ -354,6 +354,14 @@
       .topo__logo { display: none; }
     }
   </style>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MecânicaPro" />
+  <link rel="apple-touch-icon" href="icones/apple-touch-icon.png" />
+  <link rel="icon" href="icones/icone-192.png" />
 </head>
 <body>
 
@@ -400,8 +408,14 @@
 
   <div class="bandeja" id="bandeja"></div>
 
-  <script src="montagem-dados.js?v=3"></script>
-  <script src="montagem3d.js?v=53" type="module"></script>
+  <script src="montagem-dados.js?v=4"></script>
+  <script src="montagem3d.js?v=54" type="module"></script>
   <script src="montagem-pagina.js?v=13"></script>
+  <script>
+    // instala o app no celular e deixa o site abrir sem internet
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    }
+  </script>
 </body>
 </html>

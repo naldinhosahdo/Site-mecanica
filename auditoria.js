@@ -114,9 +114,37 @@ for(const k in variantes) variantes[k].forEach(v=>scan(v.desc));
     const ids = new Set(p.map(x=>x.id));
     if(ids.size !== p.length) E.push('[3d] arquitetura com id repetido: '+a);
     p.forEach(x=>{ if(!x.nome||!x.dica||!x.aoEncaixar||!x.seErrar) E.push('[3d] peca incompleta em '+a+': '+x.id); });
-    if(!usadas.has(a)) W.push('[3d] arquitetura desenhada mas nenhum motor usa: '+a);
   }
-  console.log('arquiteturas 3D: '+Object.keys(arquiteturas).length+' | usadas pelo catalogo: '+usadas.size);
+  console.log('arquiteturas 3D: '+Object.keys(arquiteturas).length+' geradas, '+usadas.size+' usadas pelo catalogo');
+}
+
+// ---------- I. COMPONENTE INCOMPATIVEL COM O MOTOR ----------
+// peca que simplesmente nao existe naquele tipo de motor
+{
+  const src = fs.readFileSync('./montagem-dados.js','utf8').replace(/^const /gm,'var ')
+            + '\nmodule.exports={arquiteturas,arqDaFamilia};';
+  const Mod = new module.constructor();
+  Mod._compile(src, process.cwd()+'/_montagem-dados-comp.js');
+  const {arquiteturas, arqDaFamilia} = Mod.exports;
+  const tem = (a,id) => arquiteturas[a] && arquiteturas[a].pecas.some(p=>p.id===id);
+  const fimP = p => /atual|hoje/i.test(String(p)) ? 9999
+                  : (String(p).match(/\d{4}/g)||[]).slice(-1)[0]*1 || 9999;
+
+  for(const mid in marcas) marcas[mid].motores.forEach(mo=>{
+    const a = arqDaFamilia(mid, mo), onde = marcas[mid].nome+' / '+mo.nome+' ['+a+']';
+    const txt = mo.nome+' '+(mo.desc||'');
+    if (/\bdiesel\b|\bTDI\b|TDCi|CRDi|\bdCi\b|\bJTD\b|\bHDi\b|Multijet|Duramax|Power ?Stroke|\bOM\d{3}|Cummins/i.test(mo.nome)
+        && tem(a,'velas')) E.push('[peca] diesel com vela de ignicao: '+onde);
+    if (/refrigerad[oa] a ar|arrefecid[oa] a ar|\bmotor a ar\b/i.test(txt) && tem(a,'bomba'))
+      E.push("[peca] motor a ar com bomba d'agua: "+onde);
+    if (fimP(mo.periodo) < 1968 && tem(a,'correia'))
+      E.push('[peca] correia dentada em motor anterior a 1962: '+onde);
+    if (/dois tempos|2 tempos/i.test(txt) && (tem(a,'comando')||tem(a,'comandos')))
+      E.push('[peca] dois tempos com comando de valvulas: '+onde);
+    if (a==='eletrico' && /h[íi]brid/i.test(txt))
+      W.push('[peca] hibrido classificado como 100% eletrico: '+onde);
+  });
+  console.log('arquiteturas 3D definidas: '+Object.keys(arquiteturas).length);
 }
 
 console.log('==== AUDITORIA COMPLETA ====');

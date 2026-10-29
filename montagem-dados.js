@@ -325,34 +325,152 @@ function pecasEletrico() {
   ];
 }
 
+
+// =========================================
+// VARIAÇÕES: a peça que NÃO existe naquele motor
+// Diesel não tem vela de ignição, tem bico injetor. Motor anterior aos
+// anos 60 não tem correia dentada, tem engrenagem. Motor a ar não tem
+// bomba d'água. Em vez de listas separadas, troco a peça na lista-base.
+// =========================================
+function variar(pecas, n, op) {
+  return pecas.map(p => {
+    if (op.diesel && p.id === 'velas') return {
+      id: 'bicos', nome: 'Bicos injetores',
+      dica: 'No diesel não existe faísca: quem acende a mistura é a própria compressão.',
+      aoEncaixar: `Um bico por cilindro, pulverizando óleo diesel a altíssima pressão direto na câmara. ` +
+                  `O ar comprimido já está tão quente que o combustível pega fogo sozinho. ` +
+                  `As velas que o diesel tem são de aquecimento, só para ajudar na partida a frio.`,
+      seErrar: 'O bico rosqueia no cabeçote — ele tem que estar montado.' };
+
+    if (op.engrenagem && (p.id === 'correia' || p.id === 'corrente')) return {
+      id: 'engrenagens', nome: 'Engrenagens de distribuição',
+      dica: 'Antes da correia dentada, o comando era tocado por engrenagem ou corrente.',
+      aoEncaixar: 'Um trem de engrenagens liga o virabrequim ao comando. A correia dentada só ' +
+                  'chegaria ao automóvel em 1962, no Glas 1004 — até lá, era assim.',
+      seErrar: 'As engrenagens ligam virabrequim e comando — os dois precisam estar montados.' };
+
+    if (op.ar && p.id === 'bomba') return {
+      id: 'ventoinha', nome: 'Ventoinha e defletores',
+      dica: 'Num motor a ar, quem faz o papel do radiador é ela.',
+      aoEncaixar: 'Sopra ar forçado sobre as aletas do bloco e do cabeçote, e as chapas defletoras ' +
+                  'guiam esse ar para onde o calor é maior. Sem ela, o motor cozinha.',
+      seErrar: 'A ventoinha é acionada pela polia do virabrequim — ele precisa estar montado.' };
+
+    return p;
+  });
+}
+
+// ---------- DOIS TEMPOS ----------
+// não tem válvula, não tem comando: o próprio pistão abre e fecha as
+// janelas na parede do cilindro
+function pecasDoisTempos(n) {
+  return [
+    { id:'bloco', nome:'Bloco do motor',
+      dica:'A peça-base, onde ficam furados os cilindros.',
+      aoEncaixar:`${numero(n)} cilindros em linha, com janelas (lumbreiras) abertas na parede de cada um.`,
+      seErrar:'Sem o bloco não há onde apoiar nenhuma outra peça.' },
+    { id:'virabrequim', nome:'Virabrequim',
+      dica:'No dois tempos ele trabalha dentro de um cárter selado.',
+      aoEncaixar:'Além de girar, ele bombeia: o cárter funciona como bomba de pré-compressão da mistura.',
+      seErrar:'O virabrequim precisa entrar antes de tudo que se apoia nele.' },
+    { id:'pistoes', nome:'Pistões e bielas',
+      dica:'Aqui o pistão acumula função: ele também é a válvula do motor.',
+      aoEncaixar:'Ao subir e descer, a saia do pistão tapa e destapa as janelas. Por isso o dois ' +
+                 'tempos não precisa de válvula nem de comando.',
+      seErrar:'A biela se prende ao virabrequim — ele tem que estar montado primeiro.' },
+    { id:'carter', nome:'Cárter selado',
+      dica:'Por que o cárter do dois tempos é fechado e o do quatro tempos é um poço de óleo?',
+      aoEncaixar:'Porque aqui ele é câmara de bombeamento. Por isso o óleo vai misturado ao ' +
+                 'combustível, e não no cárter.',
+      seErrar:'O cárter fecha por baixo — o virabrequim tem que estar no lugar antes.' },
+    { id:'junta', nome:'Junta do cabeçote',
+      dica:'A vedação entre cilindro e cabeçote.',
+      aoEncaixar:'Veda a pressão da combustão no topo do cilindro.',
+      seErrar:'A junta fica entre bloco e cabeçote — entra depois do bloco pronto.' },
+    { id:'cabecote', nome:'Cabeçote',
+      dica:'Repare: aqui ele é simples, quase uma tampa.',
+      aoEncaixar:'Sem válvula nenhuma para abrigar, o cabeçote do dois tempos é só a câmara de ' +
+                 'combustão e o furo da vela.',
+      seErrar:'O cabeçote só assenta depois da junta.' },
+    { id:'lumbreiras', nome:'Lumbreiras e transferência',
+      dica:'As janelas por onde a mistura entra e os gases saem.',
+      aoEncaixar:'Os dutos de transferência levam a mistura do cárter para cima do pistão. É esse ' +
+                 'desenho que define a potência de um dois tempos.',
+      seErrar:'As lumbreiras são abertas na parede do cilindro — o bloco vem primeiro.' },
+    { id:'velas', nome:'Velas de ignição',
+      dica:'A fagulha que detona a mistura.',
+      aoEncaixar:`Uma vela por cilindro — e no dois tempos elas trabalham o dobro: há uma explosão ` +
+                 `a cada volta do virabrequim, não a cada duas.`,
+      seErrar:'A vela rosqueia no cabeçote — ele tem que estar montado.' },
+    { id:'carburador', nome:'Carburador',
+      dica:'Onde ar, combustível e óleo se misturam.',
+      aoEncaixar:'No dois tempos o óleo vai dissolvido na gasolina — é daí que vem a fumaça azulada ' +
+                 'e o cheiro característico.',
+      seErrar:'O carburador alimenta o cárter — ele precisa estar fechado antes.' },
+    { id:'escape', nome:'Escape expansor',
+      dica:'Por que o escapamento do dois tempos tem aquela barriga?',
+      aoEncaixar:'A câmara de expansão devolve parte da mistura que escapou de volta para o cilindro, ' +
+                 'usando a onda de pressão. É afinação pura.',
+      seErrar:'O escape sai pela lumbreira do cilindro — o bloco tem que estar montado.' },
+    { id:'volante', nome:'Volante do motor',
+      dica:'O disco pesado que guarda inércia e recebe a embreagem.',
+      aoEncaixar:'Preso à ponta do virabrequim, suaviza o giro e transmite a força.',
+      seErrar:'O volante se aparafusa na ponta do virabrequim — ele tem que estar no lugar.' },
+  ];
+}
+
 // =========================================
 // CATÁLOGO DE ARQUITETURAS
 // =========================================
 const arquiteturas = {};
 
+// Cada arquitetura ganha suas variações. O sufixo diz o que muda:
+//   d  = diesel (bico injetor no lugar da vela)
+//   g  = distribuição por engrenagem (motor anterior à correia dentada)
+//   ar = refrigerado a ar (ventoinha no lugar da bomba d'água)
+const VARIACOES = [
+  { suf:'',   op:{},                             titulo:'' },
+  { suf:'d',  op:{diesel:true},                  titulo:', diesel' },
+  { suf:'g',  op:{engrenagem:true},              titulo:', distribuição por engrenagens' },
+  { suf:'dg', op:{diesel:true, engrenagem:true}, titulo:', diesel, distribuição por engrenagens' },
+];
+const VARIACOES_AR = [
+  { suf:'ar',  op:{ar:true},                     titulo:'' },
+  { suf:'arg', op:{ar:true, engrenagem:true},    titulo:', distribuição por engrenagens' },
+];
+
+// o arrefecimento entra por último, para o título sair na ordem natural
+const registrar = (id, base, pecas, n, v, refrigeracao) => {
+  const arrefece = v.op.ar ? ', refrigerado a ar'
+                 : refrigeracao ? ', refrigerado a água' : '';
+  arquiteturas[id + v.suf] = { titulo: base + v.titulo + arrefece, pecas: variar(pecas, n, v.op) };
+};
+
 [2, 3, 4, 5, 6].forEach(n => {
-  arquiteturas['linha' + n] = {
-    titulo: `${numero(n)[0].toUpperCase() + numero(n).slice(1)} cilindros em linha` +
-            (n > 2 ? ', refrigerado a água' : ''),
-    pecas: pecasLinha(n)
+  const base = `${numero(n)[0].toUpperCase() + numero(n).slice(1)} cilindros em linha`;
+  [...VARIACOES, ...VARIACOES_AR].forEach(v =>
+    registrar('linha' + n, base, pecasLinha(n), n, v, n > 2));
+});
+
+[2, 3, 4].forEach(n => {
+  arquiteturas['doisTempos' + n] = {
+    titulo: `${numero(n)[0].toUpperCase() + numero(n).slice(1)} cilindros dois tempos`,
+    pecas: pecasDoisTempos(n)
   };
 });
 
-[4, 6, 8, 10, 12, 16].forEach(n => {
-  arquiteturas['v' + n] = { titulo: `V${n} — ${numero(n)} cilindros em V`, pecas: pecasV(n, false) };
-});
-[8, 12, 16].forEach(n => {
-  arquiteturas['w' + n] = { titulo: `W${n} — ${numero(n)} cilindros em W`, pecas: pecasV(n, true) };
-});
+[4, 6, 8, 10, 12, 16].forEach(n =>
+  VARIACOES.forEach(v => registrar('v' + n, `V${n} — ${numero(n)} cilindros em V`, pecasV(n, false), n, v, false)));
+[8, 12, 16].forEach(n =>
+  VARIACOES.forEach(v => registrar('w' + n, `W${n} — ${numero(n)} cilindros em W`, pecasV(n, true), n, v, false)));
 
 [2, 4, 6, 12].forEach(n => {
   arquiteturas['boxerAr' + (n === 4 ? '' : n)] =
     { titulo: `Boxer ${n} cilindros refrigerado a ar`, pecas: pecasBoxer(n, true) };
 });
-[2, 4, 6, 12].forEach(n => {
-  arquiteturas['boxer' + n] =
-    { titulo: `Boxer ${n} cilindros refrigerado a água`, pecas: pecasBoxer(n, false) };
-});
+[2, 4, 6, 12].forEach(n =>
+  [VARIACOES[0], VARIACOES[1]].forEach(v =>
+    registrar('boxer' + n, `Boxer ${n} cilindros`, pecasBoxer(n, false), n, v, true)));
 
 [1, 2, 3, 4].forEach(n => {
   arquiteturas['rotativo' + n] = {
@@ -373,7 +491,6 @@ arquiteturas.eletrico = { titulo: 'Motor elétrico síncrono de ímãs permanent
 const porNome = [
   [/small ?block|big ?block|\bLS\b|\bLT\b|windsor|cleveland|modular|coyote|boss 302|hemi|magnum|power ?stroke|duramax|triton|\bMOPAR\b|rocket|nailhead|flathead V|\bY-?block\b/i, 'v8'],
   [/quadrajet/i, 'v8'],
-  [/duratorq|puma \(diesel\)|\bMWM\b|maxion|sofim|multijet|\bTDI\b|\bTDCi\b|\bCRDi\b|\bdCi\b|\bJTD\b|common ?rail|\bHDi\b/i, 'linha4'],
   [/opala.*(reto|6)|reto 6|\bmaster ?6\b/i, 'linha6'],
   [/\bVR6\b/i, 'v6'],
   [/\bB58\b|\bB57\b|\bN54\b|\bN55\b|\bM30\b|\bM50\b|\bM54\b|\bS54\b|\b2JZ\b|\b1JZ\b|\bRB\d\d\b|\bJZ\b|slant.?six|\bOM6\d\d\b/i, 'linha6'],
@@ -441,15 +558,74 @@ function lerLayout(txt, ehNome) {
   return null;
 }
 
+const ANO_DA_CORREIA = 1962;   // Glas 1004: a primeira correia dentada de automóvel
+
+const fimDoPeriodo = p => {
+  const t = String(p || '');
+  if (/atual|hoje/i.test(t)) return 9999;
+  const anos = t.match(/\d{4}/g);
+  return anos ? parseInt(anos[anos.length - 1], 10) : 9999;
+};
+
+const ehDieselDoTexto = txt => /\bdiesel\b|\bTDI\b|TDCi|CRDi|\bdCi\b|\bJTD\b|\bHDi\b|Multijet|Duramax|Power ?Stroke|\bOM\d{3}|Sofim|Duratorq|\bTd5\b|Cummins|\bMWM\b|Maxion|Indenor|\bXUD\b|BlueHDi|common ?rail|Ingenium/i.test(txt);
+
+const ehArDoTexto = txt => /refrigerad[oa] a ar|arrefecid[oa] a ar|\bmotor a ar\b|\ba ar\b/i.test(txt);
+
+function doisTemposDoTexto(txt) {
+  if (!/dois tempos|2 tempos|two.?stroke/i.test(txt)) return null;
+  const t = emTokens(txt);
+  if (/ 3 c[ií]l|tr[êe]s c[ií]l|tricil/i.test(t)) return 'doisTempos3';
+  if (/ 4 c[ií]l|quatro c[ií]l/i.test(t)) return 'doisTempos4';
+  return 'doisTempos2';
+}
+
+// Quais variações cada família aceita: um boxer a ar já é a ar, um
+// rotativo não tem correia nem vela no sentido comum, e por aí vai.
+const aceita = (base, mod) => {
+  if (base === 'eletrico' || base.startsWith('rotativo') || base.startsWith('doisTempos')) return false;
+  if (base.startsWith('boxerAr')) return false;              // já é a ar e não tem correia
+  if (base.startsWith('boxer')) return mod === 'd';
+  if (base.startsWith('v') || base.startsWith('w')) return mod === 'd' || mod === 'g';
+  return true;                                               // em linha aceita tudo
+};
+
 function arqDaFamilia(marcaId, motor) {
   const nome = typeof motor === 'string' ? motor : (motor && motor.nome) || '';
   const desc = typeof motor === 'string' ? '' : (motor && motor.desc) || '';
+  const periodo = typeof motor === 'string' ? '' : (motor && motor.periodo) || '';
+  const txt = nome + ' ' + desc;
 
-  // o nome da família manda: se ele já diz o layout, a descrição não muda isso
-  return lerLayout(nome, true)
-      || (porNome.find(([re]) => re.test(nome)) || [])[1]
-      || lerLayout(nome + ' ' + desc, false)
-      || 'linha4';   // o esquema mais comum do automóvel
+  // dois tempos não é variação de nada: é outro motor, sem válvula nem comando
+  const doisT = doisTemposDoTexto(txt);
+  if (doisT) return doisT;
+
+  // Híbrido não é carro elétrico: tem motor a combustão, e é ele que
+  // interessa ver. Só fica elétrico se o texto não disser qual é o motor.
+  const ehHibrido = /h[íi]brid/i.test(txt);
+
+  let base = lerLayout(nome, true)
+          || (porNome.find(([re]) => re.test(nome)) || [])[1]
+          || lerLayout(txt, false)
+          || 'linha4';
+
+  if (ehHibrido && base === 'eletrico') {
+    const combustao = lerLayout(nome.replace(/h[íi]brid\w*/ig, ''), false)
+                   || lerLayout(txt.replace(/h[íi]brid\w*/ig, '').replace(/el[ée]tric\w*/ig, ''), false);
+    if (combustao && combustao !== 'eletrico') base = combustao;
+    else if (ehDieselDoTexto(txt)) base = 'linha4';
+  }
+
+  // ---- modificadores: o que aquele motor tem e o que não tem ----
+  let suf = '';
+  if (aceita(base, 'd') && ehDieselDoTexto(txt)) suf += 'd';
+  if (aceita(base, 'g') && fimDoPeriodo(periodo) < ANO_DA_CORREIA + 6) suf += 'g';
+  if (aceita(base, 'ar') && ehArDoTexto(txt) && base.startsWith('linha')) {
+    // em linha refrigerado a ar: a bomba d'água dá lugar à ventoinha
+    suf = (suf.includes('d') ? 'd' : '') + 'ar' + (suf.includes('g') ? 'g' : '');
+  }
+
+  const id = base + suf;
+  return arquiteturas[id] ? id : base;
 }
 
 // todo motor do catálogo tem um esquema 3D

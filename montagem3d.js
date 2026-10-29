@@ -641,7 +641,8 @@ function elo(a, b, x, cor) {
 // =========================================
 // EM LINHA (refrigerado a água) — virabrequim no eixo X
 // =========================================
-function geoLinha(n) {
+function geoLinha(n, op) {
+  op = op || {};
   const xs   = [...Array(n)].map((_, i) => (i - (n - 1) / 2) * .8);
   const furos= [...Array(n + 1)].map((_, i) => (i - n / 2) * .8);
   const L    = n * .8 + .2;
@@ -650,7 +651,7 @@ function geoLinha(n) {
   const fase = i => (n === 4 ? ((i === 0 || i === n - 1) ? 0 : Math.PI) : (i % 2) * Math.PI);
   const CURSO = .3, BIELA = .95, Y_VIRA = -1.05;
 
-  return {
+  const base = {
     bloco: () => ({ obj: (()=>{
         const g = new THREE.Group();
         // corpo do bloco: a seção transversal corre ao longo do virabrequim
@@ -818,12 +819,27 @@ function geoLinha(n) {
         return g; })(),
       entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
   };
+
+  return variarGeo(base, op, {
+    bicos: () => ({ obj: (()=>{
+        const g = new THREE.Group();
+        xs.forEach(x=>g.add(põe(bicoInjetor(), x, 1.72, 0)));
+        // galeria comum (common rail) alimentando todos os bicos
+        g.add(põe(gira(cil(.11,.11,L-.3,COR.aco,16,.9,.3),0,0,PI2),0,2.5,.3));
+        xs.forEach(x=>g.add(tuboCurvo([[x,2.45,.3],[x,2.3,.18],[x,2.7,.05]],.05,COR.aco,.9,.3)));
+        return g; })(), entrada:[0,5,0] }),
+
+    engrenagens: () => ({ obj: trensDeEngrenagem(xCor, 1.95, Y_VIRA, COR.aco), entrada:[6,0,0] }),
+
+    ventoinha: () => ({ obj: ventoinhaLinha(xBomba - .1, .5), entrada:[-5,0,0] }),
+  });
 }
 
 // =========================================
 // EM V (e em W) — bancos inclinados sobre o mesmo virabrequim
 // =========================================
-function geoV(n, grausTotal, qtdBancos) {
+function geoV(n, grausTotal, qtdBancos, op) {
+  op = op || {};
   const bancos = qtdBancos || 2;
   const porBanco = n / bancos;
   const xs   = [...Array(porBanco)].map((_, i) => (i - (porBanco - 1) / 2) * .85);
@@ -848,7 +864,7 @@ function geoV(n, grausTotal, qtdBancos) {
     return g;
   };
 
-  return {
+  const base = {
     bloco: () => ({ obj: (()=>{
         const g = construir(b => {
           // cada banco é um perfil fundido, com convés e paredes
@@ -985,12 +1001,27 @@ function geoV(n, grausTotal, qtdBancos) {
         return g; })(),
       entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
   };
+
+  return variarGeo(base, op, {
+    bicos: () => ({ obj: construir(b => {
+        xs.forEach(x=>b.add(põe(bicoInjetor(), x, 2.5, .42)));
+        b.add(põe(gira(cil(.1,.1,L-.2,COR.aco,16,.9,.3),0,0,PI2),0,3.3,.42));
+      }), entrada:[0,6,0] }),
+
+    engrenagens: () => ({ obj: (()=>{
+        const g = new THREE.Group();
+        const x = meia + .12;
+        const alto = noBanco(angulos[0], 2.9);
+        g.add(trensDeEngrenagem(x, alto[0], 0, COR.aco));
+        return g; })(), entrada:[6,0,0] }),
+  });
 }
 
 // =========================================
 // BOXER — virabrequim no eixo Z, cilindros deitados no eixo X
 // =========================================
-function geoBoxer(n, ar) {
+function geoBoxer(n, ar, op) {
+  op = op || {};
   const pares = [...Array(n)].map((_, i) => [i % 2 ? 1 : -1, (i - (n - 1) / 2) * .63]);
   const C     = n * .63 + .5;                 // comprimento do cárter
   const meia  = C / 2;
@@ -1130,7 +1161,7 @@ function geoBoxer(n, ar) {
   };
 
   // ---- boxer refrigerado a água ----
-  return {
+  const base = {
     carter: comum.carter,
     virabrequim: comum.virabrequim,
     bielas: comum.bielas,
@@ -1196,6 +1227,13 @@ function geoBoxer(n, ar) {
         return g; })(), entrada:[0,6,0] }),
     volante: comum.volante,
   };
+
+  return variarGeo(base, op, {
+    bicos: () => ({ obj: (()=>{
+        const g = new THREE.Group();
+        pares.forEach(([lado,z])=>g.add(põe(gira(bicoInjetor(),0,0,-lado*PI2),lado*2.6,.2,z)));
+        return g; })(), entrada:[8,0,0] }),
+  });
 }
 
 // =========================================
@@ -1407,19 +1445,224 @@ function geoEletrico() {
   };
 }
 
+
+// =========================================
+// VARIAÇÕES DA GEOMETRIA
+// A lista de peças (montagem-dados.js) troca a peça que não existe
+// naquele motor. Aqui o desenho acompanha, na MESMA posição da lista:
+// vela vira bico injetor, correia vira engrenagem, bomba vira ventoinha.
+// =========================================
+
+// bico injetor: corpo fino, sextavado, conector elétrico e a ponta pulverizadora
+function bicoInjetor() {
+  const corpo = new THREE.Mesh(geoCache('bico', () => geoTorneada([
+    [0, 0], [.035, 0], [.05, .06], [.05, .2],          // ponta que entra na câmara
+    [.09, .24], [.09, .42],
+    [.12, .46], [.12, .58],                            // sextavado de aperto
+    [.08, .62], [.08, .86],                            // corpo
+    [.13, .9], [.13, 1.02], [0, 1.04]                  // conector elétrico
+  ], 18)), matLiso(0x8d96a3, .85, .35));
+  const g = grupo(corpo);
+  g.add(põe(new THREE.Mesh(geoCache('bicoHex', () => new THREE.CylinderGeometry(.13, .13, .12, 6)),
+                           matLiso(COR.aco, .9, .3)), 0, .52, 0));
+  g.add(põe(caixa(.2, .14, .16, COR.plastico, 0, .6), 0, .97, .1));   // plugue do chicote
+  return g;
+}
+
+// trem de engrenagens: o que tocava o comando antes da correia dentada
+function trensDeEngrenagem(x, yCima, yBaixo, cor) {
+  const g = new THREE.Group();
+  const meio = (yCima + yBaixo) / 2;
+  const grande = engrenagem(.46, 26, .14, cor); grande.rotation.y = PI2; grande.position.set(x, yCima, 0);
+  const inter  = engrenagem(.34, 20, .14, cor); inter.rotation.y = PI2;  inter.position.set(x, meio, .34);
+  const peq    = engrenagem(.3, 17, .14, cor);  peq.rotation.y = PI2;    peq.position.set(x, yBaixo, 0);
+  g.add(grande); g.add(inter); g.add(peq);
+  // tampa da caixa de engrenagens, parafusada
+  g.add(aoLongoDeX(extrudado(
+    [[-.72, yBaixo - .25], [.72, yBaixo - .25], [.78, yBaixo + .3],
+     [.5, yCima + .3], [-.5, yCima + .3], [-.78, yBaixo + .3]],
+    .12, COR.aluminioEsc, .55, .5, { chave: 'capaEngr|' + yCima + '|' + yBaixo, chanfro: .03 }), x + .16));
+  return g;
+}
+
+// ventoinha e defletores do motor em linha refrigerado a ar
+function ventoinhaLinha(x, y) {
+  const g = new THREE.Group();
+  g.add(põe(gira(cil(.62, .62, .14, COR.aluminioEsc, 30, .55, .5), 0, 0, PI2), x, y, 0));
+  for (let k = 0; k < 10; k++) {
+    const a = k * Math.PI / 5;
+    const pa = caixa(.1, .42, .07, COR.aluminioEsc, .55, .5);
+    pa.position.set(x + .1, y + Math.cos(a) * .42, Math.sin(a) * .42);
+    pa.rotation.x = -a; pa.rotation.z = .4;
+    g.add(pa);
+  }
+  // carenagem que guia o ar para as aletas
+  g.add(aoLongoDeX(extrudado(
+    [[-.85, y - .8], [.85, y - .8], [.85, y + .8], [-.85, y + .8]],
+    .1, COR.aco, .5, .55, { chave: 'defletor|' + y, chanfro: .025 }), x - .3));
+  return g;
+}
+
+// troca as peças mantendo a ORDEM — o rótulo de índice i tem que cair na peça i
+function variarGeo(geo, op, troca) {
+  const saida = {};
+  Object.entries(geo).forEach(([id, fab]) => {
+    if (op.diesel && id === 'velas' && troca.bicos) { saida.bicos = troca.bicos; return; }
+    if (op.engrenagem && (id === 'correia' || id === 'corrente') && troca.engrenagens) {
+      saida.engrenagens = troca.engrenagens; return;
+    }
+    if (op.ar && id === 'bomba' && troca.ventoinha) { saida.ventoinha = troca.ventoinha; return; }
+    saida[id] = fab;
+  });
+  return saida;
+}
+
+
+// =========================================
+// DOIS TEMPOS — sem comando, sem válvula: quem abre e fecha as
+// janelas do cilindro é a saia do próprio pistão
+// =========================================
+function geoDoisTempos(n) {
+  const xs = [...Array(n)].map((_, i) => (i - (n - 1) / 2) * .9);
+  const L = n * .9 + .3, meia = L / 2;
+  const furos = [...Array(n + 1)].map((_, i) => (i - n / 2) * .9);
+  const CURSO = .3, Y_VIRA = -1.0;
+
+  return {
+    bloco: () => ({ obj: (()=>{
+        const g = new THREE.Group();
+        g.add(aoLongoDeX(extrudado(secaoBloco(.8, .9, -1.1), L, COR.ferro, .7, .52,
+                                   { chave:'bloco2T|'+L, chanfro:.05 })));
+        xs.forEach(x=>g.add(põe(cil(.46,.46,1.8,COR.escuro,26,.6,.6),x,.05,0)));
+        // aletas: o dois tempos de carro pequeno era quase sempre a ar
+        for (let k = 0; k < 7; k++)
+          g.add(põe(caixa(L-.1,.07,1.75+k*.0,COR.ferro,.7,.55),0,-.45+k*.22,0));
+        furos.forEach(x=>[-.68,.68].forEach(z=>g.add(põe(parafuso(),x,.93,z))));
+        return g; })(), entrada:[0,-5,0] }),
+
+    virabrequim: () => ({ obj: (()=>{
+        const g = virabrequimX(xs, CURSO, i => i * Math.PI * 2 / n, L + .6);
+        g.add(põe(gira(polia(.3,.14,COR.ferro),0,0,PI2), meia + .3, 0, 0));
+        g.position.y = Y_VIRA;
+        return g; })(), entrada:[0,-5,0], animar:(o,t)=>{ o.rotation.x = t; } }),
+
+    pistoes: () => {
+      const g = new THREE.Group(); const moveis = [];
+      xs.forEach((x,i)=>{
+        const p = põe(pistao(.42, COR.aluminio), x, .3, 0);
+        const b = põe(biela(.95, COR.bronze), x, -.4, 0);
+        g.add(p); g.add(b);
+        moveis.push({ p, b, x, fase: i * Math.PI * 2 / n });
+      });
+      const mover = (o,t)=>{
+        moveis.forEach(m=>{
+          const a = t + m.fase;
+          const py = Math.cos(a)*CURSO, pz = Math.sin(a)*CURSO;
+          const moenteY = Y_VIRA + py;
+          const pino = moenteY + Math.sqrt(Math.max(.01, .95*.95 - pz*pz));
+          m.p.position.y = pino + .12;
+          m.b.position.set(m.x, moenteY, pz);
+          m.b.rotation.x = -Math.atan2(pz, pino - moenteY);
+        });
+      };
+      mover(g, 0);
+      return { obj:g, entrada:[0,5,0], animar: mover };
+    },
+
+    carter: () => ({ obj: (()=>{
+        // selado, porque aqui ele é bomba de pré-compressão
+        const g = grupo(põe(aoLongoDeX(extrudado(secaoCarter(.86, -.6), L, COR.aluminioEsc, .55, .5,
+                                                 { chave:'carter2T|'+L, chanfro:.035 })), 0, -1.35, 0));
+        furos.forEach(x=>[-.95,.95].forEach(z=>g.add(põe(parafuso(),x,-1.33,z))));
+        return g; })(), entrada:[0,-5,0] }),
+
+    junta: () => ({ obj: (()=>{
+        const j = juntaReal(xs, .8, .48, furos, COR.vermelho);
+        j.rotation.x = -PI2; j.position.y = .99;
+        return grupo(j); })(), entrada:[0,4,0] }),
+
+    cabecote: () => ({ obj: (()=>{
+        // sem válvula nenhuma: é quase uma tampa aletada
+        const g = new THREE.Group();
+        g.add(põe(aoLongoDeX(extrudado(
+          [[-.8,0],[.8,0],[.8,.5],[.62,.62],[-.62,.62],[-.8,.5]],
+          L, COR.aluminio, .6, .48, { chave:'cab2T|'+L, chanfro:.04 })), 0, 1.05, 0));
+        for (let k = 0; k < 4; k++)
+          g.add(põe(caixa(L-.08,.06,1.5-k*.12,COR.aluminio,.6,.5),0,1.3+k*.14,0));
+        xs.forEach(x=>g.add(põe(gira(cil(.4,.4,.14,COR.escuro,22,.5,.6),0,0,PI2),x,1.08,0)));
+        furos.forEach(x=>[-.66,.66].forEach(z=>g.add(põe(parafuso(),x,1.72,z))));
+        return g; })(), entrada:[0,5,0] }),
+
+    lumbreiras: () => ({ obj: (()=>{
+        const g = new THREE.Group();
+        xs.forEach(x=>{
+          // janelas de transferência subindo do cárter até o cilindro
+          [-1,1].forEach(lado=>
+            g.add(tuboCurvo([[x,-.85,lado*.5],[x,-.2,lado*.78],[x,.45,lado*.62]],.13,COR.ferro,.65,.55)));
+          g.add(põe(caixa(.34,.3,.1,COR.escuro,.5,.6),x,.3,.78));    // janela de admissão
+        });
+        return g; })(), entrada:[0,0,6] }),
+
+    velas: () => ({ obj: (()=>{
+        const g = new THREE.Group();
+        xs.forEach(x=>g.add(põe(vela(),x,1.5,0)));
+        return g; })(), entrada:[0,5,0] }),
+
+    carburador: () => ({ obj: (()=>{
+        const corpo = new THREE.Mesh(geoCache('carb2T', () => geoTorneada([
+          [0,0],[.28,0],[.3,.12],[.24,.28],[.16,.4],[.16,.62],[.22,.66],[.22,.74],[0,.74]
+        ], 24)), mat(COR.cobre,.55,.48));
+        const g = grupo(põe(gira(corpo, PI2,0,0), -meia+.5, .2, 1.15));
+        g.add(tuboCurvo([[-meia+.5,.2,.95],[-meia+.3,.1,.6],[0,-.4,.6]],.14,COR.aluminioEsc,.6,.45));
+        return g; })(), entrada:[0,0,6] }),
+
+    escape: () => ({ obj: (()=>{
+        // câmara de expansão: a barriga que devolve mistura para o cilindro
+        const g = new THREE.Group();
+        xs.forEach(x=>g.add(tuboCurvo([[x,.3,-.8],[x,.1,-1.1],[x,-.1,-1.35]],.15,COR.escuro,.6,.5)));
+        const panca = new THREE.Mesh(geoCache('expansor|'+L, () => geoTorneada([
+          [0,-L/2],[.16,-L/2],[.34,-L/2+.5],[.38,0],[.3,L/2-.4],[.14,L/2],[0,L/2]
+        ], 24)), mat(COR.escuro,.6,.5));
+        panca.rotation.z = PI2; panca.position.set(0,-.3,-1.6);
+        g.add(panca);
+        return g; })(), entrada:[0,0,-6] }),
+
+    volante: () => ({ obj: (()=>{
+        const xVol = -(meia + .3);
+        const v = volanteReal(.95, COR.ferro);
+        v.rotation.z = PI2; v.position.set(xVol, Y_VIRA, 0);
+        const g = grupo(v, põe(gira(cil(.28,.28,.24,COR.aco,24,.9,.35),0,0,PI2),xVol-.16,Y_VIRA,0));
+        const dentes = new THREE.Group();
+        cremalheira(dentes, .99, 0);
+        dentes.rotation.y = PI2; dentes.position.set(xVol, Y_VIRA, 0);
+        g.add(dentes);
+        return g; })(),
+      entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
+  };
+}
+
 // =========================================
 // CATÁLOGO DE GEOMETRIAS
 // =========================================
 const geo3d = { eletrico: geoEletrico() };
 
-[2, 4, 6, 12].forEach(n => { geo3d['boxerAr' + (n === 4 ? '' : n)] = geoBoxer(n, true); });
-[2, 4, 6, 12].forEach(n => { geo3d['boxer' + n] = geoBoxer(n, false); });
+// as mesmas variações da lista de peças, com o mesmo sufixo no id
+const OPS = { '':{}, d:{diesel:true}, g:{engrenagem:true}, dg:{diesel:true,engrenagem:true},
+              ar:{ar:true}, arg:{ar:true,engrenagem:true} };
 
-[2, 3, 4, 5, 6].forEach(n => { geo3d['linha' + n] = geoLinha(n); });
+[2, 4, 6, 12].forEach(n => { geo3d['boxerAr' + (n === 4 ? '' : n)] = geoBoxer(n, true); });
+[2, 4, 6, 12].forEach(n => ['', 'd'].forEach(suf => {
+  geo3d['boxer' + n + suf] = geoBoxer(n, false, OPS[suf]);
+}));
+[2, 3, 4].forEach(n => { geo3d['doisTempos' + n] = geoDoisTempos(n); });
+
+[2, 3, 4, 5, 6].forEach(n =>
+  ['', 'd', 'g', 'dg', 'ar', 'arg'].forEach(suf => { geo3d['linha' + n + suf] = geoLinha(n, OPS[suf]); }));
 // ângulo do V: quanto mais cilindros, mais aberto costuma ser
-[[4, 72], [6, 60], [8, 90], [10, 72], [12, 60], [16, 45]]
-  .forEach(([n, ang]) => { geo3d['v' + n] = geoV(n, ang); });
-[8, 12, 16].forEach(n => { geo3d['w' + n] = geoV(n, 72, 4); });
+[[4, 72], [6, 60], [8, 90], [10, 72], [12, 60], [16, 45]].forEach(([n, ang]) =>
+  ['', 'd', 'g', 'dg'].forEach(suf => { geo3d['v' + n + suf] = geoV(n, ang, 2, OPS[suf]); }));
+[8, 12, 16].forEach(n =>
+  ['', 'd', 'g', 'dg'].forEach(suf => { geo3d['w' + n + suf] = geoV(n, 72, 4, OPS[suf]); }));
 [1, 2, 3, 4].forEach(n => { geo3d['rotativo' + n] = geoRotativo(n); });
 
 // =========================================

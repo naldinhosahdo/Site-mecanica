@@ -8,6 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MecânicaPro" />
+  <link rel="apple-touch-icon" href="icones/apple-touch-icon.png" />
+  <link rel="icon" href="icones/icone-192.png" />
 </head>
 <body>
 
@@ -560,7 +568,13 @@
     </div>
   </div>
 
-  <script src="montagem-dados.js?v=3"></script>
-  <script src="app.js?v=28"></script>
+  <script src="montagem-dados.js?v=4"></script>
+  <script src="app.js?v=29"></script>
+  <script>
+    // instala o app no celular e deixa o site abrir sem internet
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    }
+  </script>
 </body>
 </html>

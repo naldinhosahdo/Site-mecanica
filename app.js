@@ -590,7 +590,7 @@ const marcas = {
       { nome: 'V8 biturbo (Cayenne/Panamera)', periodo: '2002–atual', desc: 'V8 dos modelos maiores, que financiou boa parte do desenvolvimento dos esportivos da marca.' },
       { nome: 'V10 do Carrera GT', periodo: '2003–2007', desc: 'V10 5.7 nascido de um projeto de Le Mans abortado, aproveitado no superesportivo Carrera GT.' },
       { nome: 'Boxer 6 (9A1)', periodo: '2008–atual', desc: 'Geração atual do boxer 6, com injeção direta e versões turbo que passam de 650 cv no 911 GT2 RS.' },
-      { nome: 'Híbrido de Le Mans (919)', periodo: '2014–2017', desc: 'Conjunto híbrido do 919 que venceu Le Mans três vezes seguidas e levou tecnologia elétrica para a rua.' },
+      { nome: 'Híbrido de Le Mans (919)', periodo: '2014–2017', desc: 'Um V4 turbo de 2.0 somado a recuperação de energia, que venceu Le Mans três vezes seguidas e levou tecnologia elétrica para a rua.' },
       { nome: 'Boxer 4 turbo (718)', periodo: '2016–atual', desc: 'Volta do boxer de 4 cilindros à linha esportiva, no Cayman e Boxster da geração 718.' },
       { nome: 'Motores elétricos (Taycan)', periodo: '2019–atual', desc: 'Primeiro elétrico da marca, com arquitetura de 800V que virou referência de recarga rápida na indústria.' },
     ]
@@ -703,7 +703,7 @@ const marcas = {
       { nome: 'Tornado OHC', periodo: '1962–1975', desc: 'Seis cilindros com comando no cabeçote; no Brasil, virou o motor dos Ford Maverick e F-100 após a compra da Willys.' },
       { nome: 'AMC 4.0 (6 em linha)', periodo: '1986–2006', desc: 'Motor do Cherokee com fama quase mitológica de durabilidade entre os off-roaders.' },
       { nome: 'Pentastar V6', periodo: '2011–atual', desc: 'V6 3.6 da Stellantis, usado no Wrangler, Grand Cherokee e em quase toda a linha americana.' },
-      { nome: '4xe (híbrido plug-in)', periodo: '2020–atual', desc: 'Sistema híbrido que deu ao Wrangler tração elétrica silenciosa para trilhas.' },
+      { nome: '4xe (híbrido plug-in)', periodo: '2020–atual', desc: 'O 2.0 turbo de 4 cilindros somado a dois motores elétricos, que deu ao Wrangler tração elétrica silenciosa para trilhas.' },
       { nome: 'Hurricane biturbo', periodo: '2021–atual', desc: 'Novo 6 cilindros em linha biturbo criado para substituir os V8 mantendo potência com menos consumo.' },
     ]
   },
@@ -735,7 +735,7 @@ const marcas = {
       { nome: 'Hemi V8 (1ª geração)', periodo: '1951–1958', desc: 'O primeiro Hemi, com câmara hemisférica que rendia muito mais potência que os rivais da época.' },
       { nome: 'Slant-Six', periodo: '1959–2000', desc: 'Seis cilindros inclinado 30 graus, conhecido por ser praticamente impossível de quebrar.' },
       { nome: '426 Hemi', periodo: '1964–1971', desc: 'O "Elephant Engine" dos muscle cars, tão dominante nas corridas que chegou a ser banido da NASCAR.' },
-      { nome: 'Cummins (diesel)', periodo: '1989–atual', desc: 'Parceria com a Cummins que transformou a picape RAM em referência de torque para trabalho pesado.' },
+      { nome: 'Cummins (diesel)', periodo: '1989–atual', desc: 'Seis cilindros em linha da Cummins, parceria que transformou a picape RAM em referência de torque para trabalho pesado.' },
       { nome: 'Hemi moderno', periodo: '2003–atual', desc: 'Retomada do nome Hemi nos V8 5.7 e 6.4 do Challenger, Charger e RAM.' },
       { nome: 'Hellcat (supercharged)', periodo: '2015–2023', desc: 'V8 6.2 com compressor passando de 700 cv, num carro de série vendido em concessionária comum.' },
     ]
@@ -861,7 +861,7 @@ const marcas = {
     motores: [
       { nome: 'C30A (V6 do NSX)', periodo: '1990–2005', desc: 'V6 com VTEC e bielas de titânio do NSX, projeto que teve Ayrton Senna como consultor de acerto.' },
       { nome: 'Série J (V6)', periodo: '1996–atual', desc: 'V6 usado nos sedãs e SUVs da marca, com desativação de cilindros para economizar combustível.' },
-      { nome: 'SH-AWD híbrido', periodo: '2013–atual', desc: 'Sistema que usa motores elétricos nas rodas traseiras para direcionar torque nas curvas.' },
+      { nome: 'SH-AWD híbrido', periodo: '2013–atual', desc: 'O V6 3.5 combinado a motores elétricos nas rodas traseiras, que direcionam torque nas curvas.' },
       { nome: 'V6 biturbo híbrido (NSX)', periodo: '2016–2022', desc: 'Conjunto do NSX moderno, somando V6 biturbo e três motores elétricos.' },
     ]
   },
@@ -884,7 +884,7 @@ const marcas = {
       { nome: 'Td5', periodo: '1998–2006', desc: 'Diesel de 5 cilindros do Defender, último motor próprio da marca antes da era Ford.' },
       { nome: 'AJ-V8 supercharged', periodo: '2005–2020', desc: 'V8 com compressor herdado da Jaguar, que deu ao Range Rover desempenho de esportivo.' },
       { nome: 'Ingenium', periodo: '2015–atual', desc: 'Família modular atual, com versões diesel, gasolina e híbridas de 4 e 6 cilindros.' },
-      { nome: 'Híbridos plug-in e elétricos', periodo: '2018–atual', desc: 'Eletrificação da linha, incluindo versões P400e e os primeiros modelos totalmente elétricos.' },
+      { nome: 'Híbridos plug-in e elétricos', periodo: '2018–atual', desc: 'Eletrificação da linha: o P400e junta o 2.0 Ingenium de 4 cilindros a um motor elétrico, e depois vieram os primeiros modelos totalmente elétricos.' },
     ]
   },
   volvo: {
@@ -1052,7 +1052,7 @@ const marcas = {
       { nome: 'Diesel GW4D', periodo: '1998–2015', desc: 'Motores diesel das primeiras picapes da marca, voltadas ao mercado interno chinês.' },
       { nome: 'GW4B / GW4N (turbo)', periodo: '2017–atual', desc: 'Família turbo de injeção direta que equipa os SUVs Haval vendidos no Brasil.' },
       { nome: 'Motores elétricos (Ora)', periodo: '2018–atual', desc: 'Linha elétrica da marca, com o compacto Ora 03 entre os primeiros elétricos chineses no Brasil.' },
-      { nome: 'Sistema híbrido DHT', periodo: '2021–atual', desc: 'Híbrido com dois motores elétricos e câmbio dedicado, usado no Haval H6 nacional.' },
+      { nome: 'Sistema híbrido DHT', periodo: '2021–atual', desc: 'Híbrido que junta um 1.5 turbo de 4 cilindros a dois motores elétricos e câmbio dedicado, usado no Haval H6 nacional.' },
     ]
   },
   jac: {
