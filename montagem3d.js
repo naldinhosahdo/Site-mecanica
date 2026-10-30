@@ -759,12 +759,16 @@ function geoLinha(n, op) {
         g.add(põe(caixa(L-.2,.5,.06,COR.aluminio,.7,.35),0,1.35,.9));   // face de flange usinada
         return g; })(), entrada:[0,5,0] }),
 
-    comando: () => ({ obj: (()=>{
-        const g = comandoX(xs, L + .1, 1.95, 0);
-        g.add(valvulas(xs, 1.05, COR.aco));
-        return g; })(), entrada:[0,5,0], animar:(o,t)=>{
-        o.children.forEach(c=>{ if (c.isMesh && c.rotation.y === PI2) c.rotation.x += 0; });
-        o.rotation.x = t/2; } }),
+    comando: () => {
+        // A árvore é construída NO PRÓPRIO EIXO (y = 0) e só depois levada à
+        // altura dela. Construída já lá em cima, girar o grupo a fazia dar uma
+        // volta em órbita em torno da linha y = 0 — e arrastava as válvulas
+        // junto, que estavam no mesmo grupo e não giram coisa nenhuma.
+        const arvore = comandoX(xs, L + .1, 0, 0);
+        arvore.position.y = 1.95;
+        const g = grupo(arvore, valvulas(xs, 1.05, COR.aco));
+        return { obj: g, entrada:[0,5,0], animar:(o,t)=>{ arvore.rotation.x = t/2; } };
+      },
 
     correia: () => ({ obj: (()=>{
         const g = correiaDentada(xCor, [1.95,0], .42, [Y_VIRA,0], .3, COR.escuro);
@@ -806,16 +810,21 @@ function geoLinha(n, op) {
         return g; })(), entrada:[0,0,6] }),
 
     volante: () => ({ obj: (()=>{
+        // montado no eixo (y = 0) e só depois erguido até a altura do
+        // virabrequim, como o próprio virabrequim faz. Montado já na altura
+        // final, rotation.x o punha a orbitar em volta da linha y = 0 em vez
+        // de girar no lugar.
         const v = volanteReal(.98, COR.ferro);
-        v.rotation.z = PI2; v.position.set(xVol, Y_VIRA, 0);
-        const g = grupo(v, põe(gira(cil(.3,.3,.26,COR.aco,24,.9,.35),0,0,PI2),xVol-.16,Y_VIRA,0));
+        v.rotation.z = PI2; v.position.set(xVol, 0, 0);
+        const g = grupo(v, põe(gira(cil(.3,.3,.26,COR.aco,24,.9,.35),0,0,PI2),xVol-.16,0,0));
         for(let k=0;k<6;k++){ const a=k*Math.PI/3;
-          g.add(põe(gira(parafuso(),0,0,PI2),xVol-.1,Y_VIRA+Math.cos(a)*.38,Math.sin(a)*.38)); }
+          g.add(põe(gira(parafuso(),0,0,PI2),xVol-.1,Math.cos(a)*.38,Math.sin(a)*.38)); }
         const dentes = new THREE.Group();
         cremalheira(dentes, 1.02, 0);
         dentes.rotation.y = PI2;
-        dentes.position.set(xVol, Y_VIRA, 0);
+        dentes.position.set(xVol, 0, 0);
         g.add(dentes);
+        g.position.y = Y_VIRA;
         return g; })(),
       entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
   };
@@ -934,10 +943,21 @@ function geoV(n, grausTotal, qtdBancos, op) {
         b.add(põe(tv, 0, 3.0, 0));
       }), entrada:[0,6,0] }),
 
-    comandos: () => ({ obj: construir(b => {
-        b.add(comandoX(xs, L + .1, 2.95, 0));
-        b.add(valvulas(xs, 2.05, COR.aco));
-      }), entrada:[0,6,0], animar:(o,t)=>{ o.children.forEach(b=>{ b.children[0].rotation.x = t/2; }); } }),
+    comandos: () => {
+        // uma árvore por banco, cada uma construída no próprio eixo e só
+        // depois posta na altura dela — senão girava em órbita em volta da
+        // base do banco, levando as válvulas de carona
+        const arvores = [];
+        const obj = construir(b => {
+          const arvore = comandoX(xs, L + .1, 0, 0);
+          arvore.position.y = 2.95;
+          arvores.push(arvore);
+          b.add(arvore);
+          b.add(valvulas(xs, 2.05, COR.aco));
+        });
+        return { obj, entrada:[0,6,0],
+                 animar:(o,t)=>{ arvores.forEach(a => { a.rotation.x = t/2; }); } };
+      },
 
     corrente: () => ({ obj: (()=>{
         const g = new THREE.Group();
@@ -1089,8 +1109,11 @@ function geoBoxer(n, ar, op) {
     carter: comum.carter,
     virabrequim: comum.virabrequim,
     comando: () => ({ obj: (()=>{
-        const g = grupo(põe(gira(cil(.1,.1,C-.1,COR.escuro),PI2,0,0),0,-.52,0));
-        pares.forEach(([,z])=>g.add(põe(gira(cil(.19,.19,.16,COR.aco),PI2,0,0),0,-.52,z)));
+        // construído no eixo e descido depois: antes ficava em y = -.52 e
+        // rotation.z o fazia orbitar em volta do virabrequim
+        const g = grupo(põe(gira(cil(.1,.1,C-.1,COR.escuro),PI2,0,0),0,0,0));
+        pares.forEach(([,z])=>g.add(põe(gira(cil(.19,.19,.16,COR.aco),PI2,0,0),0,0,z)));
+        g.position.y = -.52;
         return g; })(), entrada:[0,-4,0], animar:(o,t)=>{ o.rotation.z = t/2; } }),
     bielas: comum.bielas,
     cilindros: () => ({ obj: (()=>{
@@ -1307,7 +1330,8 @@ function geoRotativo(n) {
           g.add(põe(gira(cil(.42,.42,ESP*.7,COR.ferro,26),PI2,0,0),
                     Math.cos(ang)*EXC, Math.sin(ang)*EXC, z));
         });
-        return g; })(), entrada:[0,0,-6], animar:(o,t)=>{ o.rotation.z = t; } }),
+        return g; })(), entrada:[0,0,-6], excentrico:true,
+        animar:(o,t)=>{ o.rotation.z = t; } }),
 
     rotores: () => {
       const g = new THREE.Group(); const moveis = [];
@@ -1321,7 +1345,10 @@ function geoRotativo(n) {
         g.add(m);
         moveis.push({ m, fase: i * Math.PI * 2 / n });
       });
-      return { obj:g, entrada:[0,0,6], animar:(o,t)=>{
+      // excentrico: a órbita aqui é o motor funcionando certo, não defeito —
+      // é assim que o Wankel anda. A auditoria de geometria lê esta marca
+      // para não acusar a peça de girar fora do eixo.
+      return { obj:g, entrada:[0,0,6], excentrico:true, animar:(o,t)=>{
         // o rotor gira a 1/3 da rotação do excêntrico, orbitando em volta dele
         moveis.forEach(r=>{
           r.m.rotation.z = -(t + r.fase) / 3;
@@ -1505,12 +1532,21 @@ function trensDeEngrenagem(x, yCima, yBaixo, cor) {
 function ventoinhaLinha(x, y) {
   const g = new THREE.Group();
   g.add(põe(gira(cil(.62, .62, .14, COR.aluminioEsc, 30, .55, .5), 0, 0, PI2), x, y, 0));
+  // Cada pá num suporte que só a põe na hora do relógio; o passo é dado
+  // dentro do suporte, no eixo da própria pá. Antes a posição andava para
+  // um lado (+a) e a inclinação para o outro (-a), com o passo misturado
+  // no mesmo objeto: cada pá saía torta de um jeito e, ao girar, o conjunto
+  // parecia comido. É o mesmo defeito que a ventoinha do boxer tinha.
   for (let k = 0; k < 10; k++) {
     const a = k * Math.PI / 5;
+    const suporte = new THREE.Group();
+    suporte.position.set(x + .1, y, 0);
+    suporte.rotation.x = a;
     const pa = caixa(.1, .42, .07, COR.aluminioEsc, .55, .5);
-    pa.position.set(x + .1, y + Math.cos(a) * .42, Math.sin(a) * .42);
-    pa.rotation.x = -a; pa.rotation.z = .4;
-    g.add(pa);
+    pa.position.set(0, .42, 0);
+    pa.rotation.y = .4;                 // passo da pá
+    suporte.add(pa);
+    g.add(suporte);
   }
   // carenagem que guia o ar para as aletas
   g.add(aoLongoDeX(extrudado(
@@ -1644,14 +1680,16 @@ function geoDoisTempos(n) {
         return g; })(), entrada:[0,0,-6] }),
 
     volante: () => ({ obj: (()=>{
+        // no eixo primeiro, na altura do virabrequim depois — senão orbita
         const xVol = -(meia + .3);
         const v = volanteReal(.95, COR.ferro);
-        v.rotation.z = PI2; v.position.set(xVol, Y_VIRA, 0);
-        const g = grupo(v, põe(gira(cil(.28,.28,.24,COR.aco,24,.9,.35),0,0,PI2),xVol-.16,Y_VIRA,0));
+        v.rotation.z = PI2; v.position.set(xVol, 0, 0);
+        const g = grupo(v, põe(gira(cil(.28,.28,.24,COR.aco,24,.9,.35),0,0,PI2),xVol-.16,0,0));
         const dentes = new THREE.Group();
         cremalheira(dentes, .99, 0);
-        dentes.rotation.y = PI2; dentes.position.set(xVol, Y_VIRA, 0);
+        dentes.rotation.y = PI2; dentes.position.set(xVol, 0, 0);
         g.add(dentes);
+        g.position.y = Y_VIRA;
         return g; })(),
       entrada:[-6,0,0], animar:(o,t)=>{ o.rotation.x = t; } }),
   };
@@ -2131,6 +2169,16 @@ window.Motor3D = {
   aoZoom(fn) { aoMudarZoom = fn; },
   percentual() { return zoomPercentual(); },
   ajustar(canvas) { if (renderer) redimensionar(canvas); },
+  // Só a auditoria usa isto: uma janela de leitura para as ferramentas
+  // medirem a geometria (peça torta, pá deformada, coisa fora do lugar)
+  // sem precisar reimplementar aqui fora como o motor é construído.
+  _interno() { return { THREE, geo3d, raiz, pecas: pecasNaCena,
+                        // a vista explodida chega ao fim por aproximação; a
+                        // auditoria precisa saber quando parou, em vez de
+                        // cronometrar (o número de quadros por segundo varia
+                        // demais entre um celular e um teste automático)
+                        explode: { atual: explodeAtual, alvo: explodeAlvo },
+                        ligado, animando: tweens.length > 0 }; },
   parar() {
     if (observador) { observador.disconnect(); observador = null; }
     if (animId) cancelAnimationFrame(animId);

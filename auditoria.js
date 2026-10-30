@@ -147,6 +147,62 @@ for(const k in variantes) variantes[k].forEach(v=>scan(v.desc));
   console.log('arquiteturas 3D definidas: '+Object.keys(arquiteturas).length);
 }
 
+// ---------- J. NOMES E TEXTOS DAS PECAS ----------
+// a mesma peca tem que se chamar sempre do mesmo jeito, e nenhum texto
+// pode estar vazio, repetido de outra peca ou com sobra de rascunho
+{
+  const src = fs.readFileSync('./montagem-dados.js','utf8').replace(/^const /gm,'var ')
+            + '\nmodule.exports={arquiteturas};';
+  const Mod = new module.constructor();
+  Mod._compile(src, process.cwd()+'/_montagem-dados-nomes.js');
+  const {arquiteturas} = Mod.exports;
+
+  const nomeDoId = {}, textoDe = {};
+  for(const a in arquiteturas){
+    const pecas = arquiteturas[a].pecas;
+
+    // dois nomes iguais na mesma lista: o usuario nao sabe qual e qual
+    const nomes = pecas.map(p=>p.nome);
+    const repetidos = nomes.filter((n,i)=>nomes.indexOf(n)!==i);
+    if(repetidos.length) E.push('[nome] duas pecas com o mesmo nome em '+a+': '+[...new Set(repetidos)]);
+
+    pecas.forEach(p=>{
+      // A mesma peca com nomes diferentes de uma arquitetura para outra
+      // costuma ser de proposito ("Bloco em V", "Rotores triangulares" no
+      // plural, "Carter selado" no dois tempos). Por isso e aviso, para
+      // conferir de olho, e nao erro: so vale a pena olhar uma vez cada par.
+      if(!nomeDoId[p.id]) nomeDoId[p.id] = { nome:p.nome, arq:a, vistos:new Set([p.nome]) };
+      else if(!nomeDoId[p.id].vistos.has(p.nome)){
+        nomeDoId[p.id].vistos.add(p.nome);
+        W.push('[nome] a peca "'+p.id+'" aparece como "'+nomeDoId[p.id].nome+'" e como "'+
+               p.nome+'" (em '+a+') — conferir se a diferenca e proposital');
+      }
+
+      if(!/^[A-ZÁÂÃÉÊÍÓÔÕÚÇ]/.test(p.nome))
+        W.push('[nome] nome de peca comecando em minuscula: '+a+' / '+p.nome);
+      if(p.nome.length > 28)
+        W.push('[nome] nome de peca comprido demais para o rotulo ('+p.nome.length+'): '+p.nome);
+
+      ['dica','aoEncaixar','seErrar'].forEach(campo=>{
+        const t = (p[campo]||'').trim();
+        if(t.length < 25) E.push('[texto] '+campo+' curto demais em '+a+' / '+p.id+': "'+t+'"');
+        // marcadores de rascunho de verdade: TODO em caixa alta, nao a
+        // palavra "todo" no meio de uma frase em portugues
+        if(/\bTODO\b|\bFIXME\b|lorem ipsum|\bXXX\b|\.\.\.$/.test(t))
+          E.push('[texto] sobra de rascunho em '+a+' / '+p.id+' ('+campo+')');
+        if(!/[.!?]$/.test(t)) W.push('[texto] '+campo+' sem ponto final em '+a+' / '+p.id);
+        // texto identico usado por duas pecas diferentes
+        const chave = campo+'|'+t;
+        if(textoDe[chave] && textoDe[chave] !== p.id)
+          E.push('[texto] '+campo+' identico em duas pecas diferentes: "'+
+                 textoDe[chave]+'" e "'+p.id+'"');
+        textoDe[chave] = p.id;
+      });
+    });
+  }
+  console.log('ids de peca distintos: '+Object.keys(nomeDoId).length);
+}
+
 console.log('==== AUDITORIA COMPLETA ====');
 console.log('grupos: '+ordem.length+' | marcas: '+Object.keys(marcas).length+' | familias: '+Object.values(marcas).reduce((s,m)=>s+m.motores.length,0)+' | variantes: '+Object.values(variantes).reduce((s,v)=>s+v.length,0));
 console.log('afirmacoes absolutas no texto (revisar manualmente): '+nSup);
