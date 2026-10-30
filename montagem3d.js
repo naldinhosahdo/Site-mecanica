@@ -1131,15 +1131,27 @@ function geoBoxer(n, ar, op) {
           põe(gira(cil(.85,.85,.16,COR.aluminio,40,.7,.4),PI2,0,0),0,0,zVent),
           põe(gira(cil(.3,.3,.36,COR.aco,26,.9,.3),PI2,0,0),0,0,zVent+.22),
           põe(new THREE.Mesh(new THREE.TorusGeometry(.86,.05,10,44), mat(COR.aluminio,.7,.4)),0,0,zVent+.06));
-        for(let k=0;k<12;k++){
-          const ang=k*Math.PI/6;
-          // pá com passo: mais larga na ponta e inclinada, como pá de verdade
-          const pa = extrudado([[-.07,-.3],[.07,-.26],[.11,.3],[-.11,.26]], .06, COR.aluminio,.6,.5,
-                               { chave:'paVent', chanfro:.015, curvas:2 });
-          pa.position.set(Math.sin(ang)*.52, Math.cos(ang)*.52, zVent+.1);
-          pa.rotation.z = -ang; pa.rotation.y = .5;
-          g.add(pa);
+        // Cada pá vive dentro de um suporte que só a posiciona no relógio.
+        // O passo é dado DENTRO desse suporte, em torno do eixo longo da
+        // própria pá. Antes o passo e a posição eram dois ângulos na mesma
+        // peça, e o Three resolve isso na ordem XYZ: o passo acabava
+        // aplicado em torno do Y do mundo, então cada pá inclinava de um
+        // jeito conforme a hora do relógio em que estivesse — uma ficava de
+        // perfil, outra deitada, e elas pareciam comidas ao girar.
+        const planoDasPas = zVent + .2;      // à frente do prato, não dentro dele
+        for (let k = 0; k < 12; k++) {
+          const suporte = new THREE.Group();
+          suporte.rotation.z = -k * Math.PI / 6;
+          const pa = extrudado([[-.07,-.32],[.07,-.28],[.11,.32],[-.11,.28]], .07, COR.aluminio,.6,.5,
+                               { chave:'paVent2', chanfro:.015, curvas:2 });
+          pa.position.set(0, .54, planoDasPas);
+          pa.rotation.y = .55;               // passo da pá
+          suporte.add(pa);
+          g.add(suporte);
         }
+        // cinta externa, no mesmo plano das pás, como na ventoinha de verdade
+        g.add(põe(new THREE.Mesh(new THREE.TorusGeometry(.88,.045,10,44), mat(COR.aluminio,.7,.4)),
+                  0, 0, planoDasPas));
         return g; })(), entrada:[0,0,6], animar:(o,t)=>{ o.rotation.z = t*1.4; } }),
     distribuidor: () => ({ obj: (()=>{
         const corpo = new THREE.Mesh(geoCache('distribuidor', () => geoTorneada([
