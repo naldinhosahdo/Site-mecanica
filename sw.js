@@ -7,7 +7,7 @@
 // quando a versão sobe, o endereço muda, dá "não tenho" e vem da rede.
 // Já o HTML não tem ?v=, então ele sempre tenta a rede primeiro.
 // =========================================
-const CACHE = 'mecanicapro-v9';
+const CACHE = 'mecanicapro-v10';
 
 // o essencial para a primeira tela abrir offline
 const ESSENCIAL = [

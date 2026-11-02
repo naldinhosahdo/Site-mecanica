@@ -1714,33 +1714,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') fecharModal();
 });
 
-// Newsletter form
-document.getElementById('newsletter-form').addEventListener('submit', function (e) {
-  e.preventDefault();
-  const msg   = document.getElementById('nl-msg');
-  const nome  = document.getElementById('nl-nome').value.trim();
-  const email = document.getElementById('nl-email').value.trim();
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  if (!nome || !emailOk) {
-    msg.textContent = 'Por favor, preencha nome e e-mail válido.';
-    msg.className = 'newsletter__msg error';
-    return;
-  }
-
-  const btn = this.querySelector('button');
-  btn.disabled = true;
-  btn.textContent = 'Enviando...';
-
-  setTimeout(() => {
-    msg.textContent = '✅ Cadastro realizado! Obrigado, ' + nome + '.';
-    msg.className = 'newsletter__msg success';
-    this.reset();
-    btn.disabled = false;
-    btn.textContent = 'Quero receber';
-  }, 1000);
-});
-
 // Animate on scroll
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
