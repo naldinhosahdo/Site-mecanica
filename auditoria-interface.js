@@ -69,7 +69,12 @@ const ok    = (cond, m) => { if (!cond) erro(m); return cond; };
 
   const abrirMotor = async arq => {
     paginaAtual = `montagem.html?arq=${arq}`;
-    await pagina.goto(`${BASE}/${paginaAtual}`, { waitUntil: 'networkidle' });
+    // nada de 'networkidle': fonte do Google e foto do Unsplash deixam a rede
+    // viva para sempre quando não há internet, e o teste morreria por tempo
+    // esgotado sem ser culpa do site. Esperamos o motor 3D ficar de pé.
+    await pagina.goto(`${BASE}/${paginaAtual}`, { waitUntil: 'domcontentloaded' });
+    await pagina.waitForFunction(() => window.Motor3D && window.Motor3D._interno,
+                                 null, { timeout: 30000, polling: 200 });
     await pagina.waitForTimeout(QUADRO);
   };
 
@@ -387,7 +392,12 @@ const ok    = (cond, m) => { if (!cond) erro(m); return cond; };
   // =================================================================
   {
     paginaAtual = 'index.html';
-    await pagina.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
+    await pagina.goto(`${BASE}/index.html`, { waitUntil: 'domcontentloaded' });
+    // "typeof marcas" e não "window.marcas": app.js declara com const, e const
+    // no topo de um script não vira propriedade de window — só existe pelo nome
+    await pagina.waitForFunction(
+      () => typeof marcas !== 'undefined' && document.querySelector('#grupos-grid > *'),
+      null, { timeout: 30000, polling: 200 });
     await pagina.waitForTimeout(1200);
 
     const grupos = await pagina.evaluate(() =>
@@ -444,7 +454,7 @@ const ok    = (cond, m) => { if (!cond) erro(m); return cond; };
   // =================================================================
   {
     paginaAtual = 'mapa-mental.html';
-    await pagina.goto(`${BASE}/mapa-mental.html`, { waitUntil: 'networkidle' });
+    await pagina.goto(`${BASE}/mapa-mental.html`, { waitUntil: 'domcontentloaded' });
     await pagina.waitForTimeout(1500);
     const conteudo = await pagina.evaluate(() =>
       document.body.innerText.trim().length + document.querySelectorAll('svg, canvas').length * 500);

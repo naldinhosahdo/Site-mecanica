@@ -4,17 +4,16 @@
   "description": "Motores de 63 marcas em 3D, artigos de mecânica, diagnóstico e glossário automotivo.",
   "lang": "pt-BR",
   "dir": "ltr",
-  "start_url": "./index.html",
-  "scope": "./",
-  "id": "/Site-mecanica/",
+  "start_url": "/Site-mecanica/",
+  "scope": "/Site-mecanica/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
   "background_color": "#0d1117",
   "theme_color": "#0d1117",
   "categories": ["education", "books", "lifestyle"],
   "icons": [
     { "src": "icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icones/icone-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
     { "src": "icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "icones/icone-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
@@ -23,14 +22,14 @@
       "name": "Motores",
       "short_name": "Motores",
       "description": "Catálogo de motores por grupo e marca",
-      "url": "./index.html#motores",
+      "url": "/Site-mecanica/index.html#motores",
       "icons": [{ "src": "icones/icone-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Mapa mental",
       "short_name": "Mapa",
       "description": "Mapa mental da mecânica automotiva",
-      "url": "./mapa-mental.html",
+      "url": "/Site-mecanica/mapa-mental.html",
       "icons": [{ "src": "icones/icone-192.png", "sizes": "192x192" }]
     }
   ]

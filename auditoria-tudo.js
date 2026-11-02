@@ -49,8 +49,9 @@ function temNavegador() {
 function rodar(arquivo) {
   console.log('\n' + '─'.repeat(64));
   return new Promise(ok => {
+    // process.env.PORTA, e não a constante: a porta pode ter mudado acima
     const f = spawn(process.execPath, [path.join(RAIZ, arquivo)],
-      { stdio: 'inherit', env: { ...process.env, PORTA } });
+      { stdio: 'inherit', env: { ...process.env, PORTA: process.env.PORTA || PORTA } });
     f.on('close', codigo => ok(codigo === 0));
   });
 }
@@ -65,11 +66,27 @@ function rodar(arquivo) {
     console.log('Instale com:  npm i playwright-core && npx playwright install chromium');
     console.log('(ou aponte a variável CHROMIUM para um Chrome já instalado)');
   } else {
-    const s = servidor();
-    await new Promise(ok => s.listen(PORTA, ok));
-    resultados['auditoria-3d.js']        = await rodar('auditoria-3d.js');
-    resultados['auditoria-interface.js'] = await rodar('auditoria-interface.js');
-    s.close();
+    // Porta ocupada não pode derrubar a auditoria inteira: pode ser um
+    // servidor que você mesmo deixou rodando. Tentamos subir o nosso e, se
+    // a porta estiver tomada, procuramos a próxima livre.
+    let s = null;
+    for (let tentativa = 0; tentativa < 12 && !s; tentativa++) {
+      const porta = Number(PORTA) + tentativa;
+      const candidato = servidor();
+      const subiu = await new Promise(ok => {
+        candidato.once('error', () => ok(false));
+        candidato.listen(porta, () => ok(true));
+      });
+      if (subiu) { s = candidato; process.env.PORTA = String(porta);
+                   if (porta !== Number(PORTA)) console.log(`\n(porta ${PORTA} ocupada; usando ${porta})`); }
+      else candidato.close();
+    }
+    if (!s) { console.log('\nNão consegui abrir nenhuma porta para servir o site.'); }
+    else {
+      resultados['auditoria-3d.js']        = await rodar('auditoria-3d.js');
+      resultados['auditoria-interface.js'] = await rodar('auditoria-interface.js');
+      s.close();
+    }
   }
 
   console.log('\n' + '═'.repeat(64));

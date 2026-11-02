@@ -32,7 +32,13 @@ const CHROMIU = process.env.CHROMIUM || '/opt/pw-browsers/chromium';
   const errosJS = [];
   pagina.on('pageerror', e => errosJS.push(e.message));
 
-  await pagina.goto(`${BASE}/montagem.html?arq=linha4`, { waitUntil: 'networkidle' });
+  // 'networkidle' não serve aqui: a página pede fonte do Google e foto de
+  // fora, e se a internet estiver bloqueada esses pedidos ficam pendurados —
+  // a rede nunca fica quieta e a auditoria morre por tempo esgotado sem ter
+  // nada a ver com o site. Esperamos o próprio motor 3D ficar de pé.
+  await pagina.goto(`${BASE}/montagem.html?arq=linha4`, { waitUntil: 'domcontentloaded' });
+  await pagina.waitForFunction(() => window.Motor3D && window.Motor3D._interno,
+                               null, { timeout: 30000, polling: 200 });
   await pagina.waitForTimeout(1200);
 
   const r = await pagina.evaluate(() => {

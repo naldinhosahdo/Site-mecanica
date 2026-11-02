@@ -7,7 +7,7 @@
 // quando a versão sobe, o endereço muda, dá "não tenho" e vem da rede.
 // Já o HTML não tem ?v=, então ele sempre tenta a rede primeiro.
 // =========================================
-const CACHE = 'mecanicapro-v7';
+const CACHE = 'mecanicapro-v8';
 
 // o essencial para a primeira tela abrir offline
 const ESSENCIAL = [
@@ -17,6 +17,8 @@ const ESSENCIAL = [
   './mapa-mental.html',
   './manifest.json',
   './icones/icone-192.png',
+  './icones/icone-192-maskable.png',
+  './icones/icone-512-maskable.png',
   './icones/icone-512.png',
   './vendor/three.module.min.js',
   './vendor/three.core.min.js',
