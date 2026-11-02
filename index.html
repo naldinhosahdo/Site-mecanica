@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MecânicaPro | Conhecimento Automotivo</title>
-  <link rel="stylesheet" href="style.css?v=28" />
+  <link rel="stylesheet" href="style.css?v=29" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -34,6 +34,7 @@
           <li><a href="#glossario"   class="nav__link">Glossário</a></li>
           <li><a href="#motores"     class="nav__link">Motores</a></li>
           <li><a href="mapa-mental.html" class="nav__link">Mapa Mental</a></li>
+          <li><a href="instalar.html"    class="nav__link">Instalar app</a></li>
           <li><a href="#newsletter"  class="nav__link nav__link--cta">Newsletter</a></li>
         </ul>
       </nav>
@@ -575,6 +576,39 @@
     if ('serviceWorker' in navigator) {
       addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
     }
+
+    // ---- botão de instalar o aplicativo ----
+    // O Chrome só deixa chamar a instalação de dentro de um clique, e só
+    // depois de avisar, pelo evento abaixo, que aceita instalar. Por isso o
+    // botão nasce escondido: se o evento não vier, instalar não é possível
+    // e um botão morto só enganaria. Quem quiser saber POR QUE não veio tem
+    // a página instalar.html, que mostra o diagnóstico.
+    (function () {
+      let adiado = null;
+      const bt = document.createElement('button');
+      bt.id = 'instalar-app';
+      bt.type = 'button';
+      bt.innerHTML = '⬇ Instalar aplicativo';
+      bt.hidden = true;
+      bt.addEventListener('click', async () => {
+        if (!adiado) return;
+        bt.disabled = true;
+        adiado.prompt();
+        const r = await adiado.userChoice;
+        adiado = null;
+        if (r.outcome === 'accepted') bt.hidden = true;
+        else { bt.disabled = false; }
+      });
+      addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        adiado = e;
+        bt.hidden = false;
+      });
+      addEventListener('appinstalled', () => { bt.hidden = true; });
+      // já aberto como app: não há o que instalar
+      if (matchMedia('(display-mode: standalone)').matches) bt.hidden = true;
+      addEventListener('DOMContentLoaded', () => document.body.appendChild(bt));
+    })();
   </script>
 </body>
 </html>

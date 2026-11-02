@@ -1342,3 +1342,32 @@ button.article-card__link:hover { color: var(--red-dark); }
 }
 
 .peca-btn--ligado:hover { background: var(--red-dark); color: var(--white); }
+
+/* ---------------------------------------------------------
+   BOTÃO DE INSTALAR O APLICATIVO
+   Nasce escondido pelo HTML e só aparece quando o navegador
+   avisa que aceita instalar. Flutua no canto para não brigar
+   com o cabeçalho, e no celular ocupa a largura toda.
+   --------------------------------------------------------- */
+#instalar-app {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 900;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--vermelho, #e5484d);
+  color: #fff;
+  font: 600 .98rem/1 inherit;
+  letter-spacing: .01em;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .45);
+}
+#instalar-app:hover    { filter: brightness(1.08); }
+#instalar-app:disabled { opacity: .6; cursor: default; }
+#instalar-app[hidden]  { display: none; }
+
+@media (max-width: 560px) {
+  #instalar-app { left: 14px; right: 14px; bottom: 14px; text-align: center; }
+}

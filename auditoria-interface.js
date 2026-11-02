@@ -490,7 +490,7 @@ const ok    = (cond, m) => { if (!cond) erro(m); return cond; };
       });
 
     // e o registro do service worker tem que estar em todas as páginas
-    ['index.html', 'montagem.html', 'mapa-mental.html'].forEach(f => {
+    ['index.html', 'montagem.html', 'mapa-mental.html', 'instalar.html'].forEach(f => {
       const h = fs.readFileSync('./' + f, 'utf8');
       if (!/serviceWorker\s*\.\s*register/.test(h))
         erro(`[pwa] ${f} não registra o service worker — o app não funciona offline por ela`);
@@ -504,7 +504,7 @@ const ok    = (cond, m) => { if (!cond) erro(m); return cond; };
   // =================================================================
   {
     const refs = new Map();
-    ['index.html', 'montagem.html', 'mapa-mental.html'].forEach(f => {
+    ['index.html', 'montagem.html', 'mapa-mental.html', 'instalar.html'].forEach(f => {
       const h = fs.readFileSync('./' + f, 'utf8');
       for (const m of h.matchAll(/(?:src|href)="([\w.-]+\.(?:js|css))\?v=(\d+)"/g)) {
         if (!fs.existsSync('./' + m[1])) erro(`[versao] ${f} pede um arquivo que não existe: ${m[1]}`);

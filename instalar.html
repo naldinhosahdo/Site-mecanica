@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Instalar o app | MecânicaPro</title>
+<link rel="manifest" href="manifest.json?v=2" />
+<meta name="theme-color" content="#0d1117" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MecânicaPro" />
+<link rel="apple-touch-icon" href="icones/apple-touch-icon.png" />
+<link rel="icon" href="icones/icone-192.png" />
+<style>
+  :root { --fundo:#0d1117; --cartao:#161b22; --borda:#30363d; --texto:#e6edf3;
+          --fraco:#8b949e; --vermelho:#e5484d; --verde:#3fb950; --amarelo:#d29922; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:16px; background:var(--fundo); color:var(--texto);
+         font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  .caixa { max-width:640px; margin:0 auto; }
+  h1 { font-size:1.4rem; margin:.2em 0 .1em; }
+  .sub { color:var(--fraco); margin:0 0 20px; font-size:.95rem; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda);
+            border-radius:12px; padding:16px; margin-bottom:14px; }
+  #instalar { width:100%; padding:16px; font-size:1.1rem; font-weight:700;
+              border:0; border-radius:12px; background:var(--vermelho); color:#fff;
+              cursor:pointer; }
+  #instalar[disabled] { background:#30363d; color:var(--fraco); cursor:default; }
+  #recado { margin-top:12px; font-size:.92rem; color:var(--fraco); }
+  table { width:100%; border-collapse:collapse; font-size:.88rem; }
+  td { padding:7px 0; border-bottom:1px solid var(--borda); vertical-align:top; }
+  td:first-child { color:var(--fraco); width:42%; }
+  td:last-child { font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+                  word-break:break-word; }
+  .ok { color:var(--verde); } .ruim { color:var(--vermelho); } .meio { color:var(--amarelo); }
+  #copiar { width:100%; padding:13px; margin-top:6px; background:transparent;
+            color:var(--texto); border:1px solid var(--borda); border-radius:10px;
+            font-size:.95rem; cursor:pointer; }
+  a { color:#58a6ff; }
+</style>
+</head>
+<body>
+<div class="caixa">
+
+  <h1>Instalar o MecânicaPro</h1>
+  <p class="sub">Se o botão abaixo estiver apagado, a tabela diz o porquê.</p>
+
+  <div class="cartao">
+    <button id="instalar" disabled>Procurando…</button>
+    <div id="recado"></div>
+  </div>
+
+  <div class="cartao">
+    <table id="tabela"></table>
+  </div>
+
+  <button id="copiar">Copiar este diagnóstico</button>
+  <p class="sub" style="margin-top:14px">
+    <a href="index.html">← Voltar para o site</a>
+  </p>
+
+</div>
+
+<script>
+// ===========================================================
+// Esta página faz duas coisas: oferece o botão de instalar de
+// verdade (o evento beforeinstallprompt) e mostra, em texto,
+// tudo que o navegador pensa sobre a instalação — para quando
+// o botão NÃO aparecer dar para saber por quê.
+// ===========================================================
+const linhas = [];
+let adiado = null;
+
+const bt      = document.getElementById('instalar');
+const recado  = document.getElementById('recado');
+const tabela  = document.getElementById('tabela');
+
+function põe(rotulo, valor, estado) {
+  linhas.push([rotulo, String(valor)]);
+  const tr = tabela.insertRow();
+  tr.insertCell().textContent = rotulo;
+  const td = tr.insertCell();
+  td.textContent = valor;
+  if (estado) td.className = estado;
+}
+
+// ---------- o botão de instalar ----------
+addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  adiado = e;
+  bt.disabled = false;
+  bt.textContent = '⬇  Instalar aplicativo';
+  recado.textContent = 'O navegador aceitou instalar. Toque no botão.';
+  põe('beforeinstallprompt', 'disparou — instalável', 'ok');
+});
+
+bt.addEventListener('click', async () => {
+  if (!adiado) return;
+  bt.disabled = true;
+  adiado.prompt();
+  const r = await adiado.userChoice;
+  adiado = null;
+  recado.textContent = r.outcome === 'accepted'
+    ? 'Instalado. Pode fechar esta aba e abrir pelo ícone.'
+    : 'Você cancelou. Recarregue a página para tentar de novo.';
+  bt.textContent = r.outcome === 'accepted' ? '✔ Instalado' : 'Instalação cancelada';
+});
+
+addEventListener('appinstalled', () => {
+  bt.textContent = '✔ Instalado';
+  bt.disabled = true;
+  recado.textContent = 'Pronto. Abra pelo ícone na tela inicial.';
+});
+
+// ---------- diagnóstico ----------
+(async () => {
+  const emPe = matchMedia('(display-mode: standalone)').matches
+            || matchMedia('(display-mode: minimal-ui)').matches
+            || navigator.standalone === true;
+
+  põe('Já está aberto como app?', emPe ? 'sim — você está DENTRO do app' : 'não, está no navegador',
+      emPe ? 'ok' : '');
+
+  const ua = navigator.userAgent;
+  const iOS      = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const android  = /Android/.test(ua);
+  const chromeiOS= /CriOS/.test(ua);
+  const safari   = /Safari/.test(ua) && !/CriOS|FxiOS|Chrome|EdgiOS/.test(ua);
+  const navegador = chromeiOS ? 'Chrome no iOS' : /EdgiOS|Edg\//.test(ua) ? 'Edge'
+                  : /SamsungBrowser/.test(ua) ? 'Samsung Internet'
+                  : /Firefox|FxiOS/.test(ua) ? 'Firefox'
+                  : /Chrome\//.test(ua) ? 'Chrome' : safari ? 'Safari' : 'outro';
+
+  // Pergunta ao Android se este app JÁ está instalado. É a suspeita número
+  // um quando o Chrome não oferece instalar: instalado uma vez, ele não
+  // oferece de novo — nem que a instalação anterior tenha saído torta.
+  if (navigator.getInstalledRelatedApps) {
+    try {
+      const apps = await navigator.getInstalledRelatedApps();
+      põe('Já instalado neste aparelho?',
+          apps.length ? 'SIM (' + apps.map(a => a.platform).join(', ') +
+                        ') — remova o ícone e recarregue' : 'não',
+          apps.length ? 'ruim' : 'ok');
+    } catch (e) { põe('Já instalado neste aparelho?', 'não deu para saber: ' + e.message); }
+  } else põe('Já instalado neste aparelho?', 'este navegador não sabe responder');
+
+  põe('Sistema', iOS ? 'iOS / iPadOS' : android ? 'Android' : 'computador ou outro');
+  põe('Navegador', navegador);
+  põe('Endereço', location.href);
+  põe('Conexão segura (HTTPS)', isSecureContext ? 'sim' : 'NÃO — sem isso não instala',
+      isSecureContext ? 'ok' : 'ruim');
+  põe('Suporta instalar?', 'onbeforeinstallprompt' in window ? 'sim' : 'NÃO — este navegador não instala PWA',
+      'onbeforeinstallprompt' in window ? 'ok' : 'ruim');
+
+  // service worker — esperando de verdade. Ler na hora dava "não registrado"
+  // sempre, porque o registro ainda estava a caminho; um diagnóstico que
+  // mente é pior que nenhum, manda consertar o que não está quebrado.
+  if ('serviceWorker' in navigator) {
+    try {
+      await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise(r => setTimeout(r, 6000)),
+      ]);
+      const r = await navigator.serviceWorker.getRegistration();
+      põe('Service worker', r ? 'registrado' : 'NÃO registrado', r ? 'ok' : 'ruim');
+      if (r) {
+        põe('Escopo do SW', r.scope);
+        põe('SW ativo', r.active ? 'sim' : 'ainda instalando', r.active ? 'ok' : 'meio');
+        põe('SW controlando', navigator.serviceWorker.controller ? 'sim'
+            : 'não (recarregue a página)', navigator.serviceWorker.controller ? 'ok' : 'meio');
+      }
+    } catch (e) { põe('Service worker', 'erro: ' + e.message, 'ruim'); }
+  } else põe('Service worker', 'navegador não suporta', 'ruim');
+
+  // manifest
+  try {
+    const resp = await fetch('manifest.json?v=2', { cache: 'no-store' });
+    põe('Manifest', resp.ok ? 'carregou (' + resp.status + ')' : 'FALHOU (' + resp.status + ')',
+        resp.ok ? 'ok' : 'ruim');
+    põe('Tipo do manifest', resp.headers.get('content-type') || '(sem tipo)');
+    const m = await resp.json();
+    põe('start_url', new URL(m.start_url, location.href).href);
+    põe('scope', new URL(m.scope, location.href).href);
+    põe('display', m.display, m.display === 'standalone' ? 'ok' : 'meio');
+
+    const dentro = location.href.startsWith(new URL(m.scope, location.href).href);
+    põe('Página dentro do scope?', dentro ? 'sim' : 'NÃO — por isso não instala',
+        dentro ? 'ok' : 'ruim');
+
+    // cada ícone é baixado de verdade
+    for (const ic of (m.icons || [])) {
+      const u = new URL(ic.src, new URL('manifest.json', location.href)).href;
+      let r;
+      try {
+        const x = await fetch(u, { cache: 'no-store' });
+        if (!x.ok) r = 'FALHOU ' + x.status;
+        else {
+          const bm = await createImageBitmap(await x.blob());
+          r = bm.width + 'x' + bm.height + ' ok';
+          if (bm.width + 'x' + bm.height !== ic.sizes) r += ' (declarado ' + ic.sizes + '!)';
+        }
+      } catch (e) { r = 'erro: ' + e.message; }
+      põe('Ícone ' + ic.sizes + ' ' + (ic.purpose || 'any'), r, /ok$/.test(r) ? 'ok' : 'ruim');
+    }
+  } catch (e) { põe('Manifest', 'erro: ' + e.message, 'ruim'); }
+
+  // veredito sobre o botão, depois de dar tempo ao evento
+  setTimeout(() => {
+    if (adiado || bt.textContent.startsWith('✔')) return;
+    bt.textContent = 'Instalação não oferecida';
+    if (emPe) {
+      recado.textContent = 'Você já está dentro do app instalado — por isso não há o que instalar.';
+    } else if (iOS) {
+      recado.innerHTML = 'No iPhone/iPad só o <b>Safari</b> instala, e sem botão: ' +
+        'abra no Safari, toque em <b>Compartilhar</b> e em <b>Adicionar à Tela de Início</b>. ' +
+        'Pelo Chrome do iOS sai só um atalho com o símbolo do Chrome.';
+    } else {
+      recado.innerHTML = 'O navegador não ofereceu instalar. As duas causas comuns: ' +
+        '<b>o app já está instalado</b> (remova o ícone da tela inicial e recarregue), ' +
+        'ou você está em uma <b>aba anônima</b>.';
+    }
+    põe('beforeinstallprompt', 'NÃO disparou', 'ruim');
+  }, 4000);
+})();
+
+// copiar tudo, para poder colar numa conversa
+document.getElementById('copiar').addEventListener('click', async () => {
+  const txt = 'DIAGNÓSTICO DE INSTALAÇÃO — MecânicaPro\n' +
+              linhas.map(l => l[0] + ': ' + l[1]).join('\n') +
+              '\nuserAgent: ' + navigator.userAgent;
+  try { await navigator.clipboard.writeText(txt); alert('Copiado. Agora é só colar.'); }
+  catch (e) { prompt('Copie o texto abaixo:', txt); }
+});
+
+// registrado já, não no 'load': esta página precisa do service worker de pé
+// para poder dizer com honestidade se ele está ou não registrado
+if ('serviceWorker' in navigator)
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
